@@ -49,7 +49,7 @@ const accentColor = computed(() => {
 
     <div
       v-if="!tickets.length"
-      class="rounded-3xl border border-dashed border-white/15 px-3 py-10 text-center text-sm text-white/35"
+      class="rounded-3xl border border-dashed border-[var(--navy)]/15 bg-white/60 px-3 py-10 text-center text-sm text-[var(--muted)]"
     >
       {{ emptyLabel }}
     </div>

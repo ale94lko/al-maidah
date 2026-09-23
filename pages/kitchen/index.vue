@@ -133,15 +133,15 @@ async function onInstall() {
     <div v-else class="space-y-4" :class="{ 'pt-14': visualAlertActive }">
       <div class="flex flex-wrap items-end justify-between gap-3">
         <div class="min-w-0">
-          <h1 class="font-display text-xl font-bold tracking-tight text-[var(--ivory)] sm:text-2xl">
+          <h1 class="font-display text-xl font-bold tracking-tight text-[var(--navy)] sm:text-2xl">
             {{ t("kitchen.ticketBoard") }}
           </h1>
-          <p class="mt-1 text-sm text-[var(--brass-soft)]/70">
+          <p class="mt-1 text-sm text-[var(--muted)]">
             {{ t("kitchen.boardHint") }}
           </p>
           <p
             v-if="shiftStarted && audioBlocked"
-            class="mt-1 text-xs text-amber-300/90"
+            class="mt-1 text-xs text-[var(--warning)]"
           >
             {{ t("kitchen.alertSoundBlockedHint") }}
           </p>
@@ -150,18 +150,18 @@ async function onInstall() {
           <button
             v-if="installAvailable && !installed"
             type="button"
-            class="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-300 hover:bg-emerald-500/20"
+            class="btn-success !px-3 !py-2"
             @click="onInstall"
           >
             {{ t("kitchen.installApp") }}
           </button>
           <label
             v-if="restaurants.length > 1"
-            class="flex flex-col gap-1 text-xs text-[var(--brass-soft)]/70"
+            class="flex flex-col gap-1 text-xs text-[var(--muted)]"
           >
             {{ t("kitchen.restaurant") }}
             <select
-              class="rounded-2xl border border-[var(--brass)]/20 bg-[color-mix(in_srgb,var(--espresso)_88%,#2a241c)] px-3 py-2 text-sm text-[var(--ivory)]"
+              class="field-input"
               :value="restaurantId ?? undefined"
               @change="onRestaurantChange"
             >
@@ -176,20 +176,19 @@ async function onInstall() {
           </label>
           <p
             v-else-if="restaurants[0]"
-            class="text-sm font-medium text-[var(--brass-soft)]"
+            class="text-sm font-bold text-[var(--gold)]"
           >
             {{ restaurants[0].name }}
           </p>
         </div>
       </div>
 
-      <p v-if="errorMessage" class="text-sm text-red-400">
+      <p v-if="errorMessage" class="text-sm font-semibold text-[var(--danger)]">
         {{ errorMessage }}
       </p>
 
       <AppEmptyState
         v-if="!restaurants.length"
-        class="border-[var(--brass)]/25 text-[var(--ivory)]"
         :title="t('kitchen.noRestaurant')"
         :description="t('kitchen.noRestaurantHint')"
       />

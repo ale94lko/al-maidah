@@ -10,16 +10,16 @@ async function onSignOut() {
 
 <template>
   <div
-    class="kitchen-shell flex min-h-dvh flex-col bg-[var(--kitchen)] text-[var(--paper)]"
+    class="kitchen-shell flex min-h-dvh flex-col text-[var(--navy)]"
   >
     <header
-      class="shell-header flex shrink-0 items-center justify-between gap-3 px-4 py-3 sm:px-6"
+      class="shell-header flex shrink-0 items-center justify-between gap-3 border-b border-[var(--navy)]/8 bg-white/70 px-4 py-3 sm:px-6"
     >
       <div class="min-w-0">
         <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--gold)]">
           {{ t("kitchen.title") }}
         </p>
-        <p class="font-display truncate text-2xl font-bold tracking-tight text-white">
+        <p class="font-display truncate text-2xl font-bold tracking-tight text-[var(--navy)]">
           {{ t("kitchen.ticketBoard") }}
         </p>
       </div>
@@ -27,13 +27,13 @@ async function onSignOut() {
         <LanguageSwitcher />
         <span
           v-if="user?.email"
-          class="hidden max-w-[14rem] truncate text-xs text-white/45 sm:inline"
+          class="hidden max-w-[14rem] truncate text-xs text-[var(--muted)] sm:inline"
         >
           {{ user.email }}
         </span>
         <button
           type="button"
-          class="btn-ghost"
+          class="rounded-2xl border border-[var(--navy)]/15 bg-white px-3 py-1.5 text-sm font-bold text-[var(--navy)]"
           @click="onSignOut"
         >
           {{ t("common.signOut") }}

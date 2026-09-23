@@ -52,29 +52,29 @@ const paymentHint = computed(() => {
     />
     <header class="flex items-start justify-between gap-2">
       <div class="min-w-0">
-        <p class="font-display text-2xl font-bold tracking-tight text-white">
+        <p class="font-display text-2xl font-bold tracking-tight text-[var(--navy)]">
           {{ t("kitchen.tableLabel", { n: ticket.table_number ?? "—" }) }}
         </p>
-        <p v-if="ticket.guest_name" class="truncate text-sm text-white/55">
+        <p v-if="ticket.guest_name" class="truncate text-sm text-[var(--muted)]">
           {{ ticket.guest_name }}
         </p>
       </div>
-      <div class="shrink-0 text-end text-xs text-white/45">
+      <div class="shrink-0 text-end text-xs text-[var(--muted)]">
         <p>{{ placedAt }}</p>
         <p class="font-bold" :style="{ color: accentColor }">
           {{ t("kitchen.elapsed", { n: elapsedMinutes }) }}
         </p>
-        <p class="mt-0.5 text-[11px] font-semibold uppercase tracking-wide text-white/35">
+        <p class="mt-0.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--muted)]">
           {{ paymentHint }}
         </p>
       </div>
     </header>
 
-    <ul class="space-y-2 border-t border-white/10 pt-2">
+    <ul class="space-y-2 border-t border-[var(--navy)]/8 pt-2">
       <li
         v-for="item in ticket.items"
         :key="item.id"
-        class="text-sm text-white/95"
+        class="text-sm text-[var(--navy)]"
       >
         <p class="font-semibold">
           <span class="tabular-nums" :style="{ color: accentColor }">{{ item.quantity }}×</span>
@@ -82,7 +82,7 @@ const paymentHint = computed(() => {
         </p>
         <ul
           v-if="item.selected_options?.length"
-          class="mt-0.5 space-y-0.5 ps-4 text-xs text-white/45"
+          class="mt-0.5 space-y-0.5 ps-4 text-xs text-[var(--muted)]"
         >
           <li
             v-for="option in item.selected_options"
@@ -93,7 +93,7 @@ const paymentHint = computed(() => {
         </ul>
         <p
           v-if="item.notes"
-          class="mt-0.5 ps-4 text-xs italic text-[var(--citrus)]"
+          class="mt-0.5 ps-4 text-xs italic text-[var(--warning)]"
         >
           {{ item.notes }}
         </p>

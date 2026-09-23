@@ -28,8 +28,8 @@
   --gold: #c6a15b;
   --muted: #5c6f62;
   --surface: #ffffff;
-  --kitchen: #0a130e;
-  --kitchen-panel: #132018;
+  --kitchen: var(--paper);
+  --kitchen-panel: #ffffff;
   --brand: var(--herb);
   --brand-ink: var(--herb-deep);
   --espresso: var(--ink);
@@ -56,8 +56,11 @@ body:has(.auth-shell) {
 }
 
 body:has(.kitchen-shell) {
-  background: var(--kitchen);
-  color: #f5faf3;
+  background:
+    radial-gradient(ellipse 40% 30% at 0% 0%, rgba(198, 161, 91, 0.18), transparent 55%),
+    radial-gradient(ellipse 35% 28% at 100% 100%, rgba(142, 163, 148, 0.22), transparent 50%),
+    var(--paper);
+  color: var(--navy);
 }
 
 .font-display {
@@ -170,11 +173,6 @@ body:has(.kitchen-shell) {
     background: color-mix(in srgb, var(--paper) 90%, transparent);
   }
 
-  .kitchen-shell .shell-header {
-    border-color: rgba(245, 250, 243, 0.08);
-    background: color-mix(in srgb, var(--kitchen) 92%, transparent);
-  }
-
   .eyebrow {
     @apply text-[11px] font-extrabold uppercase tracking-[0.22em];
     color: var(--herb-deep);
@@ -225,12 +223,13 @@ body:has(.kitchen-shell) {
   }
 
   .kitchen-ticket {
-    @apply flex flex-col gap-3 rounded-3xl border p-4;
-    border-color: rgba(245, 250, 243, 0.1);
-    background: var(--kitchen-panel);
+    @apply flex flex-col gap-3 rounded-3xl border bg-white p-4;
+    border-color: color-mix(in srgb, var(--navy) 8%, transparent);
+    box-shadow: 0 16px 40px -28px rgba(27, 39, 64, 0.35);
   }
 
-  .admin-shell {
+  .admin-shell,
+  .kitchen-shell {
     background:
       radial-gradient(ellipse 40% 30% at 0% 0%, rgba(198, 161, 91, 0.18), transparent 55%),
       radial-gradient(ellipse 35% 28% at 100% 100%, rgba(142, 163, 148, 0.22), transparent 50%),
@@ -375,19 +374,16 @@ body:has(.kitchen-shell) {
     color: var(--muted);
   }
 
-  .guest-header .lang-segment,
-  .kitchen-shell .lang-segment {
+  .guest-header .lang-segment {
     border-color: rgba(255, 255, 255, 0.15);
     background: rgba(0, 0, 0, 0.25);
   }
 
-  .guest-header .lang-segment button:not(.is-active),
-  .kitchen-shell .lang-segment button:not(.is-active) {
+  .guest-header .lang-segment button:not(.is-active) {
     color: rgba(255, 255, 255, 0.65);
   }
 
-  .guest-header .lang-segment button.is-active,
-  .kitchen-shell .lang-segment button.is-active {
+  .guest-header .lang-segment button.is-active {
     background: var(--info);
     color: #fff;
   }

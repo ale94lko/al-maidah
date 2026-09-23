@@ -36,19 +36,19 @@ const hint = computed(() => {
     role="alert"
   >
     <div
-      class="flex w-full max-w-3xl items-start justify-between gap-3 rounded-xl border border-amber-400/40 bg-amber-500/15 px-4 py-3 text-amber-100 shadow-lg backdrop-blur"
+      class="flex w-full max-w-3xl items-start justify-between gap-3 rounded-2xl border border-[var(--warning)]/40 bg-[color-mix(in_srgb,var(--warning)_16%,white)] px-4 py-3 text-[var(--ink)] shadow-lg"
     >
       <div class="min-w-0">
         <p class="text-sm font-semibold tracking-tight">
           {{ title }}
         </p>
-        <p class="mt-0.5 text-xs text-amber-100/80">
+        <p class="mt-0.5 text-xs text-[var(--muted)]">
           {{ hint }}
         </p>
       </div>
       <button
         type="button"
-        class="shrink-0 rounded-lg border border-amber-300/30 px-2.5 py-1 text-xs font-medium text-amber-50 hover:bg-amber-400/20"
+        class="btn-warning !px-2.5 !py-1 !text-xs"
         @click="emit('dismiss')"
       >
         {{ t("kitchen.alertDismiss") }}
