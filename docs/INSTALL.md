@@ -35,6 +35,10 @@ supabase db reset
 
 `db reset` applies every file in `supabase/migrations/` and then `supabase/seed.sql` (wired in `supabase/config.toml`). No manual SQL steps are required.
 
+**Hosted production:** the Supabase project is linked to [`ale94lko/al-maidah`](https://github.com/ale94lko/al-maidah) with **Deploy to production** enabled. Merging (or pushing) migration files into `main` applies only the new SQL under `supabase/migrations/` to the remote database. Preview branching requires Pro and is off on Free.
+
+Optional manual fallback (GitHub → Actions → “Deploy Supabase migrations (manual)”): set repository secrets `SUPABASE_ACCESS_TOKEN` and `SUPABASE_DB_PASSWORD`.
+
 Demo restaurant slug: `demo` (tables 1–4, bilingual categories and dishes).
 
 Public menu endpoint (server uses the service role; guests never receive `cost_price`):
