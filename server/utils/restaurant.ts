@@ -11,6 +11,14 @@ import type {
   Restaurant,
   RestaurantStatistics,
 } from "~/types"
+import { computeAllTimeRestaurantStatistics } from "./admin-stats"
+
+export async function getRestaurantStatistics(
+  client: SupabaseClient,
+  restaurantId: string,
+): Promise<RestaurantStatistics> {
+  return computeAllTimeRestaurantStatistics(client, restaurantId)
+}
 
 const PUBLIC_DISH_COLUMNS =
   "id, restaurant_id, category_id, name_en, name_ar, description_en, description_ar, price, photo_url, is_available, is_vegetarian, is_archived, allergens, sort_order, created_at, updated_at"
@@ -179,60 +187,6 @@ export async function getMenuItemsForRestaurant(
   }
 
   return (data ?? []) as MenuItem[]
-}
-
-export async function getRestaurantStatistics(
-  client: SupabaseClient,
-  restaurantId: string,
-): Promise<RestaurantStatistics> {
-  const { data, error } = await client
-    .from("orders")
-    .select("payment_status, total, total_cost, created_at, ready_at")
-    .eq("restaurant_id", restaurantId)
-
-  if (error) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: `Failed to load statistics: ${error.message}`,
-    })
-  }
-
-  const rows = data ?? []
-  const paid = rows.filter((row) => row.payment_status === "paid")
-  const revenue = sumMoney(paid.map((row) => String(row.total ?? "0")))
-  const totalCost = sumMoney(paid.map((row) => String(row.total_cost ?? "0")))
-  const readyDurations = paid
-    .filter((row) => row.ready_at && row.created_at)
-    .map(
-      (row) =>
-        (Date.parse(String(row.ready_at)) - Date.parse(String(row.created_at))) /
-        1000,
-    )
-    .filter((seconds) => Number.isFinite(seconds) && seconds >= 0)
-
-  const averageReadySeconds =
-    readyDurations.length === 0
-      ? null
-      : Math.round(
-          readyDurations.reduce((sum, value) => sum + value, 0) /
-            readyDurations.length,
-        )
-
-  return {
-    restaurant_id: restaurantId,
-    order_count: rows.length,
-    paid_order_count: paid.length,
-    revenue: revenue.toFixed(2),
-    total_cost: totalCost.toFixed(2),
-    gross_profit: (revenue - totalCost).toFixed(2),
-    average_ticket:
-      paid.length === 0 ? "0.00" : (revenue / paid.length).toFixed(2),
-    average_ready_seconds: averageReadySeconds,
-  }
-}
-
-function sumMoney(values: string[]): number {
-  return values.reduce((sum, value) => sum + Number(value || 0), 0)
 }
 
 function assertNoCostPrice(dishes: Dish[]): void {

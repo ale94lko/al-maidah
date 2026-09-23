@@ -264,6 +264,50 @@ export interface RestaurantStatistics {
   average_ready_seconds: number | null
 }
 
+export type StatsRange = "today" | "week" | "month" | "last_30_days"
+
+export interface OwnerStatsSeriesPoint {
+  key: string
+  label: string
+  revenue: string
+  cost: string
+  profit: string
+  order_count: number
+}
+
+export interface OwnerStatsBestSeller {
+  menu_item_id: string | null
+  name_en: string
+  name_ar: string
+  quantity_sold: number
+}
+
+export interface OwnerStatsPeakHour {
+  hour: number
+  order_count: number
+}
+
+/** Owner dashboard payload for a selected stats range. */
+export interface OwnerStatsResponse {
+  restaurant_id: string
+  range: StatsRange
+  window: { start: string; end: string }
+  order_count: number
+  revenue: string
+  total_cost: string
+  gross_profit: string
+  /** Basis points: profit / revenue * 10000; null when revenue is 0. */
+  margin_bps: number | null
+  average_ticket: string
+  average_ready_seconds: number | null
+  /** Series for the selected range (hours for today, days otherwise). */
+  series: OwnerStatsSeriesPoint[]
+  series_by_week: OwnerStatsSeriesPoint[]
+  series_by_month: OwnerStatsSeriesPoint[]
+  best_sellers: OwnerStatsBestSeller[]
+  peak_hours: OwnerStatsPeakHour[]
+}
+
 export interface PublicMenu {
   restaurant: Pick<Restaurant, "id" | "name" | "slug" | "trn" | "currency">
   categories: Category[]
