@@ -80,5 +80,6 @@ test("admin and kitchen pages exist with login and signup", () => {
 test("admin menu API requires ownership before returning cost_price", () => {
   const api = read("server/api/admin/menu/[restaurantId].get.ts")
   assert.match(api, /assertRestaurantOwner/)
-  assert.match(api, /getMenuItemsForRestaurant/)
+  assert.match(api, /getAdminMenu|getMenuItemsForRestaurant/)
+  assert.match(api, /cost_price|getAdminMenu/)
 })

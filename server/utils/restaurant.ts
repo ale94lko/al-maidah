@@ -13,7 +13,7 @@ import type {
 } from "~/types"
 
 const PUBLIC_DISH_COLUMNS =
-  "id, restaurant_id, category_id, name_en, name_ar, description_en, description_ar, price, photo_url, is_available, is_vegetarian, allergens, sort_order, created_at, updated_at"
+  "id, restaurant_id, category_id, name_en, name_ar, description_en, description_ar, price, photo_url, is_available, is_vegetarian, is_archived, allergens, sort_order, created_at, updated_at"
 
 export async function getRestaurantBySlug(
   client: SupabaseClient,
@@ -60,8 +60,8 @@ export async function getTableByNumber(
 }
 
 /**
- * Public menu for one restaurant. Dishes are scoped by restaurant_id and
- * omit cost_price so guests never receive internal costs.
+ * Public menu for one restaurant. Dishes are scoped by restaurant_id,
+ * omit cost_price, and hide sold-out / archived rows from guests.
  */
 export async function getPublicMenuBySlug(
   client: SupabaseClient,
@@ -79,14 +79,17 @@ export async function getPublicMenuBySlug(
       client
         .from("categories")
         .select(
-          "id, restaurant_id, name_en, name_ar, sort_order, created_at, updated_at",
+          "id, restaurant_id, name_en, name_ar, sort_order, is_archived, archived_at, created_at, updated_at",
         )
         .eq("restaurant_id", restaurantId)
+        .eq("is_archived", false)
         .order("sort_order", { ascending: true }),
       client
         .from("menu_items")
         .select(PUBLIC_DISH_COLUMNS)
         .eq("restaurant_id", restaurantId)
+        .eq("is_available", true)
+        .eq("is_archived", false)
         .order("sort_order", { ascending: true }),
       client
         .from("modifier_groups")
@@ -121,8 +124,11 @@ export async function getPublicMenuBySlug(
 
   const dishes = (dishesResult.data ?? []) as Dish[]
   assertNoCostPrice(dishes)
+  const dishIds = new Set(dishes.map((dish) => dish.id))
 
-  const groups = (groupsResult.data ?? []) as ModifierGroup[]
+  const groups = ((groupsResult.data ?? []) as ModifierGroup[]).filter(
+    (group) => dishIds.has(group.menu_item_id),
+  )
   const options = (optionsResult.data ?? []) as ModifierOption[]
   const optionsByGroup = new Map<string, ModifierOption[]>()
 
@@ -159,7 +165,7 @@ export async function getMenuItemsForRestaurant(
   const { data, error } = await client
     .from("menu_items")
     .select(
-      "id, restaurant_id, category_id, name_en, name_ar, description_en, description_ar, price, cost_price, photo_url, is_available, is_vegetarian, allergens, sort_order, created_at, updated_at",
+      "id, restaurant_id, category_id, name_en, name_ar, description_en, description_ar, price, cost_price, photo_url, is_available, is_vegetarian, is_archived, archived_at, allergens, sort_order, created_at, updated_at",
     )
     .eq("restaurant_id", restaurantId)
     .order("sort_order", { ascending: true })
