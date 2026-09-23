@@ -1,17 +1,17 @@
 # Installation
 
-Al-Maidah is not yet an installable application. The Nuxt 3 app is tracked in
-[MVP-01](https://github.com/ale94lko/al-maidah/issues/2).
-
-## Prerequisites (planned)
+## Prerequisites
 
 - Node.js 22 LTS or newer
 - npm 10 or newer
+
+Optional for later MVP issues:
+
 - A Supabase project
 - A Stripe UAE account for AED payments
-- A Vercel account for hosting (optional for local development)
+- A Vercel account for hosting
 
-## Local setup (once the app exists)
+## Local setup
 
 ```bash
 git clone https://github.com/ale94lko/al-maidah.git
@@ -20,6 +20,16 @@ cp .env.example .env
 npm ci
 npm run dev
 ```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+Useful scripts:
+
+- `npm run dev` — start the Nuxt development server
+- `npm run build` — production build
+- `npm run preview` — preview the production build
+- `npm test` — scaffold smoke tests
+- `npm run lint` — TypeScript check via Nuxt
 
 Fill `.env` using the variable names in [`.env.example`](../.env.example).
 Never commit real secrets.
