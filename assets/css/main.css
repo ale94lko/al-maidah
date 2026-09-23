@@ -48,7 +48,14 @@ body:has(.kitchen-shell) {
 }
 
 .font-display {
-  font-family: "Syne", "Segoe UI", sans-serif;
+  font-family: "Fraunces", Georgia, serif;
+  font-optical-sizing: auto;
+  letter-spacing: -0.015em;
+}
+
+.font-display.font-extrabold,
+.font-display.font-bold {
+  font-weight: 650;
 }
 
 .safe-px {
