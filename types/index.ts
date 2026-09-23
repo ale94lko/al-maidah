@@ -182,6 +182,8 @@ export interface PublicOrder {
   ready_at: string | null
   table_number: number | null
   restaurant_slug: string | null
+  /** Display name for the guest header (never fall back to slug when present). */
+  restaurant_name: string | null
 }
 
 export interface PublicOrderItem {

@@ -214,9 +214,12 @@ async function fetchOrder(isInitial = false) {
       accessToken: result.order.guest_access_token,
       tableNumber: result.order.table_number,
     })
-    if (result.order.table_number != null) {
+    if (result.order.table_number != null || result.order.restaurant_name) {
       setShell({
-        venueName: session.value?.restaurantName || slug.value,
+        venueName:
+          result.order.restaurant_name ||
+          session.value?.restaurantName ||
+          slug.value,
         tableNumber: result.order.table_number,
       })
     }

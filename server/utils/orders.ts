@@ -370,6 +370,7 @@ export async function createGuestOrder(
     ready_at: orderRow.ready_at,
     table_number: table.table_number,
     restaurant_slug: restaurant.slug,
+    restaurant_name: restaurant.name,
   }
 
   const items: PublicOrderItem[] = insertedItems.map((item) => ({
@@ -418,7 +419,7 @@ export async function getPublicOrderById(
 
   const { data: restaurant, error: restaurantError } = await client
     .from("restaurants")
-    .select("id, slug")
+    .select("id, slug, name")
     .eq("id", orderRow.restaurant_id)
     .maybeSingle()
 
@@ -471,6 +472,7 @@ export async function getPublicOrderById(
       ready_at: orderRow.ready_at,
       table_number: table?.table_number ?? null,
       restaurant_slug: restaurant.slug,
+      restaurant_name: restaurant.name,
     },
     items: (itemRows ?? []).map((item) => ({
       id: item.id,

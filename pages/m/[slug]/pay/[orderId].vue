@@ -61,7 +61,7 @@ const returnUrl = computed(() => {
 
 onMounted(async () => {
   loadFromStorage()
-  const stored = loadActiveOrder(slug.value)
+  loadActiveOrder(slug.value)
   const active = session.value
   if (active) {
     setShell({
@@ -102,9 +102,12 @@ onMounted(async () => {
       await router.replace(statusPath.value)
       return
     }
-    if (result.order.table_number != null) {
+    if (result.order.table_number != null || result.order.restaurant_name) {
       setShell({
-        venueName: active?.restaurantName || stored?.slug || slug.value,
+        venueName:
+          result.order.restaurant_name ||
+          active?.restaurantName ||
+          slug.value,
         tableNumber: result.order.table_number,
       })
     }
