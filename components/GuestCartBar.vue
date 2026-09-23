@@ -25,7 +25,18 @@ const cartTo = computed(() => {
   }
 })
 
-const visible = computed(() => itemCount.value > 0 && Boolean(slug.value))
+/** Hide on cart itself and on post-checkout surfaces (pay / status). */
+const hideOnRoute = computed(() => {
+  const path = route.path
+  return (
+    /\/m\/[^/]+\/cart\/?$/.test(path) ||
+    /\/m\/[^/]+\/(?:pay|status)\//.test(path)
+  )
+})
+
+const visible = computed(
+  () => itemCount.value > 0 && Boolean(slug.value) && !hideOnRoute.value,
+)
 
 onMounted(() => {
   loadFromStorage()

@@ -159,6 +159,16 @@ test("client layout shows fixed cart bar linking to cart route", () => {
   assert.match(read("components/GuestCartBar.vue"), /subtotal/)
 })
 
+test("guest cart bar is hidden on cart, pay, and status routes", () => {
+  const bar = read("components/GuestCartBar.vue")
+  assert.match(bar, /hideOnRoute/)
+  assert.match(bar, /\/cart/)
+  assert.match(bar, /pay\|status|status\|pay/)
+  assert.match(bar, /!hideOnRoute/)
+  const layout = read("layouts/client.vue")
+  assert.match(layout, /cartBarHidden/)
+})
+
 test("menu index links dishes to the detail page", () => {
   const page = read("pages/m/[slug]/index.vue")
   assert.match(page, /dishPath/)
