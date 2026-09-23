@@ -41,7 +41,7 @@ test("guest table lookup only resolves active tables", () => {
   assert.match(orders, /is_active === false|!table\.is_active|table\.is_active === false/)
 })
 
-test("admin tables page prints QR URLs without chrome", () => {
+test("admin tables page opens QR in a print modal", () => {
   const page = read("pages/admin/tables.vue")
   const layout = read("layouts/admin.vue")
   const css = read("assets/css/main.css")
@@ -50,7 +50,10 @@ test("admin tables page prints QR URLs without chrome", () => {
   assert.match(page, /menuUrlForTable/)
   assert.match(page, /scanPromptEn|scanPromptAr/)
   assert.match(page, /AdminTableQr/)
+  assert.match(page, /viewQr|admin\.viewQr/)
+  assert.match(page, /print-sheet/)
   assert.match(page, /no-print/)
+  assert.doesNotMatch(page, /printPreview/)
   assert.match(layout, /no-print/)
   assert.match(css, /@media print/)
   assert.match(css, /\.no-print/)

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { DiningTable } from "~/types"
 import { extractApiErrorMessage } from "~/utils/errors"
 
 definePageMeta({
@@ -35,6 +36,11 @@ const newLabel = ref("")
 const editingId = ref<string | null>(null)
 const editNumber = ref<number | null>(null)
 const copiedId = ref<string | null>(null)
+const viewingTable = ref<DiningTable | null>(null)
+
+const viewingUrl = computed(() =>
+  viewingTable.value ? menuUrlForTable(viewingTable.value.id) : "",
+)
 
 function friendlyTablesError(error: unknown) {
   const raw = (extractApiErrorMessage(error) || "").toLowerCase()
@@ -123,9 +129,20 @@ async function onRemove(tableId: string, tableNumber: number) {
   }
   try {
     await removeTable(tableId)
+    if (viewingTable.value?.id === tableId) {
+      viewingTable.value = null
+    }
   } catch (error) {
     showError(friendlyTablesError(error))
   }
+}
+
+function openQr(table: DiningTable) {
+  viewingTable.value = table
+}
+
+function closeQr() {
+  viewingTable.value = null
 }
 
 function onPrint() {
@@ -166,35 +183,25 @@ async function copyMenuUrl(tableId: string) {
         <h1>{{ t("admin.tablesTitle") }}</h1>
         <p>{{ t("admin.tablesHint") }}</p>
       </div>
-      <div class="flex flex-wrap items-center gap-3">
-        <label
-          v-if="restaurants.length > 1"
-          class="flex min-w-[12rem] flex-col gap-1 text-xs font-bold text-[var(--muted)]"
+      <label
+        v-if="restaurants.length > 1"
+        class="flex min-w-[12rem] flex-col gap-1 text-xs font-bold text-[var(--muted)]"
+      >
+        {{ t("admin.restaurant") }}
+        <select
+          class="field-input"
+          :value="restaurantId ?? undefined"
+          @change="onRestaurantChange"
         >
-          {{ t("admin.restaurant") }}
-          <select
-            class="field-input"
-            :value="restaurantId ?? undefined"
-            @change="onRestaurantChange"
+          <option
+            v-for="entry in restaurants"
+            :key="entry.id"
+            :value="entry.id"
           >
-            <option
-              v-for="entry in restaurants"
-              :key="entry.id"
-              :value="entry.id"
-            >
-              {{ entry.name }}
-            </option>
-          </select>
-        </label>
-        <button
-          v-if="tables.length"
-          type="button"
-          class="btn-primary"
-          @click="onPrint"
-        >
-          {{ t("admin.printQrCodes") }}
-        </button>
-      </div>
+            {{ entry.name }}
+          </option>
+        </select>
+      </label>
     </header>
 
     <AppLoadingState
@@ -339,6 +346,13 @@ async function copyMenuUrl(tableId: string) {
                   </button>
                   <button
                     type="button"
+                    class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs font-bold"
+                    @click="openQr(table)"
+                  >
+                    {{ t("admin.viewQr") }}
+                  </button>
+                  <button
+                    type="button"
                     class="btn-danger !px-2 !py-1 !text-xs"
                     :disabled="saving"
                     @click="onRemove(table.id, table.table_number)"
@@ -356,20 +370,42 @@ async function copyMenuUrl(tableId: string) {
             :description="t('admin.tablesEmptyHint')"
           />
         </section>
+      </div>
+    </template>
 
-        <!-- Printable QR sheets: visible on screen as preview and used by window.print() -->
-        <section
-          v-if="tables.length && restaurant"
-          class="space-y-6"
-          aria-label="Printable QR codes"
-        >
-          <h2 class="no-print text-lg font-semibold text-[var(--espresso)]">
-            {{ t("admin.printPreview") }}
-          </h2>
+    <Teleport to="body">
+      <div
+        v-if="viewingTable && restaurant"
+        class="fixed inset-0 z-[70] flex items-center justify-center px-4 py-8"
+        role="dialog"
+        aria-modal="true"
+        :aria-label="t('admin.tableHeading', { n: viewingTable.table_number })"
+      >
+        <button
+          type="button"
+          class="no-print absolute inset-0 bg-[var(--navy)]/45 backdrop-blur-sm"
+          :aria-label="t('admin.closeQr')"
+          @click="closeQr"
+        />
+        <div class="relative z-10 w-full max-w-md space-y-4">
+          <div class="no-print flex justify-end gap-2">
+            <button
+              type="button"
+              class="btn-primary !px-4 !py-2.5"
+              @click="onPrint"
+            >
+              {{ t("admin.printQrCodes") }}
+            </button>
+            <button
+              type="button"
+              class="rounded-2xl border border-[var(--navy)]/10 bg-white px-4 py-2.5 text-sm font-bold text-[var(--navy)]"
+              @click="closeQr"
+            >
+              {{ t("admin.closeQr") }}
+            </button>
+          </div>
           <div
-            v-for="table in tables"
-            :key="`print-${table.id}`"
-            class="print-sheet mx-auto flex max-w-sm flex-col items-center gap-4 rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] p-8 text-center"
+            class="print-sheet mx-auto flex max-w-sm flex-col items-center gap-4 rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] p-8 text-center shadow-2xl"
           >
             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--herb)]">
               Al-Maidah
@@ -378,10 +414,10 @@ async function copyMenuUrl(tableId: string) {
               {{ restaurant.name }}
             </h3>
             <p class="text-4xl font-bold tabular-nums text-[var(--herb)]">
-              {{ t("admin.tableHeading", { n: table.table_number }) }}
+              {{ t("admin.tableHeading", { n: viewingTable.table_number }) }}
             </p>
             <AdminTableQr
-              :value="menuUrlForTable(table.id)"
+              :value="viewingUrl"
               :size="220"
               class="w-56"
             />
@@ -392,11 +428,11 @@ async function copyMenuUrl(tableId: string) {
               </p>
             </div>
             <p class="break-all font-mono text-[10px] text-[var(--muted)]">
-              {{ menuUrlForTable(table.id) }}
+              {{ viewingUrl }}
             </p>
           </div>
-        </section>
+        </div>
       </div>
-    </template>
+    </Teleport>
   </div>
 </template>
