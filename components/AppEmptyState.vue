@@ -13,9 +13,6 @@ withDefaults(
 
 <template>
   <div class="empty-panel text-[var(--ink)]" role="status">
-    <div class="accent-bar max-w-[5rem]" aria-hidden="true">
-      <span /><span /><span />
-    </div>
     <p class="font-display text-lg font-extrabold tracking-tight">
       {{ title }}
     </p>
