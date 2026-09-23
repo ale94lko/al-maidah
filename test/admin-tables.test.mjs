@@ -35,10 +35,13 @@ test("admin tables APIs require ownership and soft-remove tables", () => {
 
 test("guest table lookup only resolves active tables", () => {
   const restaurant = read("server/utils/restaurant.ts")
-  const orders = read("server/utils/orders.ts")
+  const sessions = read("server/utils/table-sessions.ts")
   assert.match(restaurant, /getTableByNumber/)
   assert.match(restaurant, /\.eq\("is_active", true\)/)
-  assert.match(orders, /is_active === false|!table\.is_active|table\.is_active === false/)
+  assert.match(
+    sessions,
+    /is_active === false|!table\.is_active|table\.is_active === false/,
+  )
 })
 
 test("admin tables page opens QR in a print modal", () => {
@@ -58,8 +61,9 @@ test("admin tables page opens QR in a print modal", () => {
   assert.match(css, /@media print/)
   assert.match(css, /\.no-print/)
   assert.match(composable, /menuUrlForTable/)
-  assert.match(composable, /\?table=/)
-  assert.match(composable, /\/m\/\$\{slug\}\?table=/)
+  assert.match(composable, /menuUrlForSession/)
+  assert.match(composable, /\?session=/)
+  assert.match(composable, /\/m\/\$\{slug\}\?session=/)
   assert.ok(existsSync(resolve(root, "components/AdminTableQr.vue")))
   assert.match(read("package.json"), /"qrcode"/)
 })
