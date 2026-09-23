@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Category, DiningTable, Dish } from "~/types"
 import { localizedDescription, localizedName } from "~/utils/localize"
-import { parseTableToken } from "~/utils/table-token"
+import { parseSessionToken } from "~/utils/session-token"
 
 definePageMeta({
   layout: "client",
@@ -14,16 +14,17 @@ const {
   loadFromStorage,
   saveSession,
   clearSession,
-  resolveTableToken,
+  resolveSessionToken,
+  session,
 } = useGuestSession()
 const { syncFromStorage } = useCart()
 const { t, locale } = useAppI18n()
 
 const slug = computed(() => String(route.params.slug || ""))
-const tableFromQuery = computed(() => parseTableToken(route.query.table))
+const sessionFromQuery = computed(() => parseSessionToken(route.query.session))
 
 const loading = ref(true)
-const errorKind = ref<"none" | "missing-table" | "not-found" | "generic">("none")
+const errorKind = ref<"none" | "missing-table" | "session-closed" | "not-found" | "generic">("none")
 const errorMessage = ref("")
 const restaurantName = ref("")
 const categories = ref<Category[]>([])
@@ -91,7 +92,7 @@ const dishesByCategory = computed(() => {
 })
 
 const errorTitle = computed(() => {
-  if (errorKind.value === "missing-table") {
+  if (errorKind.value === "missing-table" || errorKind.value === "session-closed") {
     return t("guest.scanQrAgain")
   }
   if (errorKind.value === "not-found") {
@@ -101,6 +102,9 @@ const errorTitle = computed(() => {
 })
 
 const errorDescription = computed(() => {
+  if (errorKind.value === "session-closed") {
+    return t("guest.sessionClosedHint")
+  }
   if (errorKind.value === "missing-table") {
     return t("guest.scanQrAgainHint")
   }
@@ -130,25 +134,24 @@ function formatPrice(price: string) {
 }
 
 function dishPath(dishId: string) {
+  const token =
+    sessionFromQuery.value ?? visitToken.value ?? session.value?.sessionToken
   return {
     path: `/m/${slug.value}/dish/${dishId}`,
-    query: tableFromQuery.value
-      ? { table: tableFromQuery.value }
-      : sessionToken.value
-        ? { table: sessionToken.value }
-        : undefined,
+    query: token ? { session: token } : undefined,
   }
 }
 
-const sessionToken = ref<string | null>(null)
+const visitToken = ref<string | null>(null)
 
-async function ensureTableInUrl(tableToken: string) {
-  if (tableFromQuery.value === tableToken) {
+async function ensureSessionInUrl(token: string) {
+  if (sessionFromQuery.value === token) {
     return
   }
+  const { table: _legacy, ...rest } = route.query
   await router.replace({
     path: route.path,
-    query: { ...route.query, table: tableToken },
+    query: { ...rest, session: token },
   })
 }
 
@@ -158,8 +161,8 @@ onMounted(async () => {
   errorMessage.value = ""
   loadFromStorage()
 
-  const tableToken = resolveTableToken(slug.value, tableFromQuery.value)
-  if (tableToken == null) {
+  const token = resolveSessionToken(slug.value, sessionFromQuery.value)
+  if (token == null) {
     clearSession()
     setShell({ venueName: slug.value || "Menu", tableNumber: null })
     errorKind.value = "missing-table"
@@ -173,8 +176,9 @@ onMounted(async () => {
       categories: Category[]
       dishes: Dish[]
       table: DiningTable
+      session: { id: string; token: string; status: string }
     }>(`/api/menu/${encodeURIComponent(slug.value)}`, {
-      query: { table: tableToken },
+      query: { session: token },
     })
 
     restaurantName.value = menu.restaurant.name
@@ -182,12 +186,12 @@ onMounted(async () => {
     dishes.value = menu.dishes
     pinnedTable.value = menu.table
 
-    sessionToken.value = tableToken
+    visitToken.value = menu.session.token
     saveSession({
       slug: menu.restaurant.slug,
       tableNumber: menu.table.table_number,
       tableId: menu.table.id,
-      tableToken,
+      sessionToken: menu.session.token,
       restaurantName: menu.restaurant.name,
     })
     setShell({
@@ -195,7 +199,7 @@ onMounted(async () => {
       tableNumber: menu.table.table_number,
     })
     syncFromStorage()
-    await ensureTableInUrl(tableToken)
+    await ensureSessionInUrl(menu.session.token)
   } catch (error: unknown) {
     clearSession()
     setShell({
@@ -224,11 +228,13 @@ onMounted(async () => {
     if (status === 404 && /restaurant/i.test(message)) {
       errorKind.value = "not-found"
       errorMessage.value = message || t("guest.restaurantNotFoundHint")
+    } else if (/closed|ask staff to open/i.test(message)) {
+      errorKind.value = "session-closed"
+      errorMessage.value = message || t("guest.sessionClosedHint")
     } else if (
       status === 400 ||
       status === 404 ||
-      /table/i.test(message) ||
-      /scan the qr/i.test(message)
+      /session|table|staff|qr/i.test(message)
     ) {
       errorKind.value = "missing-table"
       errorMessage.value = message || t("guest.scanQrAgainHint")

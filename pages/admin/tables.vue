@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { DiningTable } from "~/types"
+import type { DiningTableWithSession } from "~/types"
 import { extractApiErrorMessage } from "~/utils/errors"
 
 definePageMeta({
@@ -21,6 +21,8 @@ const {
   createTable,
   renumberTable,
   removeTable,
+  openSession,
+  closeSession,
 } = useAdminTables()
 const {
   errorOpen,
@@ -36,11 +38,15 @@ const newLabel = ref("")
 const editingId = ref<string | null>(null)
 const editNumber = ref<number | null>(null)
 const copiedId = ref<string | null>(null)
-const viewingTable = ref<DiningTable | null>(null)
+const viewingTable = ref<DiningTableWithSession | null>(null)
+const viewingUrlOverride = ref("")
 
-const viewingUrl = computed(() =>
-  viewingTable.value ? menuUrlForTable(viewingTable.value.id) : "",
-)
+const viewingUrl = computed(() => {
+  if (viewingUrlOverride.value) {
+    return viewingUrlOverride.value
+  }
+  return viewingTable.value ? menuUrlForTable(viewingTable.value.id) : ""
+})
 
 function friendlyTablesError(error: unknown) {
   const raw = (extractApiErrorMessage(error) || "").toLowerCase()
@@ -131,18 +137,54 @@ async function onRemove(tableId: string, tableNumber: number) {
     await removeTable(tableId)
     if (viewingTable.value?.id === tableId) {
       viewingTable.value = null
+      viewingUrlOverride.value = ""
     }
   } catch (error) {
     showError(friendlyTablesError(error))
   }
 }
 
-function openQr(table: DiningTable) {
+async function onSeat(table: DiningTableWithSession) {
+  try {
+    const response = await openSession(table.id)
+    const refreshed = tables.value.find((entry) => entry.id === table.id) ?? {
+      ...table,
+      open_session: {
+        id: response.session.id,
+        token: response.session.token,
+        opened_at: response.session.opened_at,
+      },
+    }
+    viewingTable.value = refreshed as DiningTableWithSession
+    viewingUrlOverride.value = response.menuUrl
+  } catch (error) {
+    showError(friendlyTablesError(error))
+  }
+}
+
+async function onCloseSession(table: DiningTableWithSession) {
+  try {
+    await closeSession(table.id)
+    if (viewingTable.value?.id === table.id) {
+      viewingTable.value = null
+      viewingUrlOverride.value = ""
+    }
+  } catch (error) {
+    showError(friendlyTablesError(error))
+  }
+}
+
+function openQr(table: DiningTableWithSession) {
+  if (!table.open_session) {
+    return
+  }
   viewingTable.value = table
+  viewingUrlOverride.value = menuUrlForTable(table.id)
 }
 
 function closeQr() {
   viewingTable.value = null
+  viewingUrlOverride.value = ""
 }
 
 function onPrint() {
@@ -179,7 +221,6 @@ async function copyMenuUrl(tableId: string) {
 
     <header class="admin-page-hero no-print">
       <div>
-        <p class="eyebrow">{{ t("admin.owner") }}</p>
         <h1>{{ t("admin.tablesTitle") }}</h1>
         <p>{{ t("admin.tablesHint") }}</p>
       </div>
@@ -274,8 +315,25 @@ async function copyMenuUrl(tableId: string) {
                   >
                     {{ table.label }}
                   </span>
+                  <span
+                    class="ms-2 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide"
+                    :class="
+                      table.open_session
+                        ? 'bg-[color-mix(in_srgb,var(--herb)_18%,white)] text-[var(--herb-deep)]'
+                        : 'bg-[var(--paper-deep)] text-[var(--muted)]'
+                    "
+                  >
+                    {{
+                      table.open_session
+                        ? t("admin.tableSessionOpen")
+                        : t("admin.tableSessionClosed")
+                    }}
+                  </span>
                 </p>
-                <div class="mt-1 flex min-w-0 items-center gap-2">
+                <div
+                  v-if="table.open_session"
+                  class="mt-1 flex min-w-0 items-center gap-2"
+                >
                   <p class="truncate font-mono text-xs text-[var(--muted)]">
                     {{ menuUrlForTable(table.id) }}
                   </p>
@@ -310,6 +368,12 @@ async function copyMenuUrl(tableId: string) {
                     </svg>
                   </button>
                 </div>
+                <p
+                  v-else
+                  class="mt-1 text-xs text-[var(--muted)]"
+                >
+                  {{ t("admin.tableSessionClosedHint") }}
+                </p>
               </div>
               <div class="flex flex-wrap items-center gap-2">
                 <template v-if="editingId === table.id">
@@ -345,12 +409,31 @@ async function copyMenuUrl(tableId: string) {
                     {{ t("admin.renumber") }}
                   </button>
                   <button
+                    v-if="!table.open_session"
                     type="button"
-                    class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs font-bold"
-                    @click="openQr(table)"
+                    class="btn-primary !px-2 !py-1 !text-xs"
+                    :disabled="saving"
+                    @click="onSeat(table)"
                   >
-                    {{ t("admin.viewQr") }}
+                    {{ t("admin.seatTable") }}
                   </button>
+                  <template v-else>
+                    <button
+                      type="button"
+                      class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs font-bold"
+                      @click="openQr(table)"
+                    >
+                      {{ t("admin.viewQr") }}
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-warning !px-2 !py-1 !text-xs"
+                      :disabled="saving"
+                      @click="onCloseSession(table)"
+                    >
+                      {{ t("admin.closeTableSession") }}
+                    </button>
+                  </template>
                   <button
                     type="button"
                     class="btn-danger !px-2 !py-1 !text-xs"
@@ -375,7 +458,7 @@ async function copyMenuUrl(tableId: string) {
 
     <Teleport to="body">
       <div
-        v-if="viewingTable && restaurant"
+        v-if="viewingTable && restaurant && viewingUrl"
         class="fixed inset-0 z-[70] flex items-center justify-center px-4 py-8"
         role="dialog"
         aria-modal="true"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { parseTableToken } from "~/utils/table-token"
+import { parseSessionToken } from "~/utils/session-token"
 
 const route = useRoute()
 const { itemCount, subtotal, syncFromStorage } = useCart()
@@ -8,13 +8,13 @@ const { t } = useAppI18n()
 
 const slug = computed(() => String(route.params.slug || session.value?.slug || ""))
 
-const tableQuery = computed(() => {
-  const fromRoute = parseTableToken(route.query.table)
+const sessionQuery = computed(() => {
+  const fromRoute = parseSessionToken(route.query.session)
   if (fromRoute) {
     return fromRoute
   }
   const stored = session.value ?? loadFromStorage()
-  return stored?.tableToken || undefined
+  return stored?.sessionToken || undefined
 })
 
 const cartTo = computed(() => {
@@ -23,7 +23,7 @@ const cartTo = computed(() => {
   }
   return {
     path: `/m/${slug.value}/cart`,
-    query: tableQuery.value ? { table: tableQuery.value } : undefined,
+    query: sessionQuery.value ? { session: sessionQuery.value } : undefined,
   }
 })
 

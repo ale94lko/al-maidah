@@ -1,5 +1,5 @@
-import type { DiningTable } from "~/types"
-import { sha256Hex } from "~/utils/table-token"
+import type { DiningTableWithSession } from "~/types"
+import { extractApiErrorMessage } from "~/utils/errors"
 
 type MeResponse = {
   user: { id: string; email?: string }
@@ -8,13 +8,18 @@ type MeResponse = {
 
 type TablesResponse = {
   restaurant: { id: string; name: string; slug: string }
-  tables: DiningTable[]
+  tables: DiningTableWithSession[]
 }
 
-import { extractApiErrorMessage } from "~/utils/errors"
+type OpenSessionResponse = {
+  restaurant: { id: string; name: string; slug: string }
+  table: DiningTableWithSession
+  session: { id: string; token: string; opened_at: string; status: string }
+  menuUrl: string
+}
 
 /**
- * Owner table manager: CRUD + menu URLs for printable QR codes.
+ * Owner table manager: physical tables + per-visit session QR codes.
  */
 export function useAdminTables() {
   const { accessToken, refreshSession } = useAuth()
@@ -23,8 +28,7 @@ export function useAdminTables() {
   const restaurants = ref<MeResponse["restaurants"]>([])
   const restaurantId = ref<string | null>(null)
   const restaurant = ref<TablesResponse["restaurant"] | null>(null)
-  const tables = ref<DiningTable[]>([])
-  const tableTokens = ref<Record<string, string>>({})
+  const tables = ref<DiningTableWithSession[]>([])
   const loading = ref(true)
   const saving = ref(false)
   const errorMessage = ref("")
@@ -37,14 +41,19 @@ export function useAdminTables() {
     return { Authorization: `Bearer ${token}` }
   }
 
-  function menuUrlForTable(tableId: string): string {
+  function menuUrlForSession(sessionToken: string): string {
     const slug = restaurant.value?.slug
-    const token = tableTokens.value[tableId]
-    if (!slug || !token) {
+    if (!slug || !sessionToken) {
       return ""
     }
     const base = String(appUrl.value || "").replace(/\/$/, "")
-    return `${base}/m/${slug}?table=${token}`
+    return `${base}/m/${slug}?session=${sessionToken}`
+  }
+
+  function menuUrlForTable(tableId: string): string {
+    const table = tables.value.find((entry) => entry.id === tableId)
+    const token = table?.open_session?.token
+    return token ? menuUrlForSession(token) : ""
   }
 
   async function loadTables() {
@@ -59,15 +68,7 @@ export function useAdminTables() {
       { headers },
     )
     restaurant.value = response.restaurant
-    const active = (response.tables ?? []).filter((table) => table.is_active)
-    const tokens: Record<string, string> = {}
-    await Promise.all(
-      active.map(async (table) => {
-        tokens[table.id] = await sha256Hex(table.id)
-      }),
-    )
-    tableTokens.value = tokens
-    tables.value = active
+    tables.value = (response.tables ?? []).filter((table) => table.is_active)
   }
 
   async function bootstrap() {
@@ -164,6 +165,47 @@ export function useAdminTables() {
     }
   }
 
+  async function openSession(tableId: string): Promise<OpenSessionResponse> {
+    if (!restaurantId.value) {
+      throw new Error("No restaurant selected")
+    }
+    saving.value = true
+    errorMessage.value = ""
+    try {
+      const headers = await authHeaders()
+      const response = await $fetch<OpenSessionResponse>(
+        `/api/admin/tables/${restaurantId.value}/${tableId}/open`,
+        { method: "POST", headers },
+      )
+      await loadTables()
+      return response
+    } catch (error) {
+      throw error
+    } finally {
+      saving.value = false
+    }
+  }
+
+  async function closeSession(tableId: string) {
+    if (!restaurantId.value) {
+      return
+    }
+    saving.value = true
+    errorMessage.value = ""
+    try {
+      const headers = await authHeaders()
+      await $fetch(`/api/admin/tables/${restaurantId.value}/${tableId}/close`, {
+        method: "POST",
+        headers,
+      })
+      await loadTables()
+    } catch (error) {
+      throw error
+    } finally {
+      saving.value = false
+    }
+  }
+
   return {
     restaurants,
     restaurantId,
@@ -173,11 +215,14 @@ export function useAdminTables() {
     saving,
     errorMessage,
     menuUrlForTable,
+    menuUrlForSession,
     bootstrap,
     selectRestaurant,
     createTable,
     renumberTable,
     removeTable,
+    openSession,
+    closeSession,
     reload: loadTables,
   }
 }

@@ -30,7 +30,8 @@ export type CreateOrderLineInput = {
 
 export type CreateOrderInput = {
   slug: string
-  tableId: string
+  /** Open visit session token from the staff QR (?session=). */
+  sessionToken: string
   guestName?: string | null
   /** How the guest intends to pay. Always stored with payment_status=pending. */
   paymentMethod: PaymentMethod
@@ -69,7 +70,7 @@ export async function createGuestOrder(
   input: CreateOrderInput,
 ): Promise<{ order: PublicOrder; items: PublicOrderItem[] }> {
   const slug = input.slug?.trim()
-  const tableId = input.tableId?.trim()
+  const sessionToken = input.sessionToken?.trim().toLowerCase()
   const guestName = input.guestName?.trim() || null
   const paymentMethod = input.paymentMethod
   const lines = Array.isArray(input.items) ? input.items : []
@@ -77,10 +78,10 @@ export async function createGuestOrder(
   if (!slug) {
     throw createError({ statusCode: 400, statusMessage: "Restaurant slug is required" })
   }
-  if (!tableId) {
+  if (!sessionToken || !/^[a-f0-9]{64}$/.test(sessionToken)) {
     throw createError({
       statusCode: 400,
-      statusMessage: "A valid table is required to place an order",
+      statusMessage: "A valid open table session is required to place an order",
     })
   }
   if (
@@ -112,24 +113,16 @@ export async function createGuestOrder(
     throw createError({ statusCode: 404, statusMessage: "Restaurant not found" })
   }
 
-  const { data: table, error: tableError } = await client
-    .from("tables")
-    .select("id, restaurant_id, table_number, is_active")
-    .eq("id", tableId)
-    .maybeSingle()
-
-  if (tableError) {
-    throw createError({
-      statusCode: 500,
-      statusMessage: `Failed to load table: ${tableError.message}`,
-    })
-  }
-  if (!table || table.restaurant_id !== restaurant.id || table.is_active === false) {
+  const seated = await getOpenSessionByToken(client, restaurant.id, sessionToken)
+  if (!seated) {
     throw createError({
       statusCode: 400,
-      statusMessage: "Table not found for this restaurant. Scan the QR code again.",
+      statusMessage:
+        "This table visit is closed or invalid. Ask staff to open the table again.",
     })
   }
+  const table = seated.table
+  const tableSession = seated.session
 
   const menuItemIds = [...new Set(lines.map((line) => line.menuItemId))]
   const optionIds = [
@@ -302,6 +295,7 @@ export async function createGuestOrder(
     .insert({
       restaurant_id: restaurant.id,
       table_id: table.id,
+      table_session_id: tableSession.id,
       guest_name: guestName,
       status: "pending",
       payment_status: "pending",
@@ -313,7 +307,7 @@ export async function createGuestOrder(
       total_cost: filsToMoney(totalCostFils),
     })
     .select(
-      "id, restaurant_id, table_id, guest_name, status, payment_status, payment_method, guest_access_token, subtotal, vat, tip, total, created_at, ready_at",
+      "id, restaurant_id, table_id, table_session_id, guest_name, status, payment_status, payment_method, guest_access_token, subtotal, vat, tip, total, created_at, ready_at",
     )
     .single()
 

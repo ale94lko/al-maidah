@@ -36,6 +36,7 @@ export async function markCashOrderPaid(
     return { ok: false, reason: "cancelled" }
   }
   if (order.payment_status === "paid") {
+    await closeSessionForOrder(client, order.id)
     return { ok: true, alreadyPaid: true, orderId: order.id }
   }
 
@@ -71,6 +72,7 @@ export async function markCashOrderPaid(
       })
     }
     if (again?.payment_status === "paid") {
+      await closeSessionForOrder(client, order.id)
       return { ok: true, alreadyPaid: true, orderId: order.id }
     }
     throw createError({
@@ -79,5 +81,6 @@ export async function markCashOrderPaid(
     })
   }
 
+  await closeSessionForOrder(client, order.id)
   return { ok: true, alreadyPaid: false, orderId: order.id }
 }

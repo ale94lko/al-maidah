@@ -11,7 +11,7 @@ const trn = ref("")
 const errorMessage = ref("")
 const pending = ref(false)
 const { signUp } = useAuth()
-const { t } = useAppI18n()
+const { t, dir } = useAppI18n()
 
 async function onSubmit() {
   errorMessage.value = ""
@@ -35,53 +35,36 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="auth-shell grid min-h-dvh lg:grid-cols-2">
-    <aside class="relative hidden overflow-hidden lg:block">
-      <img
-        src="/images/auth-dining.jpg"
-        alt=""
-        class="absolute inset-0 h-full w-full object-cover"
-      >
-      <div class="absolute inset-0 bg-gradient-to-br from-[var(--ink)]/90 via-[var(--chili-deep)]/70 to-[var(--herb-deep)]/65" />
-      <div class="relative flex h-full flex-col justify-between p-10 text-white">
-        <div>
-          <p class="font-display text-3xl font-extrabold">Al-Maidah</p>
-          <div class="accent-bar mt-4 max-w-[7rem]" aria-hidden="true">
-            <span /><span /><span />
-          </div>
-        </div>
-        <div>
-          <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-[var(--citrus)]">
-            {{ t("admin.owner") }}
-          </p>
-          <p class="font-display mt-3 max-w-sm text-4xl font-extrabold leading-tight">
-            {{ t("admin.signUpTitle") }}
-          </p>
-          <p class="mt-3 max-w-sm text-sm leading-relaxed text-white/75">
-            {{ t("admin.signUpHint") }}
-          </p>
-        </div>
-      </div>
-    </aside>
-
-    <div class="flex flex-col bg-[var(--paper)]">
-      <header class="flex items-center justify-between px-5 py-4 sm:px-8">
-        <NuxtLink to="/admin/login" class="font-display text-xl font-extrabold text-[var(--ink)]">
-          Al-Maidah
-        </NuxtLink>
+  <!--
+    Keep form | photo as physical LTR columns even when the document is RTL,
+    so the form stays on the left and the image on the right.
+  -->
+  <div class="auth-shell grid min-h-dvh lg:grid-cols-2" dir="ltr">
+    <div class="flex flex-col bg-[var(--paper)]" :dir="dir">
+      <header class="flex items-center justify-end gap-3 px-5 py-4 sm:px-8">
         <NuxtLink to="/admin/login" class="text-sm font-bold text-[var(--herb-deep)]">
           {{ t("common.signIn") }}
         </NuxtLink>
+        <LanguageSwitcher />
       </header>
 
       <div class="flex flex-1 items-start justify-center overflow-auto px-5 py-8 sm:px-8">
-        <div class="w-full max-w-md pb-10">
-          <h1 class="font-display text-3xl font-extrabold text-[var(--ink)] lg:mt-4">
-            {{ t("admin.signUpTitle") }}
-          </h1>
-          <p class="mt-2 text-sm text-[var(--muted)]">
-            {{ t("admin.signUpHint") }}
-          </p>
+        <div class="w-full max-w-md rounded-3xl border border-[var(--ink)]/12 bg-white p-6 pb-10 sm:p-8">
+          <div class="mb-8 text-center">
+            <img
+              src="/logo.png"
+              alt="Al-Maidah"
+              class="mx-auto h-48 w-48 object-contain sm:h-56 sm:w-56"
+              width="224"
+              height="224"
+            >
+            <h1 class="font-display mt-5 text-3xl font-extrabold text-[var(--ink)]">
+              {{ t("admin.signUpTitle") }}
+            </h1>
+            <p class="mt-2 text-sm text-[var(--muted)]">
+              {{ t("admin.signUpHint") }}
+            </p>
+          </div>
 
           <form class="mt-8 space-y-4" @submit.prevent="onSubmit">
             <label class="block">
@@ -94,7 +77,7 @@ async function onSubmit() {
                 v-model="slug"
                 type="text"
                 pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
-                placeholder="my-cafe"
+                :placeholder="t('admin.slugPlaceholder')"
                 class="field-input"
               >
             </label>
@@ -134,5 +117,14 @@ async function onSubmit() {
         </div>
       </div>
     </div>
+
+    <aside class="relative hidden overflow-hidden lg:block" aria-hidden="true">
+      <img
+        src="/images/auth-dining.jpg"
+        alt=""
+        class="absolute inset-0 h-full w-full object-cover"
+      >
+      <div class="absolute inset-0 bg-gradient-to-br from-[var(--ink)]/35 via-[var(--herb-deep)]/25 to-[var(--chili)]/20" />
+    </aside>
   </div>
 </template>

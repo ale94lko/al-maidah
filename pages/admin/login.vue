@@ -37,15 +37,12 @@ async function onSubmit() {
   -->
   <div class="auth-shell grid min-h-dvh lg:grid-cols-2" dir="ltr">
     <div class="flex flex-col bg-[var(--paper)]" :dir="dir">
-      <header class="flex items-center justify-between gap-3 px-5 py-4 sm:px-8">
-        <p class="font-display text-xl font-extrabold text-[var(--ink)]">
-          Al-Maidah
-        </p>
+      <header class="flex items-center justify-end gap-3 px-5 py-4 sm:px-8">
         <LanguageSwitcher />
       </header>
 
       <div class="flex flex-1 items-center justify-center px-5 py-10 sm:px-8">
-        <div class="w-full max-w-md">
+        <div class="w-full max-w-md rounded-3xl border border-[var(--ink)]/12 bg-white p-6 sm:p-8">
           <div class="mb-8 text-center">
             <img
               src="/logo.png"

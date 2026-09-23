@@ -64,7 +64,7 @@ test("orders API uses service role and ignores client prices", () => {
   assert.match(helper, /is_available/)
   assert.match(helper, /Dish does not belong to this restaurant/)
   assert.match(helper, /Sold out/)
-  assert.match(helper, /A valid table is required|valid table/)
+  assert.match(helper, /A valid open table session is required|valid open table session/)
   assert.doesNotMatch(helper, /body\.total|input\.total|clientTotal/)
 })
 

@@ -15,19 +15,19 @@ test("guest session persists slug and table in sessionStorage", () => {
   assert.match(source, /GUEST_SESSION_STORAGE_KEY/)
   assert.match(source, /sessionStorage/)
   assert.match(source, /saveSession/)
-  assert.match(source, /resolveTableToken/)
-  assert.match(source, /tableToken/)
+  assert.match(source, /resolveSessionToken/)
+  assert.match(source, /sessionToken/)
   assert.match(source, /tableNumber/)
   assert.match(source, /tableId/)
 })
 
-test("public menu API requires a valid table query", () => {
+test("public menu API requires a valid open session query", () => {
   const api = read("server/api/menu/[slug].get.ts")
-  assert.match(api, /Table is required\. Scan the QR code again\./)
-  assert.match(api, /Table not found\. Scan the QR code again\./)
+  assert.match(api, /Table session is required\. Ask staff for the QR code\./)
+  assert.match(api, /This table visit is closed or invalid/)
   assert.match(api, /Restaurant not found/)
-  assert.match(api, /getTableByToken/)
-  assert.match(api, /parseTableToken/)
+  assert.match(api, /getOpenSessionByToken/)
+  assert.match(api, /parseSessionToken/)
   assert.doesNotMatch(api, /table = null/)
 })
 

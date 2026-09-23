@@ -61,7 +61,7 @@ const paymentHint = computed(() => {
       </div>
       <div class="shrink-0 text-end text-xs text-[var(--muted)]">
         <p>{{ placedAt }}</p>
-        <p class="font-bold" :style="{ color: accentColor }">
+        <p class="font-bold text-[var(--navy)]">
           {{ t("kitchen.elapsed", { n: elapsedMinutes }) }}
         </p>
         <p class="mt-0.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--muted)]">
@@ -77,7 +77,7 @@ const paymentHint = computed(() => {
         class="text-sm text-[var(--navy)]"
       >
         <p class="font-semibold">
-          <span class="tabular-nums" :style="{ color: accentColor }">{{ item.quantity }}×</span>
+          <span class="tabular-nums text-[var(--navy)]">{{ item.quantity }}×</span>
           {{ localizedName(item, locale) }}
         </p>
         <ul

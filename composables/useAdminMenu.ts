@@ -171,9 +171,9 @@ export function useAdminMenu() {
     }
   }
 
-  async function saveDish(form: DishFormState) {
+  async function saveDish(form: DishFormState): Promise<{ id: string } | null> {
     if (!restaurantId.value) {
-      return
+      return null
     }
     saving.value = true
     errorMessage.value = ""
@@ -201,14 +201,19 @@ export function useAdminMenu() {
           `/api/admin/menu/${restaurantId.value}/items/${form.id}`,
           { method: "PATCH", headers, body },
         )
-      } else {
-        await $fetch(`/api/admin/menu/${restaurantId.value}/items`, {
+        await loadMenu()
+        return { id: form.id }
+      }
+      const created = await $fetch<{ item: { id: string } }>(
+        `/api/admin/menu/${restaurantId.value}/items`,
+        {
           method: "POST",
           headers,
           body,
-        })
-      }
+        },
+      )
       await loadMenu()
+      return { id: created.item.id }
     } catch (error) {
       throw error
     } finally {
