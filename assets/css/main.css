@@ -91,6 +91,22 @@ body:has(.kitchen-shell) {
   unicode-bidi: isolate;
 }
 
+.landing-shell .landing-ink {
+  text-shadow:
+    -0.6px -0.6px 0 rgba(0, 0, 0, 0.85),
+    0.6px -0.6px 0 rgba(0, 0, 0, 0.85),
+    -0.6px 0.6px 0 rgba(0, 0, 0, 0.85),
+    0.6px 0.6px 0 rgba(0, 0, 0, 0.85);
+}
+
+@supports (-webkit-text-stroke: 0.35px black) {
+  .landing-shell .landing-ink {
+    -webkit-text-stroke: 0.35px rgba(0, 0, 0, 0.9);
+    paint-order: stroke fill;
+    text-shadow: none;
+  }
+}
+
 @layer components {
   .btn-primary {
     @apply inline-flex items-center justify-center rounded-2xl px-5 py-3.5 text-sm font-extrabold tracking-tight transition;
