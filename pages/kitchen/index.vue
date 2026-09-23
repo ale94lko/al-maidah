@@ -1,9 +1,10 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: "default",
+  layout: "kitchen",
 })
 
-const { user, refreshSession, signOut } = useAuth()
+const { user, refreshSession } = useAuth()
+const ready = ref(false)
 
 onMounted(async () => {
   const session = await refreshSession()
@@ -12,35 +13,25 @@ onMounted(async () => {
       path: "/admin/login",
       query: { redirect: "/kitchen" },
     })
+    return
   }
+  ready.value = true
 })
-
-async function onSignOut() {
-  await signOut()
-  await navigateTo("/admin/login")
-}
 </script>
 
 <template>
-  <div class="mx-auto max-w-3xl px-4 py-12">
-    <div class="flex items-start justify-between gap-4">
-      <div>
-        <h1 class="text-3xl font-semibold text-stone-900">Kitchen</h1>
-        <p class="mt-2 text-sm text-stone-600">
-          Ticket board scaffold. Live order columns arrive in a later MVP issue.
-        </p>
-      </div>
-      <button
-        type="button"
-        class="rounded-lg border border-stone-300 px-3 py-1.5 text-sm"
-        @click="onSignOut"
-      >
-        Sign out
-      </button>
+  <div>
+    <AppLoadingState v-if="!ready" label="Opening kitchen…" />
+    <div v-else class="space-y-4">
+      <p class="text-sm text-zinc-400">
+        Signed in as
+        <span class="font-medium text-zinc-200">{{ user?.email }}</span>
+      </p>
+      <AppEmptyState
+        class="border-zinc-700 text-zinc-200"
+        title="Waiting for tickets"
+        description="Live pending / preparing / ready columns arrive in a later MVP issue."
+      />
     </div>
-    <p class="mt-8 text-sm text-stone-700">
-      Signed in as
-      <span class="font-medium">{{ user?.email || "…" }}</span>
-    </p>
   </div>
 </template>
