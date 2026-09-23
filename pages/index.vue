@@ -36,12 +36,27 @@
 
     <section class="mt-12 rounded-2xl border border-dashed border-teal-900/20 bg-teal-950/[0.03] p-5">
       <h2 class="text-base font-semibold text-stone-900">
-        Scaffold ready
+        Ready for service
       </h2>
       <p class="mt-2 max-w-2xl text-sm leading-relaxed text-stone-600">
-        This release only ships the Nuxt 3 application shell. Ordering, kitchen
-        realtime, payments, and admin tools arrive in the later MVP issues.
+        Guests order from the table QR, the kitchen board updates live, and
+        owners manage the menu, tables, receipts, and revenue in AED — with
+        English and Arabic.
       </p>
+      <div class="mt-4 flex flex-wrap gap-3 text-sm font-semibold">
+        <NuxtLink
+          to="/admin/login"
+          class="rounded-lg bg-teal-950 px-3 py-2 text-white"
+        >
+          Owner sign in
+        </NuxtLink>
+        <NuxtLink
+          to="/m/demo?table=1"
+          class="rounded-lg border border-teal-900/20 bg-white px-3 py-2 text-teal-950"
+        >
+          Try the demo menu
+        </NuxtLink>
+      </div>
     </section>
   </div>
 </template>

@@ -41,3 +41,12 @@ test("scaffold folders required by MVP-01 exist", () => {
     assert.ok(existsSync(resolve(root, path)), `missing ${path}`)
   }
 })
+
+test("landing page reflects the shipped product, not scaffold copy", () => {
+  const page = readFileSync(resolve(root, "pages/index.vue"), "utf8")
+  assert.doesNotMatch(page, /Scaffold ready/)
+  assert.doesNotMatch(page, /application shell/)
+  assert.match(page, /Ready for service/)
+  assert.match(page, /\/m\/demo\?table=1/)
+  assert.match(page, /\/admin\/login/)
+})
