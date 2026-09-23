@@ -50,9 +50,9 @@ async function onSubmit() {
             <img
               src="/logo.svg"
               alt="Al-Maidah"
-              class="mx-auto h-20 w-20 sm:h-24 sm:w-24"
-              width="96"
-              height="96"
+              class="mx-auto h-32 w-32 sm:h-40 sm:w-40"
+              width="160"
+              height="160"
             >
             <h1 class="font-display mt-5 text-3xl font-extrabold text-[var(--ink)]">
               {{ t("common.signIn") }}
