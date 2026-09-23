@@ -63,6 +63,7 @@ export interface MenuItem {
   cost_price: string
   photo_url: string | null
   is_available: boolean
+  is_vegetarian: boolean
   allergens: string[]
   sort_order: number
   created_at: string

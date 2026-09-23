@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Owner email/password auth, multi-tenant RLS, and session guards for `/admin` and `/kitchen` (MVP-04).
 - Distinct guest, kitchen, and admin layouts with shared loading/empty states (MVP-05).
 - English/Arabic i18n with guest language switcher, `dir="rtl"`, and localized dish names (MVP-06).
+- Public QR menu at `/m/{slug}?table=` with session-pinned table, search/filters, photos, and sold-out marks (MVP-07).
 
 ## [0.1.0] - 2026-09-23
 

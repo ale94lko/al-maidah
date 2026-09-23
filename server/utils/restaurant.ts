@@ -13,7 +13,7 @@ import type {
 } from "~/types"
 
 const PUBLIC_DISH_COLUMNS =
-  "id, restaurant_id, category_id, name_en, name_ar, description_en, description_ar, price, photo_url, is_available, allergens, sort_order, created_at, updated_at"
+  "id, restaurant_id, category_id, name_en, name_ar, description_en, description_ar, price, photo_url, is_available, is_vegetarian, allergens, sort_order, created_at, updated_at"
 
 export async function getRestaurantBySlug(
   client: SupabaseClient,
@@ -87,7 +87,6 @@ export async function getPublicMenuBySlug(
         .from("menu_items")
         .select(PUBLIC_DISH_COLUMNS)
         .eq("restaurant_id", restaurantId)
-        .eq("is_available", true)
         .order("sort_order", { ascending: true }),
       client
         .from("modifier_groups")
@@ -160,7 +159,7 @@ export async function getMenuItemsForRestaurant(
   const { data, error } = await client
     .from("menu_items")
     .select(
-      "id, restaurant_id, category_id, name_en, name_ar, description_en, description_ar, price, cost_price, photo_url, is_available, allergens, sort_order, created_at, updated_at",
+      "id, restaurant_id, category_id, name_en, name_ar, description_en, description_ar, price, cost_price, photo_url, is_available, is_vegetarian, allergens, sort_order, created_at, updated_at",
     )
     .eq("restaurant_id", restaurantId)
     .order("sort_order", { ascending: true })

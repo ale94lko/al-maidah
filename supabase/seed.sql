@@ -37,6 +37,7 @@ insert into public.menu_items (
   cost_price,
   photo_url,
   is_available,
+  is_vegetarian,
   allergens,
   sort_order
 )
@@ -51,7 +52,8 @@ values
     'حمص كريمي بزيت الزيتون.',
     18.00,
     6.50,
-    null,
+    'https://images.unsplash.com/photo-1577805947697-89e18249d767?auto=format&fit=crop&w=640&h=480&q=80',
+    true,
     true,
     array['sesame'],
     10
@@ -66,7 +68,8 @@ values
     'سلطة مقرمشة مع خبز محمص وسماق.',
     22.00,
     8.00,
-    null,
+    'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=640&h=480&q=80',
+    true,
     true,
     array['gluten'],
     20
@@ -81,8 +84,9 @@ values
     'دجاج متبل مع أرز ومخلل وصلصة ثوم.',
     42.00,
     18.00,
-    null,
+    'https://images.unsplash.com/photo-1529006557810-274b9b2fc783?auto=format&fit=crop&w=640&h=480&q=80',
     true,
+    false,
     array['dairy', 'gluten'],
     10
   ),
@@ -96,8 +100,9 @@ values
     'كفتة لحم وشيش طاووق وكباب.',
     68.00,
     28.00,
-    null,
-    true,
+    'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=640&h=480&q=80',
+    false,
+    false,
     '{}',
     20
   ),
@@ -111,7 +116,8 @@ values
     'عصير ليمون منعش بالنعناع.',
     16.00,
     4.00,
-    null,
+    'https://images.unsplash.com/photo-1621263764928-df1444c5e859?auto=format&fit=crop&w=640&h=480&q=80',
+    true,
     true,
     '{}',
     10
@@ -126,7 +132,8 @@ values
     'قهوة محمصة خفيفة بالهيل.',
     12.00,
     3.00,
-    null,
+    'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=640&h=480&q=80',
+    true,
     true,
     '{}',
     20

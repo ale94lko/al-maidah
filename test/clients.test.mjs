@@ -76,6 +76,7 @@ test("public menu API scopes dishes to the requested restaurant", () => {
   assert.match(api, /getPublicMenuBySlug/)
   assert.match(api, /createAnonServerClient/)
   assert.match(api, /dish\.restaurant_id !== menu\.restaurant\.id/)
+  assert.match(api, /Table is required/)
 })
 
 test("package depends on @supabase/supabase-js", () => {
