@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import type { OrderStatus, PublicOrder, PublicOrderItem } from "~/types"
+import type {
+  OrderStatus,
+  PublicOrder,
+  PublicOrderItem,
+  PublicReceipt,
+} from "~/types"
 import { localizedName } from "~/utils/localize"
 import { filsToMoney, moneyToFils } from "~/utils/cart"
 
@@ -22,6 +27,7 @@ const loading = ref(true)
 const errorMessage = ref("")
 const order = ref<PublicOrder | null>(null)
 const items = ref<PublicOrderItem[]>([])
+const receipt = ref<PublicReceipt | null>(null)
 let pollTimer: ReturnType<typeof setInterval> | null = null
 
 const accessToken = computed(() => {
@@ -106,6 +112,8 @@ const needsOnlinePayment = computed(
     order.value!.payment_status !== "paid" &&
     order.value!.payment_method !== "cash_at_table",
 )
+/** Paid online or cash-at-table bills get a digital receipt. */
+const showReceipt = computed(() => isPaid.value || isCash.value)
 
 const statusEyebrow = computed(() => {
   if (isPaid.value) {
@@ -157,6 +165,27 @@ function stepState(stepStatus: OrderStatus): "done" | "current" | "upcoming" {
   return "upcoming"
 }
 
+async function fetchReceipt() {
+  if (!accessToken.value || !orderId.value) {
+    receipt.value = null
+    return
+  }
+  try {
+    const result = await $fetch<{ receipt: PublicReceipt }>(
+      `/api/orders/${encodeURIComponent(orderId.value)}/receipt`,
+      {
+        query: {
+          slug: slug.value,
+          token: accessToken.value,
+        },
+      },
+    )
+    receipt.value = result.receipt
+  } catch {
+    receipt.value = null
+  }
+}
+
 async function fetchOrder(isInitial = false) {
   if (!accessToken.value) {
     errorMessage.value = t("guest.orderTrackingLost")
@@ -191,12 +220,21 @@ async function fetchOrder(isInitial = false) {
         tableNumber: result.order.table_number,
       })
     }
+    const paidOrCash =
+      result.order.payment_status === "paid" ||
+      result.order.payment_method === "cash_at_table"
+    if (paidOrCash) {
+      await fetchReceipt()
+    } else {
+      receipt.value = null
+    }
   } catch (error: unknown) {
     if (isInitial || !order.value) {
       errorMessage.value =
         error instanceof Error ? error.message : t("guest.menuUnavailable")
       order.value = null
       items.value = []
+      receipt.value = null
     }
   } finally {
     if (isInitial) {
@@ -308,52 +346,58 @@ onBeforeUnmount(() => {
         </li>
       </ol>
 
-      <ul class="space-y-3">
-        <li
-          v-for="item in items"
-          :key="item.id"
-          class="rounded-2xl border border-teal-900/10 bg-white/80 p-4"
-        >
-          <div class="flex items-start justify-between gap-3">
-            <div class="min-w-0">
-              <p class="font-semibold text-stone-900">
-                {{ item.quantity }}× {{ localizedName(item, locale) }}
-              </p>
-              <ul
-                v-if="item.selected_options?.length"
-                class="mt-1 space-y-0.5 text-sm text-stone-600"
-              >
-                <li
-                  v-for="option in item.selected_options"
-                  :key="option.id"
+      <template v-if="!(showReceipt && receipt)">
+        <ul class="space-y-3">
+          <li
+            v-for="item in items"
+            :key="item.id"
+            class="rounded-2xl border border-teal-900/10 bg-white/80 p-4"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="font-semibold text-stone-900">
+                  {{ item.quantity }}× {{ localizedName(item, locale) }}
+                </p>
+                <ul
+                  v-if="item.selected_options?.length"
+                  class="mt-1 space-y-0.5 text-sm text-stone-600"
                 >
-                  {{ localizedName(option, locale) }}
-                </li>
-              </ul>
+                  <li
+                    v-for="option in item.selected_options"
+                    :key="option.id"
+                  >
+                    {{ localizedName(option, locale) }}
+                  </li>
+                </ul>
+              </div>
+              <p class="shrink-0 font-mono text-sm text-teal-900">
+                {{ t("guest.priceAed", { price: lineAmount(item) }) }}
+              </p>
             </div>
-            <p class="shrink-0 font-mono text-sm text-teal-900">
-              {{ t("guest.priceAed", { price: lineAmount(item) }) }}
-            </p>
-          </div>
-        </li>
-      </ul>
+          </li>
+        </ul>
 
-      <div class="space-y-2 rounded-2xl border border-teal-900/10 bg-white/80 p-4 text-sm">
-        <div class="flex justify-between gap-3 text-stone-700">
-          <span>{{ t("guest.subtotal") }}</span>
-          <span class="font-mono">{{ t("guest.priceAed", { price: order.subtotal }) }}</span>
-        </div>
-        <div class="flex justify-between gap-3 text-stone-700">
-          <span>{{ t("guest.vat") }}</span>
-          <span class="font-mono">{{ t("guest.priceAed", { price: order.vat }) }}</span>
-        </div>
         <div
-          class="flex justify-between gap-3 border-t border-teal-900/10 pt-2 font-semibold text-teal-950"
+          class="space-y-2 rounded-2xl border border-teal-900/10 bg-white/80 p-4 text-sm"
         >
-          <span>{{ t("guest.total") }}</span>
-          <span class="font-mono">{{ t("guest.priceAed", { price: order.total }) }}</span>
+          <div class="flex justify-between gap-3 text-stone-700">
+            <span>{{ t("guest.subtotal") }}</span>
+            <span class="font-mono">{{ t("guest.priceAed", { price: order.subtotal }) }}</span>
+          </div>
+          <div class="flex justify-between gap-3 text-stone-700">
+            <span>{{ t("guest.vat") }}</span>
+            <span class="font-mono">{{ t("guest.priceAed", { price: order.vat }) }}</span>
+          </div>
+          <div
+            class="flex justify-between gap-3 border-t border-teal-900/10 pt-2 font-semibold text-teal-950"
+          >
+            <span>{{ t("guest.total") }}</span>
+            <span class="font-mono">{{ t("guest.priceAed", { price: order.total }) }}</span>
+          </div>
         </div>
-      </div>
+      </template>
+
+      <OrderReceipt v-else :receipt="receipt" />
 
       <NuxtLink
         :to="menuPath"

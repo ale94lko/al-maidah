@@ -195,6 +195,32 @@ export interface PublicOrderItem {
   selected_options: SelectedModifierOption[]
 }
 
+/**
+ * Digital receipt (guest or owner). Includes TRN and gateway reference when present.
+ * Never includes total_cost, unit_cost, or data from other orders.
+ */
+export interface PublicReceipt {
+  order_id: string
+  restaurant_id: string
+  restaurant_name: string
+  restaurant_slug: string
+  /** UAE Tax Registration Number — null when the owner has not set one. */
+  trn: string | null
+  table_number: number | null
+  guest_name: string | null
+  created_at: string
+  payment_status: PaymentStatus
+  payment_method: PaymentMethod | null
+  /** Stripe PaymentIntent id when online payment succeeded; otherwise null. */
+  gateway_reference: string | null
+  subtotal: string
+  vat: string
+  tip: string
+  total: string
+  currency: "AED"
+  items: PublicOrderItem[]
+}
+
 /** Kitchen board ticket: never includes total_cost or unit_cost. */
 export interface KitchenTicket {
   id: string
