@@ -1,96 +1,73 @@
 <template>
-  <div class="mx-auto max-w-5xl px-4 py-12 sm:py-16">
-    <section class="max-w-2xl">
-      <p class="text-sm font-medium uppercase tracking-[0.18em] text-teal-800/80">
-        Al-Maidah
-      </p>
-      <h1 class="mt-3 text-4xl font-semibold tracking-tight text-stone-900 sm:text-5xl">
-        The digital table for restaurants in the UAE
-      </h1>
-      <p class="mt-4 text-lg leading-relaxed text-stone-700">
-        Guests scan a QR code, the kitchen receives the order live, and owners
-        manage the menu and revenue from one place.
-      </p>
-    </section>
-
-    <section class="mt-12 grid gap-4 sm:grid-cols-3">
-      <article
-        v-for="surface in surfaces"
-        :key="surface.title"
-        class="rounded-2xl border border-teal-900/10 bg-white/80 p-5 shadow-sm"
+  <div class="landing-shell relative min-h-dvh overflow-hidden text-white">
+    <div class="absolute inset-0">
+      <img
+        src="/images/hero-dining.jpg"
+        alt=""
+        class="h-full w-full scale-105 object-cover"
       >
-        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-teal-800/70">
-          {{ surface.audience }}
-        </p>
-        <h2 class="mt-2 text-xl font-semibold text-stone-900">
-          {{ surface.title }}
-        </h2>
-        <p class="mt-2 text-sm leading-relaxed text-stone-600">
-          {{ surface.description }}
-        </p>
-        <p class="mt-4 font-mono text-xs text-teal-900/80">
-          {{ surface.route }}
-        </p>
-      </article>
-    </section>
+      <div class="absolute inset-0 bg-[var(--ink)]/35" />
+      <div
+        class="absolute inset-y-0 start-0 w-full bg-gradient-to-r from-[var(--ink)]/88 via-[var(--ink)]/55 to-transparent lg:w-[62%]"
+      />
+    </div>
 
-    <section class="mt-12 rounded-2xl border border-dashed border-teal-900/20 bg-teal-950/[0.03] p-5">
-      <h2 class="text-base font-semibold text-stone-900">
-        Ready for service
-      </h2>
-      <p class="mt-2 max-w-2xl text-sm leading-relaxed text-stone-600">
-        Guests order from the table QR, the kitchen board updates live, and
-        owners manage the menu, tables, receipts, and revenue in AED — with
-        English and Arabic.
-      </p>
-      <div class="mt-4 flex flex-wrap gap-3 text-sm font-semibold">
-        <NuxtLink
-          to="/admin/login"
-          class="rounded-lg bg-teal-950 px-3 py-2 text-white"
-        >
-          Owner sign in
-        </NuxtLink>
-        <NuxtLink
-          to="/m/demo?table=1"
-          class="rounded-lg border border-teal-900/20 bg-white px-3 py-2 text-teal-950"
-        >
-          Try the demo menu
-        </NuxtLink>
-      </div>
-    </section>
+    <div class="relative z-10 flex min-h-dvh flex-col">
+      <header>
+        <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
+          <p class="font-display text-2xl font-extrabold tracking-tight drop-shadow">
+            Al-Maidah
+          </p>
+          <nav class="flex items-center gap-5 text-sm font-bold">
+            <NuxtLink to="/admin/login" class="text-white/85 transition hover:text-[var(--citrus)]">
+              Owner
+            </NuxtLink>
+            <NuxtLink to="/kitchen" class="text-white/85 transition hover:text-[var(--citrus)]">
+              Kitchen
+            </NuxtLink>
+          </nav>
+        </div>
+        <div class="accent-bar" aria-hidden="true">
+          <span /><span /><span />
+        </div>
+      </header>
+
+      <main class="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-end px-4 pb-14 pt-16 sm:px-6 sm:pb-20 lg:justify-center lg:pb-24">
+        <div class="max-w-xl">
+          <p class="text-[11px] font-extrabold uppercase tracking-[0.24em] text-[var(--citrus)]">
+            UAE table ordering
+          </p>
+          <h1 class="font-display mt-4 text-5xl font-extrabold leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl">
+            Al-Maidah
+          </h1>
+          <p class="mt-5 max-w-md text-lg font-medium leading-relaxed text-white/85 sm:text-xl">
+            Guests scan, kitchen cooks, owners grow — one fresh digital table.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <NuxtLink to="/m/demo?table=621d0a8a93454e9d8e07bbcad5915f42eb189a3ba80a7f82d1de1d66d3e39dae" class="btn-primary">
+              Try the demo menu
+            </NuxtLink>
+            <NuxtLink
+              to="/admin/login"
+              class="inline-flex items-center justify-center rounded-2xl border-2 border-white/40 bg-white/15 px-5 py-3.5 text-sm font-extrabold text-white backdrop-blur-md transition hover:bg-white/25"
+            >
+              Owner sign in
+            </NuxtLink>
+          </div>
+        </div>
+      </main>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { ProductSurface } from "~/types"
+definePageMeta({
+  layout: false,
+})
 
 useSeoMeta({
   title: "Al-Maidah",
   description:
     "QR digital menu, kitchen ticket board, and owner panel for restaurants in the UAE.",
 })
-
-const surfaces: ProductSurface[] = [
-  {
-    audience: "Guest · mobile",
-    title: "Table menu",
-    description:
-      "Scan the QR code, browse the menu, and send the order from the table.",
-    route: "/m/{slug}?table={n}",
-  },
-  {
-    audience: "Kitchen · tablet",
-    title: "Ticket board",
-    description:
-      "See pending, preparing, and ready tickets as they arrive in realtime.",
-    route: "/kitchen",
-  },
-  {
-    audience: "Owner · desktop",
-    title: "Admin panel",
-    description:
-      "Manage the menu, printable QR codes, and revenue statistics.",
-    route: "/admin",
-  },
-]
 </script>

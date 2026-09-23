@@ -8,6 +8,7 @@ const props = defineProps<{
   busy: boolean
   action: KitchenTicketAction | null
   actionLabel: string
+  accent?: "citrus" | "chili" | "herb" | "info"
 }>()
 
 const emit = defineEmits<{
@@ -15,6 +16,13 @@ const emit = defineEmits<{
 }>()
 
 const { t, locale } = useAppI18n()
+
+const accentColor = computed(() => {
+  if (props.accent === "chili") return "var(--danger)"
+  if (props.accent === "herb") return "var(--success)"
+  if (props.accent === "info") return "var(--info)"
+  return "var(--warning)"
+})
 
 const placedAt = computed(() => {
   const date = new Date(props.ticket.created_at)
@@ -36,42 +44,45 @@ const paymentHint = computed(() => {
 </script>
 
 <template>
-  <article
-    class="flex flex-col gap-3 rounded-xl border border-zinc-700 bg-zinc-900/80 p-3 shadow-sm"
-  >
+  <article class="kitchen-ticket">
+    <div
+      class="h-1 w-12 rounded-sm"
+      :style="{ background: accentColor }"
+      aria-hidden="true"
+    />
     <header class="flex items-start justify-between gap-2">
       <div class="min-w-0">
-        <p class="text-lg font-semibold tracking-tight text-zinc-50">
+        <p class="font-display text-2xl font-bold tracking-tight text-[var(--navy)]">
           {{ t("kitchen.tableLabel", { n: ticket.table_number ?? "—" }) }}
         </p>
-        <p v-if="ticket.guest_name" class="truncate text-sm text-zinc-400">
+        <p v-if="ticket.guest_name" class="truncate text-sm text-[var(--muted)]">
           {{ ticket.guest_name }}
         </p>
       </div>
-      <div class="shrink-0 text-end text-xs text-zinc-400">
+      <div class="shrink-0 text-end text-xs text-[var(--muted)]">
         <p>{{ placedAt }}</p>
-        <p class="font-medium text-amber-300/90">
+        <p class="font-bold" :style="{ color: accentColor }">
           {{ t("kitchen.elapsed", { n: elapsedMinutes }) }}
         </p>
-        <p class="mt-0.5 text-[11px] uppercase tracking-wide text-zinc-500">
+        <p class="mt-0.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--muted)]">
           {{ paymentHint }}
         </p>
       </div>
     </header>
 
-    <ul class="space-y-2 border-t border-zinc-800 pt-2">
+    <ul class="space-y-2 border-t border-[var(--navy)]/8 pt-2">
       <li
         v-for="item in ticket.items"
         :key="item.id"
-        class="text-sm text-zinc-200"
+        class="text-sm text-[var(--navy)]"
       >
-        <p class="font-medium">
-          <span class="tabular-nums text-emerald-400">{{ item.quantity }}×</span>
+        <p class="font-semibold">
+          <span class="tabular-nums" :style="{ color: accentColor }">{{ item.quantity }}×</span>
           {{ localizedName(item, locale) }}
         </p>
         <ul
           v-if="item.selected_options?.length"
-          class="mt-0.5 space-y-0.5 ps-4 text-xs text-zinc-400"
+          class="mt-0.5 space-y-0.5 ps-4 text-xs text-[var(--muted)]"
         >
           <li
             v-for="option in item.selected_options"
@@ -82,7 +93,7 @@ const paymentHint = computed(() => {
         </ul>
         <p
           v-if="item.notes"
-          class="mt-0.5 ps-4 text-xs italic text-amber-200/80"
+          class="mt-0.5 ps-4 text-xs italic text-[var(--warning)]"
         >
           {{ item.notes }}
         </p>
@@ -92,7 +103,11 @@ const paymentHint = computed(() => {
     <button
       v-if="action"
       type="button"
-      class="mt-auto w-full rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60"
+      class="mt-auto w-full rounded-2xl px-3 py-3 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
+      :style="{
+        background: accentColor,
+        color: accent === 'citrus' || !accent ? 'var(--ink)' : '#fff',
+      }"
       :disabled="busy"
       @click="emit('action', action)"
     >

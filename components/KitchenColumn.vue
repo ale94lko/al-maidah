@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { KitchenTicket, KitchenTicketAction } from "~/types"
 
-defineProps<{
+const props = defineProps<{
   title: string
   tickets: KitchenTicket[]
   emptyLabel: string
@@ -9,23 +9,39 @@ defineProps<{
   actionLabel: string
   busyId: string | null
   elapsedMinutes: (createdAt: string) => number
+  accent?: "citrus" | "chili" | "herb" | "info"
 }>()
 
 const emit = defineEmits<{
   action: [ticketId: string, action: KitchenTicketAction]
 }>()
+
+const accentColor = computed(() => {
+  if (props.accent === "chili") return "var(--danger)"
+  if (props.accent === "herb") return "var(--success)"
+  if (props.accent === "info") return "var(--info)"
+  return "var(--warning)"
+})
 </script>
 
 <template>
   <section class="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
     <header
-      class="flex items-center justify-between gap-2 border-b border-zinc-800 pb-2"
+      class="flex items-center justify-between gap-2 border-b pb-2"
+      :style="{ borderColor: `color-mix(in srgb, ${accentColor} 35%, transparent)` }"
     >
-      <h2 class="text-sm font-semibold uppercase tracking-[0.14em] text-zinc-300">
+      <h2
+        class="text-sm font-bold uppercase tracking-[0.16em]"
+        :style="{ color: accentColor }"
+      >
         {{ title }}
       </h2>
       <span
-        class="rounded-md bg-zinc-800 px-2 py-0.5 text-xs font-medium tabular-nums text-zinc-300"
+        class="rounded-xl px-2.5 py-0.5 text-xs font-bold tabular-nums"
+        :style="{
+          background: accentColor,
+          color: accent === 'citrus' || !accent ? 'var(--ink)' : '#fff',
+        }"
       >
         {{ tickets.length }}
       </span>
@@ -33,7 +49,7 @@ const emit = defineEmits<{
 
     <div
       v-if="!tickets.length"
-      class="rounded-xl border border-dashed border-zinc-700 px-3 py-8 text-center text-sm text-zinc-500"
+      class="rounded-3xl border border-dashed border-[var(--navy)]/15 bg-white/60 px-3 py-10 text-center text-sm text-[var(--muted)]"
     >
       {{ emptyLabel }}
     </div>
@@ -46,6 +62,7 @@ const emit = defineEmits<{
         :busy="busyId === ticket.id"
         :action="action"
         :action-label="actionLabel"
+        :accent="accent"
         @action="emit('action', ticket.id, $event)"
       />
     </div>

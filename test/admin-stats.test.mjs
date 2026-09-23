@@ -42,7 +42,8 @@ test("changing range rebuilds the series window", () => {
   const page = read("pages/admin/index.vue")
   assert.match(page, /onRangeChange/)
   assert.match(page, /query:\s*\{\s*range:/)
-  assert.match(page, /stats\.series/)
+  assert.match(page, /StatsChart/)
+  assert.match(page, /seriesPoints/)
 })
 
 test("admin stats page surfaces KPIs and range controls", () => {

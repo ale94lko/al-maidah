@@ -1,18 +1,30 @@
 <template>
-  <div class="min-h-screen">
-    <header class="border-b border-teal-900/10 bg-white/70 backdrop-blur">
-      <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
-        <NuxtLink to="/" class="text-lg font-semibold tracking-tight text-teal-900">
+  <div class="min-h-screen text-[var(--ink)]">
+    <header class="shell-header">
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+        <NuxtLink
+          to="/"
+          class="font-display text-xl font-bold tracking-tight text-[var(--ink)]"
+        >
           Al-Maidah
         </NuxtLink>
-        <nav class="flex items-center gap-4 text-sm text-teal-900/80">
-          <NuxtLink to="/admin/login" class="hover:text-teal-950">
+        <nav class="flex items-center gap-5 text-sm font-bold">
+          <NuxtLink
+            to="/admin/login"
+            class="text-[var(--herb-deep)] transition hover:text-[var(--chili)]"
+          >
             Owner
           </NuxtLink>
-          <NuxtLink to="/kitchen" class="hover:text-teal-950">
+          <NuxtLink
+            to="/kitchen"
+            class="text-[var(--herb-deep)] transition hover:text-[var(--chili)]"
+          >
             Kitchen
           </NuxtLink>
         </nav>
+      </div>
+      <div class="accent-bar" aria-hidden="true">
+        <span /><span /><span />
       </div>
     </header>
     <main>

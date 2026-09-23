@@ -44,7 +44,7 @@ Demo restaurant slug: `demo` (tables 1–4, bilingual categories and dishes).
 Public menu endpoint (server uses the service role; guests never receive `cost_price`):
 
 ```bash
-curl "http://localhost:3000/api/menu/demo?table=1"
+curl "http://localhost:3000/api/menu/demo?table=621d0a8a93454e9d8e07bbcad5915f42eb189a3ba80a7f82d1de1d66d3e39dae"
 ```
 
 ### Stripe webhook (local)

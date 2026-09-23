@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-  layout: "admin",
+  layout: false,
 })
 
 const email = ref("")
@@ -31,53 +31,104 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="mx-auto max-w-md px-4 py-12">
-    <h1 class="text-3xl font-semibold text-stone-900">
-      {{ t("admin.signInTitle") }}
-    </h1>
-    <p class="mt-2 text-sm text-stone-600">
-      {{ t("admin.signInHint") }}
-    </p>
-
-    <form class="mt-8 space-y-4" @submit.prevent="onSubmit">
-      <label class="block text-sm font-medium text-stone-800">
-        {{ t("admin.email") }}
-        <input
-          v-model="email"
-          type="email"
-          required
-          autocomplete="email"
-          class="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2"
-        >
-      </label>
-      <label class="block text-sm font-medium text-stone-800">
-        {{ t("admin.password") }}
-        <input
-          v-model="password"
-          type="password"
-          required
-          minlength="8"
-          autocomplete="current-password"
-          class="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2"
-        >
-      </label>
-      <p v-if="errorMessage" class="text-sm text-red-700">
-        {{ errorMessage }}
-      </p>
-      <button
-        type="submit"
-        class="w-full rounded-lg bg-teal-800 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
-        :disabled="pending"
+  <div class="auth-shell grid min-h-dvh lg:grid-cols-2">
+    <aside class="relative hidden overflow-hidden lg:block">
+      <img
+        src="/images/auth-kitchen.jpg"
+        alt=""
+        class="absolute inset-0 h-full w-full object-cover"
       >
-        {{ pending ? t("admin.signingIn") : t("common.signIn") }}
-      </button>
-    </form>
+      <div class="absolute inset-0 bg-gradient-to-br from-[var(--ink)]/90 via-[var(--herb-deep)]/80 to-[var(--chili)]/55" />
+      <div class="relative flex h-full flex-col justify-between p-10 text-white">
+        <div>
+          <p class="font-display text-3xl font-extrabold">Al-Maidah</p>
+          <div class="accent-bar mt-4 max-w-[7rem]" aria-hidden="true">
+            <span /><span /><span />
+          </div>
+        </div>
+        <div>
+          <p class="text-[11px] font-extrabold uppercase tracking-[0.22em] text-[var(--citrus)]">
+            {{ t("admin.owner") }}
+          </p>
+          <p class="font-display mt-3 max-w-sm text-4xl font-extrabold leading-tight">
+            {{ t("admin.signInTitle") }}
+          </p>
+          <p class="mt-3 max-w-sm text-sm leading-relaxed text-white/75">
+            {{ t("admin.signInHint") }}
+          </p>
+        </div>
+      </div>
+    </aside>
 
-    <p class="mt-6 text-sm text-stone-600">
-      {{ t("admin.newRestaurant") }}
-      <NuxtLink to="/admin/signup" class="font-medium text-teal-800 underline">
-        {{ t("admin.createOwnerAccount") }}
-      </NuxtLink>
-    </p>
+    <div class="flex flex-col bg-[var(--paper)]">
+      <header class="flex items-center justify-between px-5 py-4 sm:px-8">
+        <NuxtLink to="/" class="font-display text-xl font-extrabold text-[var(--ink)]">
+          Al-Maidah
+        </NuxtLink>
+        <NuxtLink to="/" class="text-sm font-bold text-[var(--herb-deep)]">
+          {{ t("common.home") }}
+        </NuxtLink>
+      </header>
+
+      <div class="flex flex-1 items-center justify-center px-5 py-10 sm:px-8">
+        <div class="w-full max-w-md">
+          <div class="mb-8 lg:hidden">
+            <div class="accent-bar max-w-[6rem]" aria-hidden="true">
+              <span /><span /><span />
+            </div>
+            <h1 class="font-display mt-4 text-3xl font-extrabold text-[var(--ink)]">
+              {{ t("admin.signInTitle") }}
+            </h1>
+            <p class="mt-2 text-sm text-[var(--muted)]">
+              {{ t("admin.signInHint") }}
+            </p>
+          </div>
+          <h1 class="font-display hidden text-3xl font-extrabold text-[var(--ink)] lg:block">
+            {{ t("common.signIn") }}
+          </h1>
+
+          <form class="mt-8 space-y-4" @submit.prevent="onSubmit">
+            <label class="block">
+              <span class="field-label">{{ t("admin.email") }}</span>
+              <input
+                v-model="email"
+                type="email"
+                required
+                autocomplete="email"
+                class="field-input"
+              >
+            </label>
+            <label class="block">
+              <span class="field-label">{{ t("admin.password") }}</span>
+              <input
+                v-model="password"
+                type="password"
+                required
+                minlength="8"
+                autocomplete="current-password"
+                class="field-input"
+              >
+            </label>
+            <p v-if="errorMessage" class="text-sm font-semibold text-[var(--chili)]">
+              {{ errorMessage }}
+            </p>
+            <button
+              type="submit"
+              class="btn-primary w-full disabled:opacity-60"
+              :disabled="pending"
+            >
+              {{ pending ? t("admin.signingIn") : t("common.signIn") }}
+            </button>
+          </form>
+
+          <p class="mt-6 text-sm text-[var(--muted)]">
+            {{ t("admin.newRestaurant") }}
+            <NuxtLink to="/admin/signup" class="font-extrabold text-[var(--herb-deep)] underline">
+              {{ t("admin.createOwnerAccount") }}
+            </NuxtLink>
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { parseTableToken } from "~/utils/table-token"
+
 const route = useRoute()
 const { itemCount, subtotal, syncFromStorage } = useCart()
 const { session, loadFromStorage } = useGuestSession()
@@ -7,12 +9,12 @@ const { t } = useAppI18n()
 const slug = computed(() => String(route.params.slug || session.value?.slug || ""))
 
 const tableQuery = computed(() => {
-  const fromRoute = route.query.table
-  if (typeof fromRoute === "string" && fromRoute) {
+  const fromRoute = parseTableToken(route.query.table)
+  if (fromRoute) {
     return fromRoute
   }
   const stored = session.value ?? loadFromStorage()
-  return stored?.tableNumber != null ? String(stored.tableNumber) : undefined
+  return stored?.tableToken || undefined
 })
 
 const cartTo = computed(() => {
@@ -51,17 +53,17 @@ onMounted(() => {
   >
     <NuxtLink
       :to="cartTo"
-      class="pointer-events-auto mx-auto flex w-full max-w-lg items-center justify-between gap-3 rounded-2xl bg-teal-950 px-4 py-3 text-white shadow-lg shadow-teal-950/25"
+      class="pointer-events-auto mx-auto flex w-full max-w-lg items-center justify-between gap-3 rounded-3xl bg-[var(--info)] px-5 py-3.5 text-white shadow-xl shadow-[var(--info)]/35"
     >
       <div class="min-w-0">
-        <p class="text-xs font-medium uppercase tracking-[0.14em] text-teal-100/80">
+        <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-white/80">
           {{ t("guest.cartBarItems", { count: itemCount }) }}
         </p>
-        <p class="truncate text-sm font-semibold">
+        <p class="truncate text-sm font-bold">
           {{ t("guest.viewCart") }}
         </p>
       </div>
-      <p class="shrink-0 font-mono text-sm font-semibold">
+      <p class="shrink-0 rounded-2xl bg-white/15 px-3 py-1.5 font-mono text-sm font-bold">
         {{ t("guest.priceAed", { price: subtotal }) }}
       </p>
     </NuxtLink>

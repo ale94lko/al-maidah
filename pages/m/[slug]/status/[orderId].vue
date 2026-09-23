@@ -7,6 +7,7 @@ import type {
 } from "~/types"
 import { localizedName } from "~/utils/localize"
 import { filsToMoney, moneyToFils } from "~/utils/cart"
+import { parseTableToken } from "~/utils/table-token"
 
 definePageMeta({
   layout: "client",
@@ -40,12 +41,10 @@ const accessToken = computed(() => {
 
 const menuPath = computed(() => {
   const table =
-    order.value?.table_number ??
-    session.value?.tableNumber ??
-    (typeof route.query.table === "string" ? Number(route.query.table) : null)
+    parseTableToken(route.query.table) ?? session.value?.tableToken ?? null
   const query: Record<string, string> = {}
-  if (table != null && Number.isFinite(table)) {
-    query.table = String(table)
+  if (table) {
+    query.table = table
   }
   return {
     path: `/m/${slug.value}`,
@@ -291,45 +290,45 @@ onBeforeUnmount(() => {
     />
     <div v-else class="space-y-5">
       <div>
-        <p class="text-xs font-medium uppercase tracking-[0.14em] text-teal-800/70">
+        <p class="text-xs font-medium uppercase tracking-[0.14em] text-[var(--citrus-deep)]">
           {{ statusEyebrow }}
         </p>
-        <h1 class="mt-1 text-xl font-semibold tracking-tight text-stone-900">
+        <h1 class="font-display mt-1 text-xl font-bold tracking-tight text-[var(--espresso)]">
           {{ kitchenHeadline }}
         </h1>
-        <p class="mt-2 text-sm leading-relaxed text-stone-600">
+        <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
           {{ statusHint }}
         </p>
         <p
           v-if="order.table_number != null"
-          class="mt-2 text-sm font-medium text-teal-950"
+          class="mt-2 text-sm font-medium text-[var(--herb)]"
         >
           {{ t("guest.tableLabelCheckout", { n: order.table_number }) }}
         </p>
-        <p v-if="order.guest_name" class="text-sm text-stone-600">
+        <p v-if="order.guest_name" class="text-sm text-[var(--muted)]">
           {{ order.guest_name }}
         </p>
         <NuxtLink
           v-if="needsOnlinePayment"
           :to="payPath"
-          class="mt-3 inline-flex rounded-xl bg-teal-950 px-4 py-2 text-sm font-semibold text-white"
+          class="btn-primary mt-3"
         >
           {{ t("guest.payNow") }}
         </NuxtLink>
       </div>
 
-      <ol class="space-y-3 rounded-2xl border border-teal-900/10 bg-white/80 p-4">
+      <ol class="surface-card space-y-3 !p-4">
         <li
           v-for="step in kitchenSteps"
           :key="step.status"
           class="flex items-center gap-3"
         >
           <span
-            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl text-xs font-bold"
             :class="{
-              'bg-teal-950 text-white': stepState(step.status) === 'current',
-              'bg-teal-900/15 text-teal-950': stepState(step.status) === 'done',
-              'bg-stone-100 text-stone-400': stepState(step.status) === 'upcoming',
+              'bg-[var(--info)] text-white': stepState(step.status) === 'current',
+              'bg-[var(--success)]/15 text-[var(--success-deep)]': stepState(step.status) === 'done',
+              'bg-[var(--ink)]/5 text-[var(--muted)]': stepState(step.status) === 'upcoming',
             }"
             aria-hidden="true"
           >
@@ -340,8 +339,8 @@ onBeforeUnmount(() => {
             class="text-sm font-semibold"
             :class="
               stepState(step.status) === 'upcoming'
-                ? 'text-stone-400'
-                : 'text-stone-900'
+                ? 'text-[var(--muted)]'
+                : 'text-[var(--espresso)]'
             "
           >
             {{ t(step.labelKey) }}
@@ -354,16 +353,16 @@ onBeforeUnmount(() => {
           <li
             v-for="item in items"
             :key="item.id"
-            class="rounded-2xl border border-teal-900/10 bg-white/80 p-4"
+            class="surface-card !p-4"
           >
             <div class="flex items-start justify-between gap-3">
               <div class="min-w-0">
-                <p class="font-semibold text-stone-900">
+                <p class="font-semibold text-[var(--espresso)]">
                   {{ item.quantity }}× {{ localizedName(item, locale) }}
                 </p>
                 <ul
                   v-if="item.selected_options?.length"
-                  class="mt-1 space-y-0.5 text-sm text-stone-600"
+                  class="mt-1 space-y-0.5 text-sm text-[var(--muted)]"
                 >
                   <li
                     v-for="option in item.selected_options"
@@ -373,26 +372,24 @@ onBeforeUnmount(() => {
                   </li>
                 </ul>
               </div>
-              <p class="shrink-0 font-mono text-sm text-teal-900">
+              <p class="shrink-0 font-mono text-sm text-[var(--herb)]">
                 {{ t("guest.priceAed", { price: lineAmount(item) }) }}
               </p>
             </div>
           </li>
         </ul>
 
-        <div
-          class="space-y-2 rounded-2xl border border-teal-900/10 bg-white/80 p-4 text-sm"
-        >
-          <div class="flex justify-between gap-3 text-stone-700">
+        <div class="surface-card space-y-2 !p-4 text-sm">
+          <div class="flex justify-between gap-3 text-[var(--ink)]">
             <span>{{ t("guest.subtotal") }}</span>
             <span class="font-mono">{{ t("guest.priceAed", { price: order.subtotal }) }}</span>
           </div>
-          <div class="flex justify-between gap-3 text-stone-700">
+          <div class="flex justify-between gap-3 text-[var(--ink)]">
             <span>{{ t("guest.vat") }}</span>
             <span class="font-mono">{{ t("guest.priceAed", { price: order.vat }) }}</span>
           </div>
           <div
-            class="flex justify-between gap-3 border-t border-teal-900/10 pt-2 font-semibold text-teal-950"
+            class="flex justify-between gap-3 border-t border-[var(--espresso)]/10 pt-2 font-semibold text-[var(--espresso)]"
           >
             <span>{{ t("guest.total") }}</span>
             <span class="font-mono">{{ t("guest.priceAed", { price: order.total }) }}</span>
@@ -404,7 +401,7 @@ onBeforeUnmount(() => {
 
       <NuxtLink
         :to="menuPath"
-        class="inline-flex rounded-xl border border-teal-900/20 bg-white px-4 py-2 text-sm font-semibold text-teal-950"
+        class="btn-secondary"
       >
         {{ t("guest.orderSomethingElse") }}
       </NuxtLink>

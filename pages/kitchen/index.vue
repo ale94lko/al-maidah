@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { extractApiErrorMessage } from "~/utils/errors"
+
 definePageMeta({
   layout: "kitchen",
 })
@@ -34,7 +36,6 @@ const {
   preparing,
   ready,
   loading,
-  errorMessage,
   busyId,
   bootstrap,
   selectRestaurant,
@@ -47,9 +48,24 @@ const {
     void alertNewOrder(fresh.length)
   },
 })
+const {
+  errorOpen,
+  errorTitle,
+  errorMessage: dialogMessage,
+  showError,
+  dismissError,
+} = useErrorDialog()
 
 const readyGate = ref(false)
 const startingShift = ref(false)
+
+function kitchenError(error: unknown, fallback: string) {
+  const raw = (extractApiErrorMessage(error) || "").toLowerCase()
+  if (raw.includes("postgres_changes") || raw.includes("realtime") || raw.includes("subscribe")) {
+    return t("kitchen.boardLoadError")
+  }
+  return extractApiErrorMessage(error) || fallback
+}
 
 onMounted(async () => {
   listenForInstall()
@@ -66,8 +82,8 @@ onMounted(async () => {
   readyGate.value = true
   try {
     await bootstrap()
-  } catch {
-    /* errorMessage already set */
+  } catch (error) {
+    showError(kitchenError(error, t("kitchen.boardLoadError")))
   }
 })
 
@@ -89,9 +105,13 @@ async function onStartShift() {
 
 async function onRestaurantChange(event: Event) {
   const value = (event.target as HTMLSelectElement).value
-  await selectRestaurant(value)
-  if (shiftStarted.value) {
-    enableAlerts()
+  try {
+    await selectRestaurant(value)
+    if (shiftStarted.value) {
+      enableAlerts()
+    }
+  } catch (error) {
+    showError(kitchenError(error, t("kitchen.boardLoadError")))
   }
 }
 
@@ -101,8 +121,8 @@ async function onTicketAction(
 ) {
   try {
     await transition(ticketId, action)
-  } catch {
-    /* surfaced via errorMessage */
+  } catch (error) {
+    showError(kitchenError(error, t("kitchen.ticketUpdateError")))
   }
 }
 
@@ -113,6 +133,13 @@ async function onInstall() {
 
 <template>
   <div>
+    <AppErrorDialog
+      :open="errorOpen"
+      :title="errorTitle"
+      :message="dialogMessage"
+      @dismiss="dismissError"
+    />
+
     <KitchenNewOrderAlert
       :active="visualAlertActive"
       :message-key="visualAlertMessage"
@@ -133,15 +160,15 @@ async function onInstall() {
     <div v-else class="space-y-4" :class="{ 'pt-14': visualAlertActive }">
       <div class="flex flex-wrap items-end justify-between gap-3">
         <div class="min-w-0">
-          <h1 class="text-xl font-semibold tracking-tight text-zinc-50 sm:text-2xl">
+          <h1 class="font-display text-xl font-bold tracking-tight text-[var(--navy)] sm:text-2xl">
             {{ t("kitchen.ticketBoard") }}
           </h1>
-          <p class="mt-1 text-sm text-zinc-400">
+          <p class="mt-1 text-sm text-[var(--muted)]">
             {{ t("kitchen.boardHint") }}
           </p>
           <p
             v-if="shiftStarted && audioBlocked"
-            class="mt-1 text-xs text-amber-300/90"
+            class="mt-1 text-xs text-[var(--warning)]"
           >
             {{ t("kitchen.alertSoundBlockedHint") }}
           </p>
@@ -150,18 +177,18 @@ async function onInstall() {
           <button
             v-if="installAvailable && !installed"
             type="button"
-            class="rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-300 hover:bg-emerald-500/20"
+            class="btn-success !px-3 !py-2"
             @click="onInstall"
           >
             {{ t("kitchen.installApp") }}
           </button>
           <label
             v-if="restaurants.length > 1"
-            class="flex flex-col gap-1 text-xs text-zinc-400"
+            class="flex flex-col gap-1 text-xs text-[var(--muted)]"
           >
             {{ t("kitchen.restaurant") }}
             <select
-              class="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100"
+              class="field-input"
               :value="restaurantId ?? undefined"
               @change="onRestaurantChange"
             >
@@ -176,20 +203,15 @@ async function onInstall() {
           </label>
           <p
             v-else-if="restaurants[0]"
-            class="text-sm font-medium text-zinc-300"
+            class="text-sm font-bold text-[var(--gold)]"
           >
             {{ restaurants[0].name }}
           </p>
         </div>
       </div>
 
-      <p v-if="errorMessage" class="text-sm text-red-400">
-        {{ errorMessage }}
-      </p>
-
       <AppEmptyState
         v-if="!restaurants.length"
-        class="border-zinc-700 text-zinc-200"
         :title="t('kitchen.noRestaurant')"
         :description="t('kitchen.noRestaurantHint')"
       />

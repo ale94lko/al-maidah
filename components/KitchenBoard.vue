@@ -28,6 +28,7 @@ const { t } = useAppI18n()
       :action-label="t('kitchen.actionStart')"
       :busy-id="busyId"
       :elapsed-minutes="elapsedMinutes"
+      accent="citrus"
       @action="(id, action) => emit('action', id, action)"
     />
     <KitchenColumn
@@ -38,6 +39,7 @@ const { t } = useAppI18n()
       :action-label="t('kitchen.actionReady')"
       :busy-id="busyId"
       :elapsed-minutes="elapsedMinutes"
+      accent="info"
       @action="(id, action) => emit('action', id, action)"
     />
     <KitchenColumn
@@ -48,6 +50,7 @@ const { t } = useAppI18n()
       :action-label="t('kitchen.actionDeliver')"
       :busy-id="busyId"
       :elapsed-minutes="elapsedMinutes"
+      accent="herb"
       @action="(id, action) => emit('action', id, action)"
     />
   </div>

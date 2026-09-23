@@ -11,6 +11,7 @@ import type {
   Restaurant,
   RestaurantStatistics,
 } from "~/types"
+import { sha256Hex } from "~/utils/table-token"
 import { computeAllTimeRestaurantStatistics } from "./admin-stats"
 
 export async function getRestaurantStatistics(
@@ -66,6 +67,34 @@ export async function getTableByNumber(
   }
 
   return (data as DiningTable | null) ?? null
+}
+
+/** Resolve a guest QR token (SHA-256 of the table id) to an active table. */
+export async function getTableByToken(
+  client: SupabaseClient,
+  restaurantId: string,
+  token: string,
+): Promise<DiningTable | null> {
+  const { data, error } = await client
+    .from("tables")
+    .select("id, restaurant_id, table_number, label, is_active, deactivated_at, created_at")
+    .eq("restaurant_id", restaurantId)
+    .eq("is_active", true)
+
+  if (error) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: `Failed to load table: ${error.message}`,
+    })
+  }
+
+  for (const row of (data ?? []) as DiningTable[]) {
+    if ((await sha256Hex(row.id)) === token) {
+      return row
+    }
+  }
+
+  return null
 }
 
 /**

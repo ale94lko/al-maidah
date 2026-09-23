@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Category, DiningTable, Dish } from "~/types"
 import { localizedDescription, localizedName } from "~/utils/localize"
+import { parseTableToken } from "~/utils/table-token"
 
 definePageMeta({
   layout: "client",
@@ -13,17 +14,13 @@ const {
   loadFromStorage,
   saveSession,
   clearSession,
-  resolveTableNumber,
+  resolveTableToken,
 } = useGuestSession()
 const { syncFromStorage } = useCart()
 const { t, locale } = useAppI18n()
 
 const slug = computed(() => String(route.params.slug || ""))
-const tableFromQuery = computed(() => {
-  const raw = route.query.table
-  const value = typeof raw === "string" || typeof raw === "number" ? Number(raw) : NaN
-  return Number.isInteger(value) && value > 0 ? value : null
-})
+const tableFromQuery = computed(() => parseTableToken(route.query.table))
 
 const loading = ref(true)
 const errorKind = ref<"none" | "missing-table" | "not-found" | "generic">("none")
@@ -136,20 +133,22 @@ function dishPath(dishId: string) {
   return {
     path: `/m/${slug.value}/dish/${dishId}`,
     query: tableFromQuery.value
-      ? { table: String(tableFromQuery.value) }
-      : pinnedTable.value
-        ? { table: String(pinnedTable.value.table_number) }
+      ? { table: tableFromQuery.value }
+      : sessionToken.value
+        ? { table: sessionToken.value }
         : undefined,
   }
 }
 
-async function ensureTableInUrl(tableNumber: number) {
-  if (tableFromQuery.value === tableNumber) {
+const sessionToken = ref<string | null>(null)
+
+async function ensureTableInUrl(tableToken: string) {
+  if (tableFromQuery.value === tableToken) {
     return
   }
   await router.replace({
     path: route.path,
-    query: { ...route.query, table: String(tableNumber) },
+    query: { ...route.query, table: tableToken },
   })
 }
 
@@ -159,8 +158,8 @@ onMounted(async () => {
   errorMessage.value = ""
   loadFromStorage()
 
-  const tableNumber = resolveTableNumber(slug.value, tableFromQuery.value)
-  if (tableNumber == null) {
+  const tableToken = resolveTableToken(slug.value, tableFromQuery.value)
+  if (tableToken == null) {
     clearSession()
     setShell({ venueName: slug.value || "Menu", tableNumber: null })
     errorKind.value = "missing-table"
@@ -175,7 +174,7 @@ onMounted(async () => {
       dishes: Dish[]
       table: DiningTable
     }>(`/api/menu/${encodeURIComponent(slug.value)}`, {
-      query: { table: tableNumber },
+      query: { table: tableToken },
     })
 
     restaurantName.value = menu.restaurant.name
@@ -183,10 +182,12 @@ onMounted(async () => {
     dishes.value = menu.dishes
     pinnedTable.value = menu.table
 
+    sessionToken.value = tableToken
     saveSession({
       slug: menu.restaurant.slug,
       tableNumber: menu.table.table_number,
       tableId: menu.table.id,
+      tableToken,
       restaurantName: menu.restaurant.name,
     })
     setShell({
@@ -194,7 +195,7 @@ onMounted(async () => {
       tableNumber: menu.table.table_number,
     })
     syncFromStorage()
-    await ensureTableInUrl(menu.table.table_number)
+    await ensureTableInUrl(tableToken)
   } catch (error: unknown) {
     clearSession()
     setShell({
@@ -250,30 +251,26 @@ onMounted(async () => {
       :description="errorDescription"
     />
     <div v-else class="space-y-5">
-      <p class="text-sm leading-relaxed text-stone-600">
+      <p class="text-sm leading-relaxed text-[var(--muted)]">
         {{ t("guest.shellIntro", { name: restaurantName }) }}
       </p>
 
-      <div class="space-y-3 rounded-2xl border border-teal-900/10 bg-white/70 p-3">
+      <div class="space-y-3 rounded-3xl border border-[var(--ink)]/8 bg-white p-3 shadow-sm">
         <label class="block">
           <span class="sr-only">{{ t("guest.searchPlaceholder") }}</span>
           <input
             v-model="searchQuery"
             type="search"
             :placeholder="t('guest.searchPlaceholder')"
-            class="w-full rounded-xl border border-teal-900/15 bg-white px-3 py-2 text-sm text-stone-900 outline-none ring-teal-800/30 placeholder:text-stone-400 focus:ring-2"
-          />
+            class="field-input !bg-[var(--paper)]"
+          >
         </label>
 
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           <button
             type="button"
-            class="rounded-full border px-3 py-1.5 text-xs font-semibold transition"
-            :class="
-              vegetarianOnly
-                ? 'border-teal-900 bg-teal-900 text-white'
-                : 'border-teal-900/20 bg-white text-teal-950'
-            "
+            class="category-chip"
+            :class="{ 'is-active': vegetarianOnly }"
             @click="vegetarianOnly = !vegetarianOnly"
           >
             {{ t("guest.vegetarianOnly") }}
@@ -282,12 +279,8 @@ onMounted(async () => {
             v-for="allergen in allergenOptions"
             :key="allergen"
             type="button"
-            class="rounded-full border px-3 py-1.5 text-xs font-semibold capitalize transition"
-            :class="
-              excludedAllergens.includes(allergen)
-                ? 'border-rose-800 bg-rose-800 text-white'
-                : 'border-teal-900/20 bg-white text-teal-950'
-            "
+            class="category-chip capitalize"
+            :class="{ 'is-active': excludedAllergens.includes(allergen) }"
             :aria-pressed="excludedAllergens.includes(allergen)"
             @click="toggleAllergen(allergen)"
           >
@@ -296,7 +289,7 @@ onMounted(async () => {
           <button
             v-if="hasActiveFilters"
             type="button"
-            class="rounded-full border border-stone-300 px-3 py-1.5 text-xs font-medium text-stone-600"
+            class="category-chip !border-transparent !bg-[var(--paper-deep)] !text-[var(--muted)]"
             @click="clearFilters"
           >
             {{ t("guest.clearFilters") }}
@@ -315,27 +308,45 @@ onMounted(async () => {
         :description="t('guest.noMatchesHint')"
       />
 
+      <nav
+        v-if="dishesByCategory.length"
+        class="sticky top-[4.25rem] z-10 -mx-4 flex gap-2 overflow-x-auto bg-[var(--nav)] px-4 py-3"
+        aria-label="Categories"
+      >
+        <a
+          v-for="group in dishesByCategory"
+          :key="`nav-${group.category.id}`"
+          class="admin-pill"
+          :href="`#cat-${group.category.id}`"
+        >
+          {{ localizedName(group.category, locale) }}
+        </a>
+      </nav>
+
       <section
         v-for="group in dishesByCategory"
+        :id="`cat-${group.category.id}`"
         :key="group.category.id"
-        class="space-y-3"
+        class="scroll-mt-36 space-y-3"
       >
-        <h2 class="text-lg font-semibold tracking-tight text-stone-900">
-          {{ localizedName(group.category, locale) }}
-        </h2>
+        <div class="flex items-end justify-between gap-3">
+          <h2 class="font-display text-2xl font-extrabold tracking-tight text-[var(--ink)]">
+            {{ localizedName(group.category, locale) }}
+          </h2>
+          <span class="rounded-xl bg-[var(--citrus)]/30 px-2 py-0.5 text-[11px] font-extrabold text-[var(--ink)]">
+            {{ group.dishes.length }}
+          </span>
+        </div>
         <ul class="space-y-3">
           <li
             v-for="dish in group.dishes"
             :key="dish.id"
-            class="overflow-hidden rounded-2xl border border-teal-900/10 bg-white/80"
+            class="dish-row"
             :class="{ 'opacity-70': !dish.is_available }"
           >
-            <NuxtLink
-              :to="dishPath(dish.id)"
-              class="flex gap-0 sm:gap-0"
-            >
+            <NuxtLink :to="dishPath(dish.id)" class="flex">
               <div
-                class="relative h-28 w-28 shrink-0 overflow-hidden bg-teal-900/5 sm:h-32 sm:w-32"
+                class="relative h-28 w-28 shrink-0 overflow-hidden bg-gradient-to-br from-[var(--chili)]/15 via-[var(--herb)]/15 to-[var(--citrus)]/20 sm:h-32 sm:w-32"
               >
                 <img
                   v-if="dish.photo_url"
@@ -343,57 +354,51 @@ onMounted(async () => {
                   :alt="localizedName(dish, locale)"
                   class="h-full w-full object-cover"
                   loading="lazy"
-                />
+                >
                 <div
                   v-else
-                  class="flex h-full w-full items-center justify-center text-xs font-medium uppercase tracking-wide text-teal-900/40"
+                  class="font-display flex h-full w-full items-center justify-center text-xs font-extrabold text-[var(--herb)]/45"
                   aria-hidden="true"
                 >
                   Al-Maidah
                 </div>
                 <span
                   v-if="!dish.is_available"
-                  class="absolute inset-x-2 bottom-2 rounded-md bg-stone-900/85 px-2 py-1 text-center text-[10px] font-semibold uppercase tracking-wide text-white"
+                  class="absolute inset-x-2 bottom-2 rounded-xl bg-[var(--ink)]/90 px-2 py-1 text-center text-[10px] font-extrabold uppercase tracking-wide text-white"
                 >
                   {{ t("guest.soldOut") }}
                 </span>
               </div>
-              <div class="flex min-w-0 flex-1 flex-col gap-2 p-3">
+              <div class="flex min-w-0 flex-1 flex-col gap-2 p-3.5">
                 <div class="flex items-start justify-between gap-2">
                   <div class="min-w-0">
-                    <p class="font-semibold text-stone-900">
+                    <p class="font-extrabold text-[var(--ink)]">
                       {{ localizedName(dish, locale) }}
                     </p>
                     <p
                       v-if="localizedDescription(dish, locale)"
-                      class="mt-1 line-clamp-2 text-sm text-stone-600"
+                      class="mt-1 line-clamp-2 text-sm text-[var(--muted)]"
                     >
                       {{ localizedDescription(dish, locale) }}
                     </p>
                   </div>
-                  <p class="shrink-0 font-mono text-sm text-teal-900">
+                  <p class="shrink-0 rounded-xl bg-[var(--ink)]/6 px-2 py-1 font-mono text-sm font-extrabold text-[var(--ink)]">
                     {{ formatPrice(dish.price) }}
                   </p>
                 </div>
                 <div class="mt-auto flex flex-wrap gap-1.5">
                   <span
                     v-if="dish.is_vegetarian"
-                    class="rounded-md bg-emerald-900/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-900"
+                    class="rounded-xl bg-[var(--herb)]/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-[var(--herb-deep)]"
                   >
                     {{ t("guest.vegetarian") }}
                   </span>
                   <span
                     v-for="allergen in dish.allergens"
                     :key="`${dish.id}-${allergen}`"
-                    class="rounded-md bg-amber-900/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-950"
+                    class="rounded-xl bg-[var(--citrus)]/30 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-[var(--ink)]"
                   >
                     {{ allergen }}
-                  </span>
-                  <span
-                    v-if="!dish.is_available"
-                    class="rounded-md bg-stone-900/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-stone-800"
-                  >
-                    {{ t("guest.soldOut") }}
                   </span>
                 </div>
               </div>

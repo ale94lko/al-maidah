@@ -49,36 +49,36 @@ function paymentLabel(method: PaymentMethod | null): string {
 
 <template>
   <article
-    class="space-y-4 rounded-2xl border border-teal-900/10 bg-white/90 p-4 text-sm text-stone-800"
+    class="surface-card space-y-4 !p-4 text-sm text-[var(--ink)]"
     :aria-label="t('guest.receiptTitle')"
   >
-    <header class="space-y-1 border-b border-teal-900/10 pb-3">
-      <p class="text-xs font-medium uppercase tracking-[0.14em] text-teal-800/70">
+    <header class="space-y-1 border-b border-[var(--espresso)]/10 pb-3">
+      <p class="text-xs font-medium uppercase tracking-[0.14em] text-[var(--citrus-deep)]">
         {{ t("guest.receiptTitle") }}
       </p>
-      <h2 class="text-lg font-semibold tracking-tight text-stone-900">
+      <h2 class="font-display text-lg font-bold tracking-tight text-[var(--espresso)]">
         {{ receipt.restaurant_name }}
       </h2>
-      <p v-if="receipt.trn" class="font-mono text-xs text-stone-600">
+      <p v-if="receipt.trn" class="font-mono text-xs text-[var(--muted)]">
         {{ t("guest.trnLabel", { trn: receipt.trn }) }}
       </p>
       <p v-else class="text-xs text-amber-800">
         {{ t("guest.trnNotOnFile") }}
       </p>
-      <p class="text-xs text-stone-500">
+      <p class="text-xs text-[var(--muted)]">
         {{ issuedAt }}
       </p>
-      <p v-if="receipt.table_number != null" class="text-sm font-medium text-teal-950">
+      <p v-if="receipt.table_number != null" class="text-sm font-medium text-[var(--herb)]">
         {{ t("guest.tableLabelCheckout", { n: receipt.table_number }) }}
       </p>
-      <p v-if="receipt.guest_name" class="text-sm text-stone-600">
+      <p v-if="receipt.guest_name" class="text-sm text-[var(--muted)]">
         {{ receipt.guest_name }}
       </p>
     </header>
 
     <div
       v-if="showTrnPrompt && !receipt.trn && settingsPath"
-      class="rounded-xl border border-amber-300/80 bg-amber-50 px-3 py-2 text-amber-950"
+      class="rounded-2xl border border-amber-300/80 bg-amber-50 px-3 py-2 text-amber-950"
     >
       <p class="font-medium">{{ t("admin.trnMissingTitle") }}</p>
       <p class="mt-1 text-xs leading-relaxed">{{ t("admin.trnMissingHint") }}</p>
@@ -97,48 +97,48 @@ function paymentLabel(method: PaymentMethod | null): string {
         class="flex items-start justify-between gap-3"
       >
         <div class="min-w-0">
-          <p class="font-medium text-stone-900">
+          <p class="font-medium text-[var(--espresso)]">
             {{ item.quantity }}× {{ localizedName(item, locale) }}
           </p>
           <ul
             v-if="item.selected_options?.length"
-            class="mt-0.5 space-y-0.5 text-xs text-stone-600"
+            class="mt-0.5 space-y-0.5 text-xs text-[var(--muted)]"
           >
             <li v-for="option in item.selected_options" :key="option.id">
               {{ localizedName(option, locale) }}
             </li>
           </ul>
         </div>
-        <p class="shrink-0 font-mono text-teal-900">
+        <p class="shrink-0 font-mono text-[var(--herb)]">
           {{ t("guest.priceAed", { price: lineAmount(item.quantity, item.unit_price) }) }}
         </p>
       </li>
     </ul>
 
-    <div class="space-y-1.5 border-t border-teal-900/10 pt-3">
-      <div class="flex justify-between gap-3 text-stone-700">
+    <div class="space-y-1.5 border-t border-[var(--espresso)]/10 pt-3">
+      <div class="flex justify-between gap-3 text-[var(--ink)]">
         <span>{{ t("guest.subtotal") }}</span>
         <span class="font-mono">{{ t("guest.priceAed", { price: receipt.subtotal }) }}</span>
       </div>
-      <div class="flex justify-between gap-3 text-stone-700">
+      <div class="flex justify-between gap-3 text-[var(--ink)]">
         <span>{{ t("guest.vat") }}</span>
         <span class="font-mono">{{ t("guest.priceAed", { price: receipt.vat }) }}</span>
       </div>
-      <div v-if="showTip" class="flex justify-between gap-3 text-stone-700">
+      <div v-if="showTip" class="flex justify-between gap-3 text-[var(--ink)]">
         <span>{{ t("guest.tip") }}</span>
         <span class="font-mono">{{ t("guest.priceAed", { price: receipt.tip }) }}</span>
       </div>
       <div
-        class="flex justify-between gap-3 border-t border-teal-900/10 pt-2 font-semibold text-teal-950"
+        class="flex justify-between gap-3 border-t border-[var(--espresso)]/10 pt-2 font-semibold text-[var(--espresso)]"
       >
         <span>{{ t("guest.total") }}</span>
         <span class="font-mono">{{ t("guest.priceAed", { price: receipt.total }) }}</span>
       </div>
     </div>
 
-    <footer class="space-y-1 border-t border-teal-900/10 pt-3 text-xs text-stone-600">
+    <footer class="space-y-1 border-t border-[var(--espresso)]/10 pt-3 text-xs text-[var(--muted)]">
       <p>
-        <span class="font-medium text-stone-800">{{ t("guest.paymentMethod") }}:</span>
+        <span class="font-medium text-[var(--espresso)]">{{ t("guest.paymentMethod") }}:</span>
         {{ paymentLabel(receipt.payment_method) }}
         <template v-if="receipt.payment_status === 'paid'">
           · {{ t("guest.orderPaid") }}

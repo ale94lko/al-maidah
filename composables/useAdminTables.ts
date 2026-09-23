@@ -1,4 +1,5 @@
 import type { DiningTable } from "~/types"
+import { sha256Hex } from "~/utils/table-token"
 
 type MeResponse = {
   user: { id: string; email?: string }
@@ -9,6 +10,8 @@ type TablesResponse = {
   restaurant: { id: string; name: string; slug: string }
   tables: DiningTable[]
 }
+
+import { extractApiErrorMessage } from "~/utils/errors"
 
 /**
  * Owner table manager: CRUD + menu URLs for printable QR codes.
@@ -21,6 +24,7 @@ export function useAdminTables() {
   const restaurantId = ref<string | null>(null)
   const restaurant = ref<TablesResponse["restaurant"] | null>(null)
   const tables = ref<DiningTable[]>([])
+  const tableTokens = ref<Record<string, string>>({})
   const loading = ref(true)
   const saving = ref(false)
   const errorMessage = ref("")
@@ -33,13 +37,14 @@ export function useAdminTables() {
     return { Authorization: `Bearer ${token}` }
   }
 
-  function menuUrlForTable(tableNumber: number): string {
+  function menuUrlForTable(tableId: string): string {
     const slug = restaurant.value?.slug
-    if (!slug) {
+    const token = tableTokens.value[tableId]
+    if (!slug || !token) {
       return ""
     }
     const base = String(appUrl.value || "").replace(/\/$/, "")
-    return `${base}/m/${slug}?table=${tableNumber}`
+    return `${base}/m/${slug}?table=${token}`
   }
 
   async function loadTables() {
@@ -54,7 +59,15 @@ export function useAdminTables() {
       { headers },
     )
     restaurant.value = response.restaurant
-    tables.value = (response.tables ?? []).filter((table) => table.is_active)
+    const active = (response.tables ?? []).filter((table) => table.is_active)
+    const tokens: Record<string, string> = {}
+    await Promise.all(
+      active.map(async (table) => {
+        tokens[table.id] = await sha256Hex(table.id)
+      }),
+    )
+    tableTokens.value = tokens
+    tables.value = active
   }
 
   async function bootstrap() {
@@ -77,8 +90,7 @@ export function useAdminTables() {
       }
       await loadTables()
     } catch (error) {
-      errorMessage.value =
-        error instanceof Error ? error.message : "Could not load tables"
+      errorMessage.value = extractApiErrorMessage(error) || "Could not load tables"
       throw error
     } finally {
       loading.value = false
@@ -105,8 +117,6 @@ export function useAdminTables() {
       })
       await loadTables()
     } catch (error) {
-      errorMessage.value =
-        error instanceof Error ? error.message : "Could not create table"
       throw error
     } finally {
       saving.value = false
@@ -128,8 +138,6 @@ export function useAdminTables() {
       })
       await loadTables()
     } catch (error) {
-      errorMessage.value =
-        error instanceof Error ? error.message : "Could not renumber table"
       throw error
     } finally {
       saving.value = false
@@ -150,8 +158,6 @@ export function useAdminTables() {
       })
       await loadTables()
     } catch (error) {
-      errorMessage.value =
-        error instanceof Error ? error.message : "Could not remove table"
       throw error
     } finally {
       saving.value = false

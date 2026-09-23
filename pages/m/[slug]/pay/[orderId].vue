@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PublicOrder } from "~/types"
+import { parseTableToken } from "~/utils/table-token"
 
 definePageMeta({
   layout: "client",
@@ -34,11 +35,9 @@ const statusPath = computed(() => {
   if (accessToken.value) {
     query.token = accessToken.value
   }
-  const table =
-    order.value?.table_number ??
-    (typeof route.query.table === "string" ? Number(route.query.table) : null)
-  if (table != null && Number.isFinite(table)) {
-    query.table = String(table)
+  const table = parseTableToken(route.query.table) ?? session.value?.tableToken
+  if (table) {
+    query.table = table
   }
   return {
     path: `/m/${slug.value}/status/${orderId.value}`,
@@ -130,16 +129,16 @@ onMounted(async () => {
     />
     <div v-else class="space-y-5">
       <div>
-        <p class="text-xs font-medium uppercase tracking-[0.14em] text-teal-800/70">
+        <p class="text-xs font-medium uppercase tracking-[0.14em] text-[var(--citrus-deep)]">
           {{ t("guest.orderPending") }}
         </p>
-        <h1 class="mt-1 text-xl font-semibold tracking-tight text-stone-900">
+        <h1 class="font-display mt-1 text-xl font-bold tracking-tight text-[var(--espresso)]">
           {{ t("guest.payOnline") }}
         </h1>
-        <p class="mt-2 text-sm leading-relaxed text-stone-600">
+        <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
           {{ t("guest.payOnlineHint") }}
         </p>
-        <p class="mt-3 font-mono text-lg font-semibold text-teal-950">
+        <p class="mt-3 font-mono text-lg font-semibold text-[var(--herb)]">
           {{ t("guest.priceAed", { price: order.total }) }}
         </p>
       </div>
@@ -154,7 +153,7 @@ onMounted(async () => {
         {{ paymentNote }}
       </p>
 
-      <NuxtLink :to="statusPath" class="inline-flex text-sm font-medium text-teal-900">
+      <NuxtLink :to="statusPath" class="inline-flex text-sm font-medium text-[var(--herb)]">
         {{ t("guest.onlinePendingHint") }}
       </NuxtLink>
     </div>

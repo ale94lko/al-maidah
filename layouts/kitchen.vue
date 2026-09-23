@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { user, signOut } = useAuth()
+const { signOut } = useAuth()
 const { t } = useAppI18n()
 
 async function onSignOut() {
@@ -10,34 +10,36 @@ async function onSignOut() {
 
 <template>
   <div
-    class="kitchen-shell flex min-h-dvh flex-col bg-zinc-950 text-zinc-100"
+    class="kitchen-shell flex min-h-dvh flex-col text-[var(--navy)]"
   >
-    <header
-      class="flex shrink-0 items-center justify-between gap-3 border-b border-zinc-800 px-4 py-3 sm:px-6"
-    >
-      <div class="min-w-0">
-        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-400/90">
-          {{ t("kitchen.title") }}
-        </p>
-        <p class="truncate text-lg font-semibold tracking-tight text-zinc-50">
-          {{ t("kitchen.ticketBoard") }}
-        </p>
-      </div>
-      <div class="flex shrink-0 items-center gap-3">
-        <LanguageSwitcher />
-        <span
-          v-if="user?.email"
-          class="hidden max-w-[14rem] truncate text-xs text-zinc-400 sm:inline"
-        >
-          {{ user.email }}
-        </span>
-        <button
-          type="button"
-          class="rounded-lg border border-zinc-700 px-3 py-1.5 text-sm text-zinc-200 hover:bg-zinc-900"
-          @click="onSignOut"
-        >
-          {{ t("common.signOut") }}
-        </button>
+    <header class="shrink-0 border-b border-[var(--navy)]/8 bg-white/70 px-4 py-3 backdrop-blur sm:px-6">
+      <div class="mx-auto flex max-w-[90rem] items-center justify-between gap-4">
+        <div class="flex min-w-0 items-center gap-4">
+          <NuxtLink
+            to="/admin"
+            class="font-display border-e border-[var(--navy)]/10 pe-4 text-xl font-bold text-[var(--gold)]"
+          >
+            Al-Maidah
+          </NuxtLink>
+          <div class="min-w-0">
+            <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--sage-deep)]">
+              {{ t("kitchen.title") }}
+            </p>
+            <p class="truncate text-sm font-bold text-[var(--navy)]">
+              {{ t("kitchen.ticketBoard") }}
+            </p>
+          </div>
+        </div>
+        <div class="flex shrink-0 items-center gap-2">
+          <LanguageSwitcher />
+          <button
+            type="button"
+            class="shrink-0 rounded-full border border-[var(--navy)]/10 bg-white px-3 py-1.5 text-xs font-bold text-[var(--navy)]"
+            @click="onSignOut"
+          >
+            {{ t("common.signOut") }}
+          </button>
+        </div>
       </div>
     </header>
 

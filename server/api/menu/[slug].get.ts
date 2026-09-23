@@ -1,3 +1,5 @@
+import { parseTableToken } from "~/utils/table-token"
+
 /**
  * Public guest menu for a restaurant slug.
  * Requires a valid ?table= so ordering is always pinned to a dining table.
@@ -10,13 +12,11 @@ export default defineEventHandler(async (event) => {
   }
 
   const query = getQuery(event)
-  const tableNumberRaw = query.table
-  const tableNumber =
-    typeof tableNumberRaw === "string" || typeof tableNumberRaw === "number"
-      ? Number(tableNumberRaw)
-      : NaN
+  const tableToken = parseTableToken(
+    typeof query.table === "string" ? query.table : null,
+  )
 
-  if (!Number.isInteger(tableNumber) || tableNumber <= 0) {
+  if (!tableToken) {
     throw createError({
       statusCode: 400,
       statusMessage: "Table is required. Scan the QR code again.",
@@ -44,7 +44,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const table = await getTableByNumber(client, menu.restaurant.id, tableNumber)
+  const table = await getTableByToken(client, menu.restaurant.id, tableToken)
   if (!table) {
     throw createError({
       statusCode: 404,

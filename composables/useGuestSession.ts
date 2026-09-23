@@ -9,6 +9,7 @@ export interface GuestSession {
   slug: string
   tableNumber: number
   tableId: string
+  tableToken: string
   restaurantName: string
 }
 
@@ -24,6 +25,8 @@ function isGuestSession(value: unknown): value is GuestSession {
     Number.isInteger(row.tableNumber) &&
     row.tableNumber > 0 &&
     typeof row.tableId === "string" &&
+    typeof row.tableToken === "string" &&
+    /^[a-f0-9]{64}$/.test(row.tableToken) &&
     typeof row.restaurantName === "string"
   )
 }
@@ -74,17 +77,17 @@ export function useGuestSession() {
     writeStorage(null)
   }
 
-  /** Prefer ?table= for this slug; otherwise reuse a stored session for the same slug. */
-  function resolveTableNumber(
+  /** Prefer ?table=<sha> for this slug; otherwise reuse a stored session for the same slug. */
+  function resolveTableToken(
     slug: string,
-    queryTable: number | null,
-  ): number | null {
-    if (queryTable != null) {
-      return queryTable
+    queryToken: string | null,
+  ): string | null {
+    if (queryToken) {
+      return queryToken
     }
     const stored = session.value ?? readStorage()
     if (stored && stored.slug === slug) {
-      return stored.tableNumber
+      return stored.tableToken
     }
     return null
   }
@@ -94,6 +97,6 @@ export function useGuestSession() {
     loadFromStorage,
     saveSession,
     clearSession,
-    resolveTableNumber,
+    resolveTableToken,
   }
 }
