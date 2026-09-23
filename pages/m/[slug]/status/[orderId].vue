@@ -40,6 +40,7 @@ const payPath = computed(() => ({
 }))
 
 const isCash = computed(() => order.value?.payment_method === "cash_at_table")
+const isPaid = computed(() => order.value?.payment_status === "paid")
 const needsOnlinePayment = computed(
   () =>
     Boolean(order.value) &&
@@ -47,7 +48,17 @@ const needsOnlinePayment = computed(
     order.value!.payment_method !== "cash_at_table",
 )
 
+const statusEyebrow = computed(() => {
+  if (isPaid.value) {
+    return t("guest.orderPaid")
+  }
+  return t("guest.orderPending")
+})
+
 const statusHint = computed(() => {
+  if (isPaid.value) {
+    return t("guest.orderPaidHint")
+  }
   if (isCash.value) {
     return t("guest.cashKitchenHint")
   }
@@ -104,7 +115,7 @@ onMounted(async () => {
     <div v-else class="space-y-5">
       <div>
         <p class="text-xs font-medium uppercase tracking-[0.14em] text-teal-800/70">
-          {{ t("guest.orderPending") }}
+          {{ statusEyebrow }}
         </p>
         <h1 class="mt-1 text-xl font-semibold tracking-tight text-stone-900">
           {{ t("guest.orderPlaced") }}

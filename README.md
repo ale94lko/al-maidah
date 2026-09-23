@@ -57,7 +57,7 @@ Do not commit secrets.
 
 ## How to build it
 
-Each MVP piece is tracked as an issue, in implementation order. AED Google Pay / card / cash checkout closes **MVP-10**.
+Each MVP piece is tracked as an issue, in implementation order. Stripe webhook payment confirmation closes **MVP-11**.
 
 ## Contributing
 

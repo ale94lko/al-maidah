@@ -73,7 +73,9 @@ export const messages = {
       placingOrder: "Placing order…",
       orderPlaced: "Order placed",
       orderPending: "Payment pending",
+      orderPaid: "Paid",
       orderStatusHint: "Your order was sent to the kitchen. Pay at the table or continue to payment later.",
+      orderPaidHint: "Payment confirmed. The kitchen can prepare your order.",
       cashKitchenHint: "Cash at the table — the kitchen has your order. Pay when the bill arrives.",
       onlinePendingHint:
         "Complete Google Pay or card to finish. If you close the sheet, payment stays pending until Stripe confirms (webhook).",
@@ -205,8 +207,10 @@ export const messages = {
       placingOrder: "جاري إرسال الطلب…",
       orderPlaced: "تم تقديم الطلب",
       orderPending: "الدفع معلّق",
+      orderPaid: "مدفوع",
       orderStatusHint:
         "أُرسل طلبك إلى المطبخ. ادفع على الطاولة أو تابع الدفع لاحقًا.",
+      orderPaidHint: "تم تأكيد الدفع. يمكن للمطبخ تحضير طلبك.",
       cashKitchenHint:
         "الدفع نقدًا على الطاولة — المطبخ لديه طلبك. ادفع عند وصول الفاتورة.",
       onlinePendingHint:
