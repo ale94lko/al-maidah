@@ -35,11 +35,11 @@ Thermal printing, offline mode, and buy-now-pay-later gateways are out of the MV
 
 | Route | Who | Purpose |
 | --- | --- | --- |
-| `/m/{slug}` | Guest | Menu and table order |
+| `/m/{slug}` | Guest | Menu and table order (`layouts/client.vue`) |
 | `/m/{slug}/cart` | Guest | Summary, VAT, and payment |
 | `/m/{slug}/status/{orderId}` | Guest | Live status |
-| `/kitchen` | Kitchen | Ticket board |
-| `/admin` | Owner | Statistics |
+| `/kitchen` | Kitchen | Ticket board (`layouts/kitchen.vue`) |
+| `/admin` | Owner | Statistics (`layouts/admin.vue`) |
 | `/admin/menu` | Owner | Menu |
 | `/admin/tables` | Owner | Tables and QR codes |
 
@@ -57,7 +57,7 @@ Do not commit secrets.
 
 ## How to build it
 
-Each MVP piece is tracked as an issue, in implementation order. Owner auth and multi-tenant RLS close **MVP-04**.
+Each MVP piece is tracked as an issue, in implementation order. Guest, kitchen, and admin layouts close **MVP-05**.
 
 ## Contributing
 

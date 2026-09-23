@@ -24,3 +24,13 @@ body {
     Arial,
     sans-serif;
 }
+
+body:has(.kitchen-shell) {
+  background: #09090b;
+  color: #f4f4f5;
+}
+
+.safe-px {
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
