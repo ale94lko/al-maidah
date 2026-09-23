@@ -45,7 +45,7 @@ async function onSubmit() {
       </header>
 
       <div class="flex flex-1 items-center justify-center px-5 py-10 sm:px-8">
-        <div class="w-full max-w-md">
+        <div class="w-full max-w-md rounded-3xl border border-[var(--ink)]/12 bg-white p-6 sm:p-8">
           <div class="mb-8 text-center">
             <img
               src="/logo.png"
