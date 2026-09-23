@@ -402,45 +402,120 @@ async function copyMenuUrl(tableId: string) {
                 <template v-else>
                   <button
                     type="button"
-                    class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
+                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--espresso)]/15 bg-white text-[var(--navy)] transition hover:bg-[var(--paper)] disabled:opacity-50"
                     :disabled="saving"
+                    :aria-label="t('admin.renumber')"
+                    :title="t('admin.renumber')"
                     @click="startRenumber(table.id, table.table_number)"
                   >
-                    {{ t("admin.renumber") }}
+                    <svg
+                      viewBox="0 0 24 24"
+                      class="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
                   </button>
                   <button
                     v-if="!table.open_session"
                     type="button"
-                    class="btn-primary !px-2 !py-1 !text-xs"
+                    class="btn-primary inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !p-0 disabled:opacity-50"
                     :disabled="saving"
+                    :aria-label="t('admin.seatTable')"
+                    :title="t('admin.seatTable')"
                     @click="onSeat(table)"
                   >
-                    {{ t("admin.seatTable") }}
+                    <svg
+                      viewBox="0 0 24 24"
+                      class="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M5 11v8M19 11v8M5 15h14M7 11V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v4"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
                   </button>
                   <template v-else>
                     <button
                       type="button"
-                      class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs font-bold"
+                      class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--espresso)]/15 bg-white text-[var(--navy)] transition hover:bg-[var(--paper)]"
+                      :aria-label="t('admin.viewQr')"
+                      :title="t('admin.viewQr')"
                       @click="openQr(table)"
                     >
-                      {{ t("admin.viewQr") }}
+                      <svg
+                        viewBox="0 0 24 24"
+                        class="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        aria-hidden="true"
+                      >
+                        <rect x="3" y="3" width="7" height="7" rx="1" />
+                        <rect x="14" y="3" width="7" height="7" rx="1" />
+                        <rect x="3" y="14" width="7" height="7" rx="1" />
+                        <path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20h.01" stroke-linecap="round" />
+                      </svg>
                     </button>
                     <button
                       type="button"
-                      class="btn-warning !px-2 !py-1 !text-xs"
+                      class="btn-warning inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !p-0 disabled:opacity-50"
                       :disabled="saving"
+                      :aria-label="t('admin.closeTableSession')"
+                      :title="t('admin.closeTableSession')"
                       @click="onCloseSession(table)"
                     >
-                      {{ t("admin.closeTableSession") }}
+                      <svg
+                        viewBox="0 0 24 24"
+                        class="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
                     </button>
                   </template>
                   <button
                     type="button"
-                    class="btn-danger !px-2 !py-1 !text-xs"
+                    class="btn-danger inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !p-0 disabled:opacity-50"
                     :disabled="saving"
+                    :aria-label="t('admin.removeTable')"
+                    :title="t('admin.removeTable')"
                     @click="onRemove(table.id, table.table_number)"
                   >
-                    {{ t("admin.removeTable") }}
+                    <svg
+                      viewBox="0 0 24 24"
+                      class="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path d="M10 11v6M14 11v6" stroke-linecap="round" />
+                    </svg>
                   </button>
                 </template>
               </div>
