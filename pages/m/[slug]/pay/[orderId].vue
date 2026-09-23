@@ -145,7 +145,6 @@ onMounted(async () => {
         :order-id="order.id"
         :return-url="returnUrl"
         @cancelled="paymentNote = t('guest.paymentCancelled')"
-        @error="(message) => (paymentNote = message)"
       />
 
       <p v-if="paymentNote" class="text-sm font-medium text-amber-900">
