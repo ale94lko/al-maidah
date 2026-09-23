@@ -92,9 +92,14 @@ test("RLS is enabled and orders have no open anon write policy", () => {
   const sql = loadMigrationSql()
   assert.match(sql, /alter table public\.orders enable row level security/i)
   assert.match(sql, /revoke all on table public\.orders from anon/i)
+  // Avoid cross-policy false positives from concatenated migrations.
   assert.doesNotMatch(
     sql,
-    /create policy[\s\S]*on public\.orders[\s\S]*for insert[\s\S]*to anon/i,
+    /create policy\s+\w+\s+on\s+public\.orders\s+for\s+insert\s+to\s+anon\b/i,
+  )
+  assert.doesNotMatch(
+    sql,
+    /create policy\s+\w+\s+on\s+public\.orders\s+for\s+update\s+to\s+anon\b/i,
   )
 })
 

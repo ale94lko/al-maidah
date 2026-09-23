@@ -114,7 +114,7 @@ export async function createGuestOrder(
 
   const { data: table, error: tableError } = await client
     .from("tables")
-    .select("id, restaurant_id, table_number")
+    .select("id, restaurant_id, table_number, is_active")
     .eq("id", tableId)
     .maybeSingle()
 
@@ -124,7 +124,7 @@ export async function createGuestOrder(
       statusMessage: `Failed to load table: ${tableError.message}`,
     })
   }
-  if (!table || table.restaurant_id !== restaurant.id) {
+  if (!table || table.restaurant_id !== restaurant.id || table.is_active === false) {
     throw createError({
       statusCode: 400,
       statusMessage: "Table not found for this restaurant. Scan the QR code again.",

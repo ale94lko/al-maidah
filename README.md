@@ -57,7 +57,7 @@ Do not commit secrets.
 
 ## How to build it
 
-Each MVP piece is tracked as an issue, in implementation order. Owner menu management closes **MVP-15**.
+Each MVP piece is tracked as an issue, in implementation order. Tables and printable QR codes close **MVP-16**.
 
 ## Contributing
 

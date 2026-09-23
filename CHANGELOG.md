@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Realtime kitchen ticket board with pending / preparing / ready columns, status transitions, and ready_at timing (MVP-13).
 - Kitchen Start shift sound unlock, visual new-order alerts, and installable tablet PWA for `/kitchen` (MVP-14).
 - Owner menu management: categories and dishes with EN/AR fields, cost/price, modifiers, sold-out, archive, and restaurant-scoped photo uploads (MVP-15).
+- Owner tables with soft-remove, printable bilingual QR sheets via `window.print()`, and menu URLs pinned to `{appUrl}/m/{slug}?table={n}` (MVP-16).
 
 ## [0.1.0] - 2026-09-23
 
