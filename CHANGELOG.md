@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Nuxt 3 application scaffold with TypeScript, Tailwind CSS, runtimeConfig, and a standalone PWA manifest (MVP-01).
 - Supabase multi-tenant schema, RLS deny-by-default for order writes, and demo seed restaurant (MVP-02).
+- Shared domain types plus browser (anon) and server (service role) Supabase clients with restaurant/menu helpers (MVP-03).
 
 ## [0.1.0] - 2026-09-23
 
