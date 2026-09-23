@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/ale94lko/al-maidah/actions/workflows/ci.yml/badge.svg)](https://github.com/ale94lko/al-maidah/actions/workflows/ci.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/ale94lko/al-maidah/badge)](https://scorecard.dev/viewer/?uri=github.com/ale94lko/al-maidah)
-[![OpenSSF Best Practices](https://img.shields.io/badge/OpenSSF_Best_Practices-register_to_earn_passing-yellow?logo=openssf)](docs/OPENSSF_BEST_PRACTICES.md)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/14770/badge)](https://www.bestpractices.dev/projects/14770)
 [![Repo Health](https://api.gitscope.dev/api/badges/ale94lko/al-maidah/health.svg)](https://gitscope.dev/badges)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
