@@ -12,8 +12,11 @@ function read(path) {
 test("orders realtime migration publishes kitchen updates", () => {
   const path = "supabase/migrations/20260923180000_orders_realtime.sql"
   assert.ok(existsSync(resolve(root, path)))
-  assert.match(read(path), /supabase_realtime/)
-  assert.match(read(path), /public\.orders/)
+  const sql = read(path)
+  assert.match(sql, /supabase_realtime/)
+  assert.match(sql, /public\.orders/)
+  assert.match(sql, /create publication supabase_realtime|pg_publication/)
+  assert.match(sql, /pg_publication_tables|add table public\.orders/)
 })
 
 test("kitchen helpers filter cash or paid and set ready_at", () => {
