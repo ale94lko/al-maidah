@@ -4,10 +4,10 @@ const { signOut } = useAuth()
 const { t } = useAppI18n()
 
 const links = computed(() => [
-  { to: "/admin", label: t("admin.statistics"), match: /^\/admin\/?$/, icon: "chart" },
   { to: "/admin/orders", label: t("admin.orders"), match: /^\/admin\/orders/, icon: "orders" },
   { to: "/admin/menu", label: t("admin.menu"), match: /^\/admin\/menu/, icon: "menu" },
   { to: "/admin/tables", label: t("admin.tables"), match: /^\/admin\/tables/, icon: "tables" },
+  { to: "/admin", label: t("admin.analytics"), match: /^\/admin\/?$/, icon: "chart" },
   { to: "/admin/settings", label: t("admin.settings"), match: /^\/admin\/settings/, icon: "settings" },
 ])
 

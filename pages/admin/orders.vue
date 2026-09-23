@@ -199,7 +199,6 @@ onMounted(async () => {
 
     <header class="admin-page-hero">
       <div>
-        <p class="eyebrow">{{ t("admin.owner") }}</p>
         <h1>{{ t("admin.ordersTitle") }}</h1>
         <p>{{ t("admin.ordersHint") }}</p>
       </div>

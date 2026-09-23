@@ -2,13 +2,14 @@
 import type { DishFormState } from "~/composables/useAdminMenu"
 import type { ModifierGroupInput } from "~/types"
 import { extractApiErrorMessage } from "~/utils/errors"
+import { localizedName } from "~/utils/localize"
 
 definePageMeta({
   layout: "admin",
 })
 
 const { refreshSession } = useAuth()
-const { t } = useAppI18n()
+const { t, locale } = useAppI18n()
 const {
   restaurants,
   restaurantId,
@@ -40,7 +41,35 @@ const {
 const ready = ref(false)
 const newCategoryEn = ref("")
 const newCategoryAr = ref("")
+const editingCategory = ref<{
+  id: string
+  name_en: string
+  name_ar: string
+} | null>(null)
 const editingDish = ref<DishFormState | null>(null)
+const pendingPhoto = ref<File | null>(null)
+const pendingPhotoPreview = ref<string | null>(null)
+const photoInputRef = ref<HTMLInputElement | null>(null)
+
+const dishPhotoPreview = computed(() => {
+  if (pendingPhotoPreview.value) {
+    return pendingPhotoPreview.value
+  }
+  return editingDish.value?.photo_url || ""
+})
+
+function clearPendingPhoto() {
+  if (pendingPhotoPreview.value) {
+    URL.revokeObjectURL(pendingPhotoPreview.value)
+  }
+  pendingPhoto.value = null
+  pendingPhotoPreview.value = null
+}
+
+function closeDishModal() {
+  clearPendingPhoto()
+  editingDish.value = null
+}
 
 function menuError(error: unknown) {
   return extractApiErrorMessage(error) || t("admin.menuSaveError")
@@ -81,7 +110,35 @@ async function onAddCategory() {
   }
 }
 
+function openEditCategory(category: { id: string; name_en: string; name_ar: string }) {
+  editingCategory.value = {
+    id: category.id,
+    name_en: category.name_en,
+    name_ar: category.name_ar,
+  }
+}
+
+function cancelEditCategory() {
+  editingCategory.value = null
+}
+
+async function onSaveCategory() {
+  if (!editingCategory.value) {
+    return
+  }
+  try {
+    await patchCategory(editingCategory.value.id, {
+      name_en: editingCategory.value.name_en.trim(),
+      name_ar: editingCategory.value.name_ar.trim(),
+    })
+    editingCategory.value = null
+  } catch (error) {
+    showError(menuError(error))
+  }
+}
+
 function openNewDish(categoryId: string) {
+  clearPendingPhoto()
   editingDish.value = emptyDishForm(categoryId)
 }
 
@@ -92,6 +149,7 @@ function openEditDish(itemId: string) {
   if (!found) {
     return
   }
+  clearPendingPhoto()
   editingDish.value = dishFormFromItem(found)
 }
 
@@ -121,8 +179,11 @@ async function onSaveDish() {
     return
   }
   try {
-    await saveDish(editingDish.value)
-    editingDish.value = null
+    const saved = await saveDish(editingDish.value)
+    if (pendingPhoto.value && saved?.id) {
+      await uploadPhoto(saved.id, pendingPhoto.value)
+    }
+    closeDishModal()
   } catch (error) {
     showError(menuError(error))
   }
@@ -131,17 +192,29 @@ async function onSaveDish() {
 async function onPhotoChange(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
-  if (!file || !editingDish.value?.id) {
-    showError(t("admin.menuPhotoSaveFirst"))
+  if (!file || !editingDish.value) {
     return
   }
   try {
-    await uploadPhoto(editingDish.value.id, file)
-    openEditDish(editingDish.value.id)
+    if (editingDish.value.id) {
+      await uploadPhoto(editingDish.value.id, file)
+      openEditDish(editingDish.value.id)
+    } else {
+      clearPendingPhoto()
+      pendingPhoto.value = file
+      pendingPhotoPreview.value = URL.createObjectURL(file)
+    }
   } catch (error) {
     showError(menuError(error))
   } finally {
     input.value = ""
+  }
+}
+
+function clearSelectedPhoto() {
+  clearPendingPhoto()
+  if (editingDish.value) {
+    editingDish.value.photo_url = ""
   }
 }
 </script>
@@ -157,7 +230,6 @@ async function onPhotoChange(event: Event) {
 
     <header class="admin-page-hero">
       <div>
-        <p class="eyebrow">{{ t("admin.owner") }}</p>
         <h1>{{ t("admin.menuTitle") }}</h1>
         <p>{{ t("admin.menuHint") }}</p>
       </div>
@@ -244,14 +316,69 @@ async function onPhotoChange(event: Event) {
           :class="{ 'opacity-70': category.is_archived }"
         >
           <div class="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <h2 class="text-lg font-semibold text-[var(--espresso)]">
-                {{ category.name_en }}
-                <span class="ms-2 text-sm font-normal text-[var(--muted)]">
-                  {{ category.name_ar }}
-                </span>
-              </h2>
-              <p v-if="category.is_archived" class="text-xs text-amber-700">
+            <div class="min-w-0 flex-1">
+              <form
+                v-if="editingCategory?.id === category.id"
+                class="flex flex-wrap items-end gap-2"
+                @submit.prevent="onSaveCategory"
+              >
+                <label class="flex min-w-[8rem] flex-1 flex-col gap-1 text-xs text-[var(--muted)]">
+                  {{ t("admin.nameEn") }}
+                  <input
+                    v-model="editingCategory.name_en"
+                    required
+                    class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+                  >
+                </label>
+                <label class="flex min-w-[8rem] flex-1 flex-col gap-1 text-xs text-[var(--muted)]">
+                  {{ t("admin.nameAr") }}
+                  <input
+                    v-model="editingCategory.name_ar"
+                    required
+                    dir="rtl"
+                    class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+                  >
+                </label>
+                <button
+                  type="submit"
+                  class="btn-primary !px-3 !py-2 !text-xs disabled:opacity-60"
+                  :disabled="saving"
+                >
+                  {{ saving ? t("admin.saving") : t("admin.save") }}
+                </button>
+                <button
+                  type="button"
+                  class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-xs"
+                  @click="cancelEditCategory"
+                >
+                  {{ t("admin.cancel") }}
+                </button>
+              </form>
+              <div v-else class="flex items-center gap-2">
+                <h2 class="text-lg font-semibold text-[var(--espresso)]">
+                  {{ localizedName(category, locale) }}
+                </h2>
+                <button
+                  type="button"
+                  class="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--espresso)]/15 text-[var(--espresso)] transition hover:bg-white"
+                  :aria-label="t('admin.editCategory')"
+                  :title="t('admin.editCategory')"
+                  @click="openEditCategory(category)"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    class="h-4 w-4"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M13.586 3.586a2 2 0 1 1 2.828 2.828l-.793.793-2.828-2.828.793-.793ZM11.379 5.793 3 14.172V17h2.828l8.38-8.379-2.83-2.828Z"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <p v-if="category.is_archived" class="mt-1 text-xs text-amber-700">
                 {{ t("admin.archived") }}
               </p>
             </div>
@@ -305,26 +432,45 @@ async function onPhotoChange(event: Event) {
               :key="dish.id"
               class="flex flex-wrap items-center justify-between gap-3 py-3"
             >
-              <div class="min-w-0 flex-1">
-                <p class="font-medium text-[var(--espresso)]">
-                  {{ dish.name_en }}
-                  <span
-                    v-if="!dish.is_available"
-                    class="ms-2 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-amber-800"
+              <div class="flex min-w-0 flex-1 items-center gap-3">
+                <div
+                  class="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-[var(--espresso)]/10 bg-[var(--paper)]"
+                >
+                  <img
+                    v-if="dish.photo_url"
+                    :src="dish.photo_url"
+                    :alt="localizedName(dish, locale)"
+                    class="h-full w-full object-cover"
                   >
-                    {{ t("admin.soldOut") }}
-                  </span>
-                  <span
-                    v-if="dish.is_archived"
-                    class="status-chip status-chip-warn ms-2"
+                  <div
+                    v-else
+                    class="flex h-full w-full items-center justify-center text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]"
+                    aria-hidden="true"
                   >
-                    {{ t("admin.archived") }}
-                  </span>
-                </p>
-                <p class="text-xs text-[var(--muted)]">
-                  {{ t("admin.price") }} {{ dish.price }} AED ·
-                  {{ t("admin.cost") }} {{ dish.cost_price }} AED
-                </p>
+                    —
+                  </div>
+                </div>
+                <div class="min-w-0">
+                  <p class="font-medium text-[var(--espresso)]">
+                    {{ localizedName(dish, locale) }}
+                    <span
+                      v-if="!dish.is_available"
+                      class="ms-2 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-amber-800"
+                    >
+                      {{ t("admin.soldOut") }}
+                    </span>
+                    <span
+                      v-if="dish.is_archived"
+                      class="status-chip status-chip-warn ms-2"
+                    >
+                      {{ t("admin.archived") }}
+                    </span>
+                  </p>
+                  <p class="text-xs text-[var(--muted)]">
+                    {{ t("admin.price") }} {{ dish.price }} {{ t("common.currencyAed") }} ·
+                    {{ t("admin.cost") }} {{ dish.cost_price }} {{ t("common.currencyAed") }}
+                  </p>
+                </div>
               </div>
               <div class="flex flex-wrap gap-2">
                 <button
@@ -399,13 +545,14 @@ async function onPhotoChange(event: Event) {
 
     <div
       v-if="editingDish"
-      class="fixed inset-0 z-40 flex items-end justify-center bg-[var(--ink)]/45 p-4 sm:items-center"
+      class="fixed inset-0 z-40 flex items-end justify-center overflow-y-auto bg-[var(--ink)]/45 p-4 sm:items-center sm:p-6"
       role="dialog"
       aria-modal="true"
     >
       <div
-        class="max-h-[90dvh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-[var(--ivory)] p-5 shadow-xl"
+        class="my-auto w-full max-w-2xl overflow-hidden rounded-2xl border border-[var(--ink)]/15 bg-[var(--ivory)] shadow-xl"
       >
+        <div class="max-h-[min(90dvh,52rem)] overflow-y-auto p-5">
         <div class="flex items-start justify-between gap-3">
           <h2 class="text-xl font-semibold text-[var(--espresso)]">
             {{
@@ -415,7 +562,7 @@ async function onPhotoChange(event: Event) {
           <button
             type="button"
             class="text-sm text-[var(--muted)]"
-            @click="editingDish = null"
+            @click="closeDishModal"
           >
             {{ t("admin.cancel") }}
           </button>
@@ -458,7 +605,7 @@ async function onPhotoChange(event: Event) {
               />
             </label>
             <label class="flex flex-col gap-1 text-xs text-[var(--muted)]">
-              {{ t("admin.price") }} (AED)
+              {{ t("admin.price") }} ({{ t("common.currencyAed") }})
               <input
                 v-model="editingDish.price"
                 required
@@ -469,7 +616,7 @@ async function onPhotoChange(event: Event) {
               >
             </label>
             <label class="flex flex-col gap-1 text-xs text-[var(--muted)]">
-              {{ t("admin.cost") }} (AED)
+              {{ t("admin.cost") }} ({{ t("common.currencyAed") }})
               <input
                 v-model="editingDish.cost_price"
                 required
@@ -500,25 +647,61 @@ async function onPhotoChange(event: Event) {
             </label>
           </div>
 
-          <label class="flex flex-col gap-1 text-xs text-[var(--muted)]">
-            {{ t("admin.photoUrl") }}
-            <input
-              v-model="editingDish.photo_url"
-              class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+          <div class="space-y-2">
+            <p class="text-xs font-bold text-[var(--muted)]">
+              {{ t("admin.uploadPhoto") }}
+            </p>
+            <div
+              class="flex flex-col gap-3 rounded-2xl border border-dashed border-[var(--espresso)]/20 bg-white/60 p-3 sm:flex-row sm:items-center"
             >
-          </label>
-          <label
-            v-if="editingDish.id"
-            class="flex flex-col gap-1 text-xs text-[var(--muted)]"
-          >
-            {{ t("admin.uploadPhoto") }}
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif"
-              class="text-sm"
-              @change="onPhotoChange"
-            >
-          </label>
+              <div
+                class="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[var(--espresso)]/10 bg-[var(--paper)]"
+              >
+                <img
+                  v-if="dishPhotoPreview"
+                  :src="dishPhotoPreview"
+                  alt=""
+                  class="h-full w-full object-cover"
+                >
+                <span v-else class="px-2 text-center text-[10px] text-[var(--muted)]">
+                  {{ t("admin.photoHint") }}
+                </span>
+              </div>
+              <div class="flex min-w-0 flex-1 flex-col gap-2">
+                <input
+                  ref="photoInputRef"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  class="sr-only"
+                  @change="onPhotoChange"
+                >
+                <div class="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    class="rounded-2xl border border-[var(--espresso)]/15 bg-white px-3 py-2 text-sm font-bold text-[var(--ink)]"
+                    @click="photoInputRef?.click()"
+                  >
+                    {{ dishPhotoPreview ? t("admin.changePhoto") : t("admin.uploadPhoto") }}
+                  </button>
+                  <button
+                    v-if="dishPhotoPreview"
+                    type="button"
+                    class="rounded-2xl px-3 py-2 text-sm font-bold text-rose-700"
+                    @click="clearSelectedPhoto"
+                  >
+                    {{ t("admin.removePhoto") }}
+                  </button>
+                </div>
+                <label class="flex flex-col gap-1 text-xs text-[var(--muted)]">
+                  {{ t("admin.photoUrl") }}
+                  <input
+                    v-model="editingDish.photo_url"
+                    class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+                  >
+                </label>
+              </div>
+            </div>
+          </div>
 
           <div class="space-y-3 border-t border-[var(--espresso)]/10 pt-3">
             <div class="flex items-center justify-between">
@@ -629,7 +812,7 @@ async function onPhotoChange(event: Event) {
             <button
               type="button"
               class="rounded-2xl border border-[var(--espresso)]/15 px-4 py-2 text-sm"
-              @click="editingDish = null"
+              @click="closeDishModal"
             >
               {{ t("admin.cancel") }}
             </button>
@@ -642,6 +825,7 @@ async function onPhotoChange(event: Event) {
             </button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   </div>

@@ -30,10 +30,7 @@ const accentColor = computed(() => {
       class="flex items-center justify-between gap-2 border-b pb-2"
       :style="{ borderColor: `color-mix(in srgb, ${accentColor} 35%, transparent)` }"
     >
-      <h2
-        class="text-sm font-bold uppercase tracking-[0.16em]"
-        :style="{ color: accentColor }"
-      >
+      <h2 class="text-sm font-bold uppercase tracking-[0.16em] text-[var(--ink)]">
         {{ title }}
       </h2>
       <span
