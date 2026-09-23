@@ -42,12 +42,12 @@ test("scaffold folders required by MVP-01 exist", () => {
   }
 })
 
-test("landing page reflects the shipped product, not scaffold copy", () => {
+test("root redirects to owner login instead of a marketing landing", () => {
   const page = readFileSync(resolve(root, "pages/index.vue"), "utf8")
+  const config = readFileSync(resolve(root, "nuxt.config.ts"), "utf8")
   assert.doesNotMatch(page, /Scaffold ready/)
-  assert.doesNotMatch(page, /application shell/)
-  assert.match(page, /font-display/)
-  assert.match(page, /Al-Maidah/)
-  assert.match(page, /\/m\/demo\?table=[a-f0-9]{64}/)
+  assert.doesNotMatch(page, /landing-shell/)
   assert.match(page, /\/admin\/login/)
+  assert.match(page, /navigateTo/)
+  assert.match(config, /["']\/["']\s*:\s*\{\s*redirect:\s*["']\/admin\/login["']/)
 })
