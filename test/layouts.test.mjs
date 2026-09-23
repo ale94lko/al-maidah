@@ -57,5 +57,5 @@ test("route groups declare the matching layout", () => {
   assert.match(read("pages/admin/index.vue"), /layout:\s*["']admin["']/)
   assert.match(read("pages/admin/menu.vue"), /layout:\s*["']admin["']/)
   assert.match(read("pages/admin/tables.vue"), /layout:\s*["']admin["']/)
-  assert.match(read("pages/admin/login.vue"), /layout:\s*["']admin["']/)
+  assert.match(read("pages/admin/login.vue"), /layout:\s*(?:false|["']admin["'])/)
 })

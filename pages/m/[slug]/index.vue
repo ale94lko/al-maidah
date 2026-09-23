@@ -249,31 +249,32 @@ onMounted(async () => {
       :title="errorTitle"
       :description="errorDescription"
     />
-    <div v-else class="space-y-6">
-      <p class="text-sm leading-relaxed text-[var(--muted)]">
-        {{ t("guest.shellIntro", { name: restaurantName }) }}
-      </p>
+    <div v-else class="space-y-5">
+      <div class="rounded-3xl bg-[var(--ink)] px-4 py-4 text-white shadow-lg shadow-black/10">
+        <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[var(--citrus)]">
+          {{ restaurantName }}
+        </p>
+        <p class="mt-1 text-sm leading-relaxed text-white/75">
+          {{ t("guest.shellIntro", { name: restaurantName }) }}
+        </p>
+      </div>
 
-      <div class="surface-card space-y-3 !rounded-3xl !p-4">
+      <div class="space-y-3 rounded-3xl border border-[var(--ink)]/8 bg-white p-3 shadow-sm">
         <label class="block">
           <span class="sr-only">{{ t("guest.searchPlaceholder") }}</span>
           <input
             v-model="searchQuery"
             type="search"
             :placeholder="t('guest.searchPlaceholder')"
-            class="w-full rounded-2xl border border-[var(--ink)]/10 bg-[var(--paper)] px-4 py-2.5 text-sm text-[var(--ink)] outline-none ring-[var(--herb)]/25 placeholder:text-[var(--muted)] focus:ring-2"
-          />
+            class="field-input !bg-[var(--paper)]"
+          >
         </label>
 
-        <div class="flex flex-wrap items-center gap-2">
+        <div class="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
           <button
             type="button"
-            class="rounded-2xl border px-3 py-1.5 text-xs font-bold transition"
-            :class="
-              vegetarianOnly
-                ? 'border-[var(--herb)] bg-[var(--herb)] text-white'
-                : 'border-[var(--ink)]/10 bg-white text-[var(--ink)]'
-            "
+            class="category-chip"
+            :class="{ 'is-active': vegetarianOnly }"
             @click="vegetarianOnly = !vegetarianOnly"
           >
             {{ t("guest.vegetarianOnly") }}
@@ -282,12 +283,8 @@ onMounted(async () => {
             v-for="allergen in allergenOptions"
             :key="allergen"
             type="button"
-            class="rounded-2xl border px-3 py-1.5 text-xs font-bold capitalize transition"
-            :class="
-              excludedAllergens.includes(allergen)
-                ? 'border-[var(--chili)] bg-[var(--chili)] text-white'
-                : 'border-[var(--ink)]/10 bg-white text-[var(--ink)]'
-            "
+            class="category-chip capitalize"
+            :class="{ 'is-active': excludedAllergens.includes(allergen) }"
             :aria-pressed="excludedAllergens.includes(allergen)"
             @click="toggleAllergen(allergen)"
           >
@@ -296,7 +293,7 @@ onMounted(async () => {
           <button
             v-if="hasActiveFilters"
             type="button"
-            class="rounded-2xl border border-[var(--ink)]/10 px-3 py-1.5 text-xs font-semibold text-[var(--muted)]"
+            class="category-chip !border-transparent !bg-[var(--paper-deep)] !text-[var(--muted)]"
             @click="clearFilters"
           >
             {{ t("guest.clearFilters") }}
@@ -315,14 +312,35 @@ onMounted(async () => {
         :description="t('guest.noMatchesHint')"
       />
 
+      <nav
+        v-if="dishesByCategory.length"
+        class="-mx-1 sticky top-[5.75rem] z-10 flex gap-2 overflow-x-auto bg-[var(--paper)]/95 px-1 py-2 backdrop-blur"
+        aria-label="Categories"
+      >
+        <a
+          v-for="group in dishesByCategory"
+          :key="`nav-${group.category.id}`"
+          class="category-chip"
+          :href="`#cat-${group.category.id}`"
+        >
+          {{ localizedName(group.category, locale) }}
+        </a>
+      </nav>
+
       <section
         v-for="group in dishesByCategory"
+        :id="`cat-${group.category.id}`"
         :key="group.category.id"
-        class="space-y-3"
+        class="scroll-mt-36 space-y-3"
       >
-        <h2 class="font-display text-2xl font-bold tracking-tight text-[var(--ink)]">
-          {{ localizedName(group.category, locale) }}
-        </h2>
+        <div class="flex items-end justify-between gap-3">
+          <h2 class="font-display text-2xl font-extrabold tracking-tight text-[var(--ink)]">
+            {{ localizedName(group.category, locale) }}
+          </h2>
+          <span class="rounded-xl bg-[var(--citrus)]/30 px-2 py-0.5 text-[11px] font-extrabold text-[var(--ink)]">
+            {{ group.dishes.length }}
+          </span>
+        </div>
         <ul class="space-y-3">
           <li
             v-for="dish in group.dishes"
@@ -330,12 +348,9 @@ onMounted(async () => {
             class="dish-row"
             :class="{ 'opacity-70': !dish.is_available }"
           >
-            <NuxtLink
-              :to="dishPath(dish.id)"
-              class="flex"
-            >
+            <NuxtLink :to="dishPath(dish.id)" class="flex">
               <div
-                class="relative h-28 w-28 shrink-0 overflow-hidden bg-[var(--herb)]/10 sm:h-32 sm:w-32"
+                class="relative h-28 w-28 shrink-0 overflow-hidden bg-gradient-to-br from-[var(--chili)]/15 via-[var(--herb)]/15 to-[var(--citrus)]/20 sm:h-32 sm:w-32"
               >
                 <img
                   v-if="dish.photo_url"
@@ -343,17 +358,17 @@ onMounted(async () => {
                   :alt="localizedName(dish, locale)"
                   class="h-full w-full object-cover"
                   loading="lazy"
-                />
+                >
                 <div
                   v-else
-                  class="font-display flex h-full w-full items-center justify-center text-xs font-bold text-[var(--herb)]/40"
+                  class="font-display flex h-full w-full items-center justify-center text-xs font-extrabold text-[var(--herb)]/45"
                   aria-hidden="true"
                 >
                   Al-Maidah
                 </div>
                 <span
                   v-if="!dish.is_available"
-                  class="absolute inset-x-2 bottom-2 rounded-xl bg-[var(--ink)]/90 px-2 py-1 text-center text-[10px] font-bold uppercase tracking-wide text-white"
+                  class="absolute inset-x-2 bottom-2 rounded-xl bg-[var(--ink)]/90 px-2 py-1 text-center text-[10px] font-extrabold uppercase tracking-wide text-white"
                 >
                   {{ t("guest.soldOut") }}
                 </span>
@@ -361,7 +376,7 @@ onMounted(async () => {
               <div class="flex min-w-0 flex-1 flex-col gap-2 p-3.5">
                 <div class="flex items-start justify-between gap-2">
                   <div class="min-w-0">
-                    <p class="font-bold text-[var(--ink)]">
+                    <p class="font-extrabold text-[var(--ink)]">
                       {{ localizedName(dish, locale) }}
                     </p>
                     <p
@@ -371,29 +386,23 @@ onMounted(async () => {
                       {{ localizedDescription(dish, locale) }}
                     </p>
                   </div>
-                  <p class="shrink-0 font-mono text-sm font-bold text-[var(--chili)]">
+                  <p class="shrink-0 rounded-xl bg-[var(--chili)]/10 px-2 py-1 font-mono text-sm font-extrabold text-[var(--chili)]">
                     {{ formatPrice(dish.price) }}
                   </p>
                 </div>
                 <div class="mt-auto flex flex-wrap gap-1.5">
                   <span
                     v-if="dish.is_vegetarian"
-                    class="rounded-xl bg-[var(--herb)]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--herb-deep)]"
+                    class="rounded-xl bg-[var(--herb)]/15 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-[var(--herb-deep)]"
                   >
                     {{ t("guest.vegetarian") }}
                   </span>
                   <span
                     v-for="allergen in dish.allergens"
                     :key="`${dish.id}-${allergen}`"
-                    class="rounded-xl bg-[var(--citrus)]/25 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--ink)]"
+                    class="rounded-xl bg-[var(--citrus)]/30 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-[var(--ink)]"
                   >
                     {{ allergen }}
-                  </span>
-                  <span
-                    v-if="!dish.is_available"
-                    class="rounded-xl bg-[var(--ink)]/8 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--ink)]"
-                  >
-                    {{ t("guest.soldOut") }}
                   </span>
                 </div>
               </div>
