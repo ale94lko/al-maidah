@@ -8,26 +8,28 @@ const options: Array<{ value: AppLocale; labelKey: string }> = [
   { value: "ar", labelKey: "common.arabic" },
 ]
 
-function onChange(event: Event) {
-  const value = (event.target as HTMLSelectElement).value
-  if (value === "en" || value === "ar") {
-    setLocale(value)
-  }
+function pick(value: AppLocale) {
+  setLocale(value)
 }
 </script>
 
 <template>
-  <label class="inline-flex items-center gap-2 text-xs font-medium">
-    <span class="sr-only">{{ t("common.language") }}</span>
-    <select
-      class="rounded-2xl border border-[var(--espresso)]/15 bg-[var(--surface)] px-2 py-1.5 text-[var(--espresso)]"
-      :value="locale"
-      :aria-label="t('common.language')"
-      @change="onChange"
+  <div
+    class="lang-segment"
+    role="group"
+    :aria-label="t('common.language')"
+  >
+    <button
+      v-for="option in options"
+      :key="option.value"
+      type="button"
+      class="min-w-[2.75rem]"
+      :class="{ 'is-active': locale === option.value }"
+      :aria-pressed="locale === option.value"
+      @click="pick(option.value)"
     >
-      <option v-for="option in options" :key="option.value" :value="option.value">
-        {{ t(option.labelKey) }}
-      </option>
-    </select>
-  </label>
+      {{ option.value === "en" ? "EN" : "AR" }}
+      <span class="sr-only">{{ t(option.labelKey) }}</span>
+    </button>
+  </div>
 </template>

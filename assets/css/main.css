@@ -202,6 +202,148 @@ body:has(.kitchen-shell) {
     border-color: rgba(245, 250, 243, 0.1);
     background: var(--kitchen-panel);
   }
+
+  .admin-shell {
+    background:
+      radial-gradient(ellipse 50% 40% at 100% 0%, rgba(250, 176, 5, 0.14), transparent 50%),
+      radial-gradient(ellipse 45% 35% at 0% 100%, rgba(47, 158, 68, 0.12), transparent 50%),
+      var(--paper);
+  }
+
+  .admin-workspace {
+    @apply flex min-h-0 flex-1 flex-col overflow-hidden border bg-white;
+    border-color: color-mix(in srgb, var(--ink) 8%, transparent);
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 50px -30px rgba(16, 32, 24, 0.35);
+  }
+
+  .admin-topbar {
+    @apply flex items-center justify-between gap-3 border-b px-5 py-3.5 sm:px-6;
+    border-color: color-mix(in srgb, var(--ink) 8%, transparent);
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--herb) 6%, white),
+      white 40%,
+      color-mix(in srgb, var(--citrus) 8%, white)
+    );
+  }
+
+  .admin-page-hero {
+    @apply mb-6 flex flex-wrap items-end justify-between gap-4 border-b pb-5;
+    border-color: color-mix(in srgb, var(--ink) 8%, transparent);
+  }
+
+  .admin-page-hero h1 {
+    @apply font-display text-3xl font-bold tracking-tight text-[var(--ink)] sm:text-4xl;
+  }
+
+  .admin-page-hero p {
+    @apply mt-1.5 max-w-xl text-sm leading-relaxed text-[var(--muted)];
+  }
+
+  .admin-panel {
+    @apply overflow-hidden rounded-3xl border bg-white;
+    border-color: color-mix(in srgb, var(--ink) 8%, transparent);
+  }
+
+  .admin-panel-head {
+    @apply flex items-center justify-between gap-3 border-b px-5 py-4;
+    border-color: color-mix(in srgb, var(--ink) 6%, transparent);
+    background: color-mix(in srgb, var(--paper) 70%, white);
+  }
+
+  .admin-panel-body {
+    @apply p-5 sm:p-6;
+  }
+
+  .admin-split {
+    @apply grid gap-5 lg:grid-cols-[minmax(16rem,0.9fr)_minmax(0,1.4fr)];
+  }
+
+  .field-label {
+    @apply mb-1.5 block text-sm font-bold text-[var(--ink)];
+  }
+
+  .field-input {
+    @apply w-full rounded-2xl border bg-[var(--paper)] px-3.5 py-2.5 text-sm text-[var(--ink)] outline-none transition;
+    border-color: color-mix(in srgb, var(--ink) 12%, transparent);
+  }
+
+  .field-input:focus {
+    border-color: var(--herb);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--herb) 20%, transparent);
+  }
+
+  .status-chip {
+    @apply inline-flex items-center rounded-xl px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide;
+  }
+
+  .status-chip-ok {
+    background: color-mix(in srgb, var(--herb) 16%, white);
+    color: var(--herb-deep);
+  }
+
+  .status-chip-warn {
+    background: color-mix(in srgb, var(--citrus) 28%, white);
+    color: #8a5a00;
+  }
+
+  .status-chip-alert {
+    background: color-mix(in srgb, var(--chili) 14%, white);
+    color: var(--chili-deep);
+  }
+
+  .admin-nav-link {
+    @apply flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-semibold transition;
+  }
+
+  .admin-nav-link.is-active {
+    background: color-mix(in srgb, var(--chili) 92%, black);
+    color: #fff;
+    box-shadow: 0 10px 20px -12px rgba(224, 49, 49, 0.7);
+  }
+
+  .admin-nav-link:not(.is-active) {
+    color: rgba(245, 250, 243, 0.72);
+  }
+
+  .admin-nav-link:not(.is-active):hover {
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+  }
+
+  .lang-segment {
+    @apply inline-flex overflow-hidden rounded-2xl border p-0.5 text-xs font-bold;
+    border-color: color-mix(in srgb, var(--ink) 12%, transparent);
+    background: var(--paper);
+  }
+
+  .lang-segment button {
+    @apply rounded-xl px-2.5 py-1.5 transition;
+  }
+
+  .lang-segment button.is-active {
+    background: var(--herb);
+    color: #fff;
+  }
+
+  .lang-segment button:not(.is-active) {
+    color: var(--muted);
+  }
+
+  .admin-shell .lang-segment {
+    border-color: rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  .admin-shell .lang-segment button:not(.is-active) {
+    color: rgba(255, 255, 255, 0.65);
+  }
+
+  .admin-shell .lang-segment button.is-active {
+    background: var(--citrus);
+    color: var(--ink);
+  }
 }
 
 @media print {
@@ -220,6 +362,12 @@ body:has(.kitchen-shell) {
 
   .admin-shell {
     background: white !important;
+  }
+
+  .admin-shell .admin-workspace {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
 
   .admin-shell > .mx-auto {

@@ -110,23 +110,20 @@ function onPrint() {
 
 <template>
   <div>
-    <div class="no-print flex flex-wrap items-start justify-between gap-4">
+    <header class="admin-page-hero no-print">
       <div>
-        <h1 class="font-display text-3xl font-bold tracking-tight text-[var(--espresso)]">
-          {{ t("admin.tablesTitle") }}
-        </h1>
-        <p class="mt-2 text-sm text-[var(--muted)]">
-          {{ t("admin.tablesHint") }}
-        </p>
+        <p class="eyebrow">{{ t("admin.owner") }}</p>
+        <h1>{{ t("admin.tablesTitle") }}</h1>
+        <p>{{ t("admin.tablesHint") }}</p>
       </div>
       <div class="flex flex-wrap items-center gap-3">
         <label
           v-if="restaurants.length > 1"
-          class="flex flex-col gap-1 text-xs text-[var(--muted)]"
+          class="flex min-w-[12rem] flex-col gap-1 text-xs font-bold text-[var(--muted)]"
         >
           {{ t("admin.restaurant") }}
           <select
-            class="rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--espresso)]"
+            class="field-input"
             :value="restaurantId ?? undefined"
             @change="onRestaurantChange"
           >
@@ -148,7 +145,7 @@ function onPrint() {
           {{ t("admin.printQrCodes") }}
         </button>
       </div>
-    </div>
+    </header>
 
     <AppLoadingState
       v-if="!ready || loading"
@@ -170,44 +167,48 @@ function onPrint() {
         :description="t('admin.noRestaurantsHint')"
       />
 
-      <div v-else class="mt-8 space-y-8">
-        <section class="surface-card no-print">
-          <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
-            {{ t("admin.addTable") }}
-          </h2>
-          <form
-            class="mt-3 flex flex-wrap items-end gap-3"
-            @submit.prevent="onCreate"
-          >
-            <label class="flex w-28 flex-col gap-1 text-xs text-[var(--muted)]">
-              {{ t("admin.tableNumber") }}
-              <input
-                v-model.number="newNumber"
-                required
-                type="number"
-                min="1"
-                step="1"
-                class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
-              >
-            </label>
-            <label class="flex min-w-[10rem] flex-1 flex-col gap-1 text-xs text-[var(--muted)]">
-              {{ t("admin.tableLabelOptional") }}
-              <input
-                v-model="newLabel"
-                class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
-              >
-            </label>
-            <button
-              type="submit"
-              class="btn-primary disabled:opacity-60"
-              :disabled="saving"
-            >
+      <div v-else class="mt-2 space-y-5">
+        <section class="admin-panel no-print">
+          <div class="admin-panel-head">
+            <h2 class="font-display text-base font-bold text-[var(--ink)]">
               {{ t("admin.addTable") }}
-            </button>
-          </form>
+            </h2>
+          </div>
+          <div class="admin-panel-body">
+            <form
+              class="flex flex-wrap items-end gap-3"
+              @submit.prevent="onCreate"
+            >
+              <label class="flex w-28 flex-col gap-1 text-xs font-bold text-[var(--muted)]">
+                {{ t("admin.tableNumber") }}
+                <input
+                  v-model.number="newNumber"
+                  required
+                  type="number"
+                  min="1"
+                  step="1"
+                  class="field-input"
+                >
+              </label>
+              <label class="flex min-w-[10rem] flex-1 flex-col gap-1 text-xs font-bold text-[var(--muted)]">
+                {{ t("admin.tableLabelOptional") }}
+                <input
+                  v-model="newLabel"
+                  class="field-input"
+                >
+              </label>
+              <button
+                type="submit"
+                class="btn-primary disabled:opacity-60"
+                :disabled="saving"
+              >
+                {{ t("admin.addTable") }}
+              </button>
+            </form>
+          </div>
         </section>
 
-        <section class="surface-card no-print !p-0">
+        <section class="admin-panel no-print !p-0">
           <ul v-if="tables.length" class="divide-y divide-[var(--espresso)]/10">
             <li
               v-for="table in tables"

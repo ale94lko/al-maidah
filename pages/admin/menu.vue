@@ -143,23 +143,20 @@ async function onPhotoChange(event: Event) {
 
 <template>
   <div>
-    <div class="flex flex-wrap items-start justify-between gap-4">
+    <header class="admin-page-hero">
       <div>
-        <h1 class="font-display text-3xl font-bold tracking-tight text-[var(--espresso)]">
-          {{ t("admin.menuTitle") }}
-        </h1>
-        <p class="mt-2 text-sm text-[var(--muted)]">
-          {{ t("admin.menuHint") }}
-        </p>
+        <p class="eyebrow">{{ t("admin.owner") }}</p>
+        <h1>{{ t("admin.menuTitle") }}</h1>
+        <p>{{ t("admin.menuHint") }}</p>
       </div>
       <div class="flex flex-wrap items-center gap-3">
         <label
           v-if="restaurants.length > 1"
-          class="flex flex-col gap-1 text-xs text-[var(--muted)]"
+          class="flex min-w-[12rem] flex-col gap-1 text-xs font-bold text-[var(--muted)]"
         >
           {{ t("admin.restaurant") }}
           <select
-            class="rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--espresso)]"
+            class="field-input"
             :value="restaurantId ?? undefined"
             @change="onRestaurantChange"
           >
@@ -172,12 +169,12 @@ async function onPhotoChange(event: Event) {
             </option>
           </select>
         </label>
-        <label class="flex items-center gap-2 text-sm text-[var(--muted)]">
+        <label class="flex items-center gap-2 rounded-2xl border border-[var(--ink)]/10 bg-white px-3 py-2 text-sm font-semibold text-[var(--ink)]">
           <input v-model="showArchived" type="checkbox" class="rounded" >
           {{ t("admin.showArchived") }}
         </label>
       </div>
-    </div>
+    </header>
 
     <AppLoadingState
       v-if="!ready || loading"

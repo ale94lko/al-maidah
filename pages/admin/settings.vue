@@ -136,22 +136,19 @@ onMounted(async () => {
 
 <template>
   <div>
-    <div class="flex flex-wrap items-start justify-between gap-4">
+    <header class="admin-page-hero">
       <div>
-        <h1 class="font-display text-3xl font-bold tracking-tight text-[var(--espresso)]">
-          {{ t("admin.settingsTitle") }}
-        </h1>
-        <p class="mt-2 text-sm text-[var(--muted)]">
-          {{ t("admin.settingsHint") }}
-        </p>
+        <p class="eyebrow">{{ t("admin.owner") }}</p>
+        <h1>{{ t("admin.settingsTitle") }}</h1>
+        <p>{{ t("admin.settingsHint") }}</p>
       </div>
       <label
         v-if="restaurants.length > 1"
-        class="flex flex-col gap-1 text-xs text-[var(--muted)]"
+        class="flex min-w-[12rem] flex-col gap-1 text-xs font-bold text-[var(--muted)]"
       >
         {{ t("admin.restaurant") }}
         <select
-          class="rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--espresso)]"
+          class="field-input"
           :value="restaurantId ?? undefined"
           @change="onRestaurantChange"
         >
@@ -164,64 +161,123 @@ onMounted(async () => {
           </option>
         </select>
       </label>
-    </div>
+    </header>
 
     <AppLoadingState
       v-if="loading"
-      class="mt-8"
       :label="t('admin.loadingOwner')"
     />
     <template v-else>
-      <p v-if="errorMessage" class="mt-4 text-sm text-rose-700">
+      <p v-if="errorMessage" class="mb-4 text-sm text-rose-700">
         {{ errorMessage }}
       </p>
 
       <div
-        v-if="trnMissing"
-        class="mt-6 rounded-2xl border border-amber-300/80 bg-amber-50 px-4 py-3 text-amber-950"
+        v-if="trnMissing && selected"
+        class="mb-5 flex flex-wrap items-start gap-3 rounded-3xl border border-[var(--citrus)]/40 bg-[color-mix(in_srgb,var(--citrus)_18%,white)] px-5 py-4"
       >
-        <p class="font-semibold">{{ t("admin.trnMissingTitle") }}</p>
-        <p class="mt-1 text-sm leading-relaxed">
-          {{ t("admin.trnMissingHint") }}
-        </p>
+        <span
+          class="mt-0.5 h-2.5 w-2.5 shrink-0 rounded-sm bg-[var(--citrus-deep)]"
+          aria-hidden="true"
+        />
+        <div class="min-w-0 flex-1">
+          <p class="font-bold text-[var(--ink)]">{{ t("admin.trnMissingTitle") }}</p>
+          <p class="mt-1 text-sm leading-relaxed text-[var(--muted)]">
+            {{ t("admin.trnMissingHint") }}
+          </p>
+        </div>
       </div>
 
-      <form
-        v-if="selected"
-        class="surface-card mt-6 max-w-md space-y-4"
-        @submit.prevent="onSave"
-      >
-        <p class="font-semibold text-[var(--espresso)]">
-          {{ selected.name }}
-        </p>
-        <label class="flex flex-col gap-1 text-sm text-[var(--ink)]">
-          {{ t("admin.trnField") }}
-          <input
-            v-model="trnInput"
-            type="text"
-            autocomplete="off"
-            class="rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 font-mono text-sm"
-            :placeholder="t('admin.trnPlaceholder')"
+      <div v-if="selected" class="admin-split">
+        <aside class="admin-panel overflow-hidden">
+          <div
+            class="relative overflow-hidden bg-[var(--ink)] px-5 py-6 text-white"
           >
-        </label>
-        <p class="text-xs text-[var(--muted)]">
-          {{ t("admin.trnFieldHint") }}
-        </p>
-        <p v-if="savedMessage" class="text-sm text-[var(--herb)]">
-          {{ savedMessage }}
-        </p>
-        <button
-          type="submit"
-          class="btn-primary disabled:opacity-60"
-          :disabled="saving"
-        >
-          {{ saving ? t("admin.saving") : t("admin.save") }}
-        </button>
-      </form>
+            <div class="accent-bar max-w-[6rem]" aria-hidden="true">
+              <span /><span /><span />
+            </div>
+            <p class="mt-4 text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--citrus)]">
+              {{ t("admin.restaurant") }}
+            </p>
+            <h2 class="font-display mt-2 text-3xl font-bold tracking-tight">
+              {{ selected.name }}
+            </h2>
+            <p class="mt-2 font-mono text-sm text-white/55">
+              /m/{{ selected.slug }}
+            </p>
+          </div>
+          <div class="admin-panel-body space-y-4">
+            <div class="flex flex-wrap gap-2">
+              <span
+                v-if="!trnMissing"
+                class="status-chip status-chip-ok"
+              >
+                {{ t("admin.trnField") }}
+              </span>
+              <span
+                v-else
+                class="status-chip status-chip-warn"
+              >
+                {{ t("admin.trnMissingTitle") }}
+              </span>
+              <span class="status-chip status-chip-ok">
+                {{ t("admin.owner") }}
+              </span>
+            </div>
+            <dl class="space-y-3 text-sm">
+              <div>
+                <dt class="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">
+                  {{ t("admin.trnField") }}
+                </dt>
+                <dd class="mt-1 font-mono text-[var(--ink)]">
+                  {{ selected.trn || "—" }}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </aside>
+
+        <form class="admin-panel flex flex-col" @submit.prevent="onSave">
+          <div class="admin-panel-head">
+            <div>
+              <h2 class="font-display text-lg font-bold text-[var(--ink)]">
+                {{ t("admin.trnField") }}
+              </h2>
+              <p class="mt-0.5 text-xs text-[var(--muted)]">
+                {{ t("admin.trnFieldHint") }}
+              </p>
+            </div>
+          </div>
+          <div class="admin-panel-body flex flex-1 flex-col gap-5">
+            <label class="block">
+              <span class="field-label">{{ t("admin.trnField") }}</span>
+              <input
+                v-model="trnInput"
+                type="text"
+                autocomplete="off"
+                class="field-input font-mono"
+                :placeholder="t('admin.trnPlaceholder')"
+              >
+            </label>
+            <p v-if="savedMessage" class="text-sm font-semibold text-[var(--herb)]">
+              {{ savedMessage }}
+            </p>
+            <div class="mt-auto flex flex-wrap items-center justify-end gap-3 border-t border-[var(--ink)]/6 pt-5">
+              <button
+                type="submit"
+                class="btn-primary min-w-[8rem] disabled:opacity-60"
+                :disabled="saving"
+              >
+                {{ saving ? t("admin.saving") : t("admin.save") }}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
 
       <AppEmptyState
         v-else
-        class="mt-8"
+        class="mt-2"
         :title="t('admin.noRestaurants')"
         :description="t('admin.noRestaurantsHint')"
       />

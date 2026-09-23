@@ -13,7 +13,7 @@ type MeResponse = {
 
 const RANGES: StatsRange[] = ["today", "week", "month", "last_30_days"]
 
-const { user, refreshSession, accessToken, signOut } = useAuth()
+const { user, refreshSession, accessToken } = useAuth()
 const { t, locale } = useAppI18n()
 
 const restaurants = ref<MeResponse["restaurants"]>([])
@@ -127,32 +127,24 @@ onMounted(async () => {
   }
   await bootstrap()
 })
-
-async function onSignOut() {
-  await signOut()
-  await navigateTo("/admin/login")
-}
 </script>
 
 <template>
   <div>
-    <div class="flex flex-wrap items-start justify-between gap-4">
+    <header class="admin-page-hero">
       <div>
-        <h1 class="font-display text-3xl font-bold tracking-tight text-[var(--espresso)]">
-          {{ t("admin.statsTitle") }}
-        </h1>
-        <p class="mt-2 text-sm text-[var(--muted)]">
-          {{ t("admin.statsHint") }}
-        </p>
+        <p class="eyebrow">{{ t("admin.owner") }}</p>
+        <h1>{{ t("admin.statsTitle") }}</h1>
+        <p>{{ t("admin.statsHint") }}</p>
       </div>
       <div class="flex flex-wrap items-center gap-3">
         <label
           v-if="restaurants.length > 1"
-          class="flex flex-col gap-1 text-xs text-[var(--muted)]"
+          class="flex min-w-[12rem] flex-col gap-1 text-xs font-bold text-[var(--muted)]"
         >
           {{ t("admin.restaurant") }}
           <select
-            class="rounded-lg border border-[var(--espresso)]/20 bg-[var(--surface)] px-3 py-2 text-sm text-[var(--espresso)]"
+            class="field-input"
             :value="restaurantId ?? undefined"
             @change="onRestaurantChange"
           >
@@ -165,18 +157,11 @@ async function onSignOut() {
             </option>
           </select>
         </label>
-        <button
-          type="button"
-          class="rounded-lg border border-[var(--espresso)]/20 px-3 py-1.5 text-sm md:hidden"
-          @click="onSignOut"
-        >
-          {{ t("common.signOut") }}
-        </button>
       </div>
-    </div>
+    </header>
 
     <div
-      class="mt-6 flex flex-wrap gap-2"
+      class="mb-6 flex flex-wrap gap-2"
       role="group"
       :aria-label="t('admin.statsRangeLabel')"
     >
@@ -184,11 +169,11 @@ async function onSignOut() {
         v-for="option in RANGES"
         :key="option"
         type="button"
-        class="rounded-2xl px-3 py-1.5 text-sm font-semibold transition"
+        class="rounded-2xl px-3.5 py-2 text-sm font-bold transition"
         :class="
           range === option
-            ? 'bg-[var(--chili)] text-white'
-            : 'border border-[var(--espresso)]/15 bg-[var(--surface)] text-[var(--espresso)]'
+            ? 'bg-[var(--chili)] text-white shadow-lg shadow-[var(--chili)]/25'
+            : 'border border-[var(--ink)]/10 bg-white text-[var(--ink)] hover:border-[var(--herb)]/40'
         "
         @click="onRangeChange(option)"
       >
@@ -260,84 +245,97 @@ async function onSignOut() {
         </div>
       </div>
 
-      <section class="mt-8 rounded-3xl border border-[var(--ink)]/8 bg-[var(--surface)]/80 p-4">
-        <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
-          {{ t("admin.statsSeriesTitle") }}
-        </h2>
-        <p class="mt-1 text-xs text-[var(--muted)]">
-          {{ t("admin.statsSeriesHint") }}
-        </p>
-        <ul class="mt-4 space-y-2">
-          <li
-            v-for="point in stats.series"
-            :key="point.key"
-            class="grid grid-cols-[4.5rem_1fr_auto] items-center gap-3 text-sm"
-          >
-            <span class="font-mono text-xs text-[var(--muted)]">{{ point.label }}</span>
-            <div class="h-2 overflow-hidden rounded-2xl bg-[var(--ivory-deep)]">
-              <div
-                class="h-full rounded-2xl bg-[var(--herb)]"
-                :style="{ width: barWidth(Number(point.revenue), seriesMax) }"
-              />
-            </div>
-            <span class="font-mono text-xs text-[var(--espresso)]">
-              {{ t("guest.priceAed", { price: point.revenue }) }}
-              <span class="text-[var(--muted)]">({{ point.order_count }})</span>
-            </span>
-          </li>
-        </ul>
-      </section>
-
-      <div class="mt-8 grid gap-6 lg:grid-cols-2">
-        <section class="rounded-3xl border border-[var(--ink)]/8 bg-[var(--surface)]/80 p-4">
-          <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
-            {{ t("admin.statsBestSellers") }}
-          </h2>
-          <AppEmptyState
-            v-if="!stats.best_sellers.length"
-            class="mt-4"
-            :title="t('admin.statsEmpty')"
-            :description="t('admin.statsEmptyHint')"
-          />
-          <ol v-else class="mt-4 space-y-2">
+      <section class="admin-panel mt-6">
+        <div class="admin-panel-head">
+          <div>
+            <h2 class="font-display text-base font-bold text-[var(--ink)]">
+              {{ t("admin.statsSeriesTitle") }}
+            </h2>
+            <p class="mt-0.5 text-xs text-[var(--muted)]">
+              {{ t("admin.statsSeriesHint") }}
+            </p>
+          </div>
+        </div>
+        <div class="admin-panel-body">
+          <ul class="space-y-2.5">
             <li
-              v-for="(dish, index) in stats.best_sellers"
-              :key="dish.menu_item_id || dish.name_en"
-              class="flex items-center justify-between gap-3 text-sm"
+              v-for="point in stats.series"
+              :key="point.key"
+              class="grid grid-cols-[4.5rem_1fr_auto] items-center gap-3 text-sm"
             >
-              <span class="min-w-0 truncate text-[var(--espresso)]">
-                <span class="text-[var(--muted)]">{{ index + 1 }}.</span>
-                {{ localizedName(dish, locale) }}
-              </span>
-              <span class="shrink-0 font-mono text-[var(--espresso)]">
-                ×{{ dish.quantity_sold }}
-              </span>
-            </li>
-          </ol>
-        </section>
-
-        <section class="rounded-3xl border border-[var(--ink)]/8 bg-[var(--surface)]/80 p-4">
-          <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
-            {{ t("admin.statsPeakHours") }}
-          </h2>
-          <ul class="mt-4 space-y-1.5">
-            <li
-              v-for="bucket in stats.peak_hours"
-              :key="bucket.hour"
-              class="grid grid-cols-[3rem_1fr_2rem] items-center gap-2 text-xs"
-            >
-              <span class="font-mono text-[var(--muted)]">
-                {{ String(bucket.hour).padStart(2, "0") }}:00
-              </span>
-              <div class="h-1.5 overflow-hidden rounded-2xl bg-[var(--ivory-deep)]">
+              <span class="font-mono text-xs text-[var(--muted)]">{{ point.label }}</span>
+              <div class="h-2.5 overflow-hidden rounded-xl bg-[var(--paper-deep)]">
                 <div
-                  class="h-full rounded-2xl bg-amber-700/70"
-                  :style="{ width: barWidth(bucket.order_count, peakMax) }"
+                  class="h-full rounded-xl bg-[var(--herb)]"
+                  :style="{ width: barWidth(Number(point.revenue), seriesMax) }"
                 />
               </div>
-              <span class="font-mono text-[var(--ink)]">{{ bucket.order_count }}</span>
+              <span class="font-mono text-xs font-bold text-[var(--ink)]">
+                {{ t("guest.priceAed", { price: point.revenue }) }}
+                <span class="font-normal text-[var(--muted)]">({{ point.order_count }})</span>
+              </span>
             </li>
           </ul>
+        </div>
+      </section>
+
+      <div class="mt-5 grid gap-5 lg:grid-cols-2">
+        <section class="admin-panel">
+          <div class="admin-panel-head">
+            <h2 class="font-display text-base font-bold text-[var(--ink)]">
+              {{ t("admin.statsBestSellers") }}
+            </h2>
+          </div>
+          <div class="admin-panel-body">
+            <AppEmptyState
+              v-if="!stats.best_sellers.length"
+              :title="t('admin.statsEmpty')"
+              :description="t('admin.statsEmptyHint')"
+            />
+            <ol v-else class="space-y-2.5">
+              <li
+                v-for="(dish, index) in stats.best_sellers"
+                :key="dish.menu_item_id || dish.name_en"
+                class="flex items-center justify-between gap-3 text-sm"
+              >
+                <span class="min-w-0 truncate font-semibold text-[var(--ink)]">
+                  <span class="text-[var(--chili)]">{{ index + 1 }}.</span>
+                  {{ localizedName(dish, locale) }}
+                </span>
+                <span class="shrink-0 font-mono font-bold text-[var(--herb)]">
+                  ×{{ dish.quantity_sold }}
+                </span>
+              </li>
+            </ol>
+          </div>
+        </section>
+
+        <section class="admin-panel">
+          <div class="admin-panel-head">
+            <h2 class="font-display text-base font-bold text-[var(--ink)]">
+              {{ t("admin.statsPeakHours") }}
+            </h2>
+          </div>
+          <div class="admin-panel-body">
+            <ul class="space-y-2">
+              <li
+                v-for="bucket in stats.peak_hours"
+                :key="bucket.hour"
+                class="grid grid-cols-[3rem_1fr_2rem] items-center gap-2 text-xs"
+              >
+                <span class="font-mono text-[var(--muted)]">
+                  {{ String(bucket.hour).padStart(2, "0") }}:00
+                </span>
+                <div class="h-2 overflow-hidden rounded-xl bg-[var(--paper-deep)]">
+                  <div
+                    class="h-full rounded-xl bg-[var(--citrus)]"
+                    :style="{ width: barWidth(bucket.order_count, peakMax) }"
+                  />
+                </div>
+                <span class="font-mono font-bold text-[var(--ink)]">{{ bucket.order_count }}</span>
+              </li>
+            </ul>
+          </div>
         </section>
       </div>
 
