@@ -28,7 +28,7 @@ async function onSignOut() {
     <div class="mx-auto flex min-h-dvh w-full max-w-6xl">
       <aside
         v-if="!isAuthPage"
-        class="hidden w-56 shrink-0 flex-col border-e border-teal-900/10 bg-white/70 p-4 md:flex lg:w-64"
+        class="no-print hidden w-56 shrink-0 flex-col border-e border-teal-900/10 bg-white/70 p-4 md:flex lg:w-64"
       >
         <NuxtLink
           to="/admin"
@@ -75,7 +75,7 @@ async function onSignOut() {
 
       <div class="flex min-w-0 flex-1 flex-col pb-20 md:pb-0">
         <header
-          class="sticky top-0 z-20 border-b border-teal-900/10 bg-[var(--sand)]/95 px-4 py-3 backdrop-blur md:px-6"
+          class="no-print sticky top-0 z-20 border-b border-teal-900/10 bg-[var(--sand)]/95 px-4 py-3 backdrop-blur md:px-6"
         >
           <div class="flex items-center justify-between gap-3">
             <div class="min-w-0 md:hidden">
@@ -107,7 +107,7 @@ async function onSignOut() {
 
     <nav
       v-if="!isAuthPage"
-      class="fixed inset-x-0 bottom-0 z-30 border-t border-teal-900/10 bg-white/95 backdrop-blur md:hidden"
+      class="no-print fixed inset-x-0 bottom-0 z-30 border-t border-teal-900/10 bg-white/95 backdrop-blur md:hidden"
       style="padding-bottom: env(safe-area-inset-bottom)"
       :aria-label="t('admin.ownerPanel')"
     >

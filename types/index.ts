@@ -37,6 +37,8 @@ export interface DiningTable {
   restaurant_id: string
   table_number: number
   label: string | null
+  is_active: boolean
+  deactivated_at: string | null
   created_at: string
 }
 

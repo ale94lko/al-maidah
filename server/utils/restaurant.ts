@@ -44,9 +44,10 @@ export async function getTableByNumber(
 ): Promise<DiningTable | null> {
   const { data, error } = await client
     .from("tables")
-    .select("id, restaurant_id, table_number, label, created_at")
+    .select("id, restaurant_id, table_number, label, is_active, deactivated_at, created_at")
     .eq("restaurant_id", restaurantId)
     .eq("table_number", tableNumber)
+    .eq("is_active", true)
     .maybeSingle()
 
   if (error) {

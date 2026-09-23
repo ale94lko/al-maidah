@@ -42,6 +42,7 @@ test("admin layout navigates to statistics, menu, and tables", () => {
   // Mobile bottom nav + desktop sidebar so nav is not clipped.
   assert.match(layout, /md:hidden|md:flex/)
   assert.match(layout, /fixed inset-x-0 bottom-0|bottom-0/)
+  assert.match(layout, /no-print/)
 })
 
 test("shared loading and empty states exist", () => {
