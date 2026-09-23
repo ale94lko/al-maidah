@@ -250,14 +250,9 @@ onMounted(async () => {
       :description="errorDescription"
     />
     <div v-else class="space-y-5">
-      <div class="rounded-3xl bg-[var(--ink)] px-4 py-4 text-white shadow-lg shadow-black/10">
-        <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[var(--citrus)]">
-          {{ restaurantName }}
-        </p>
-        <p class="mt-1 text-sm leading-relaxed text-white/75">
-          {{ t("guest.shellIntro", { name: restaurantName }) }}
-        </p>
-      </div>
+      <p class="text-sm leading-relaxed text-[var(--muted)]">
+        {{ t("guest.shellIntro", { name: restaurantName }) }}
+      </p>
 
       <div class="space-y-3 rounded-3xl border border-[var(--ink)]/8 bg-white p-3 shadow-sm">
         <label class="block">
@@ -314,13 +309,13 @@ onMounted(async () => {
 
       <nav
         v-if="dishesByCategory.length"
-        class="-mx-1 sticky top-[5.75rem] z-10 flex gap-2 overflow-x-auto bg-[var(--paper)]/95 px-1 py-2 backdrop-blur"
+        class="sticky top-[4.25rem] z-10 -mx-4 flex gap-2 overflow-x-auto bg-[var(--nav)] px-4 py-3"
         aria-label="Categories"
       >
         <a
           v-for="group in dishesByCategory"
           :key="`nav-${group.category.id}`"
-          class="category-chip"
+          class="admin-pill"
           :href="`#cat-${group.category.id}`"
         >
           {{ localizedName(group.category, locale) }}

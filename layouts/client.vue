@@ -33,34 +33,29 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="client-shell min-h-dvh bg-[var(--paper)] text-[var(--ink)]">
-    <header class="guest-header sticky top-0 z-20 shadow-lg shadow-black/20">
-      <div
-        class="mx-auto flex w-full max-w-lg items-center justify-between gap-3 px-4 py-4 safe-px"
-      >
-        <div class="min-w-0">
-          <p class="font-display truncate text-xl font-extrabold tracking-tight text-white">
-            {{ venueName }}
-          </p>
-          <div class="mt-1.5 flex flex-wrap items-center gap-2">
-            <span
+  <div class="client-shell min-h-dvh text-[var(--navy)]">
+    <header class="sticky top-0 z-20 border-b border-[var(--navy)]/8 bg-white/70 px-4 py-3 backdrop-blur">
+      <div class="mx-auto flex w-full max-w-lg items-center justify-between gap-3 safe-px">
+        <div class="flex min-w-0 items-center gap-4">
+          <span class="font-display shrink-0 border-e border-[var(--navy)]/10 pe-4 text-xl font-bold text-[var(--gold)]">
+            Al-Maidah
+          </span>
+          <div class="min-w-0">
+            <p
               v-if="tableLabel"
-              class="inline-flex rounded-xl bg-[var(--info)] px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide text-white"
+              class="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--sage-deep)]"
             >
               {{ tableLabel }}
-            </span>
-            <span class="text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--citrus)]">
-              Al-Maidah
-            </span>
+            </p>
+            <p class="truncate text-sm font-bold text-[var(--navy)]">
+              {{ venueName }}
+            </p>
           </div>
         </div>
         <div class="flex shrink-0 items-center gap-2">
           <LanguageSwitcher />
           <slot name="header-actions" />
         </div>
-      </div>
-      <div class="accent-bar" aria-hidden="true">
-        <span /><span /><span />
       </div>
     </header>
 

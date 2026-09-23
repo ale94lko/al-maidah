@@ -12,37 +12,42 @@ async function onSignOut() {
   <div
     class="kitchen-shell flex min-h-dvh flex-col text-[var(--navy)]"
   >
-    <header
-      class="shell-header flex shrink-0 items-center justify-between gap-3 border-b border-[var(--navy)]/8 bg-white/70 px-4 py-3 sm:px-6"
-    >
-      <div class="min-w-0">
-        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--gold)]">
-          {{ t("kitchen.title") }}
-        </p>
-        <p class="font-display truncate text-2xl font-bold tracking-tight text-[var(--navy)]">
-          {{ t("kitchen.ticketBoard") }}
-        </p>
-      </div>
-      <div class="flex shrink-0 items-center gap-3">
-        <LanguageSwitcher />
-        <span
-          v-if="user?.email"
-          class="hidden max-w-[14rem] truncate text-xs text-[var(--muted)] sm:inline"
-        >
-          {{ user.email }}
-        </span>
-        <button
-          type="button"
-          class="rounded-2xl border border-[var(--navy)]/15 bg-white px-3 py-1.5 text-sm font-bold text-[var(--navy)]"
-          @click="onSignOut"
-        >
-          {{ t("common.signOut") }}
-        </button>
+    <header class="shrink-0 border-b border-[var(--navy)]/8 bg-white/70 px-4 py-3 backdrop-blur sm:px-6">
+      <div class="mx-auto flex max-w-[90rem] items-center justify-between gap-4">
+        <div class="flex min-w-0 items-center gap-4">
+          <NuxtLink
+            to="/admin"
+            class="font-display border-e border-[var(--navy)]/10 pe-4 text-xl font-bold text-[var(--gold)]"
+          >
+            Al-Maidah
+          </NuxtLink>
+          <div class="min-w-0">
+            <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--sage-deep)]">
+              {{ t("kitchen.title") }}
+            </p>
+            <p class="truncate text-sm font-bold text-[var(--navy)]">
+              {{ t("kitchen.ticketBoard") }}
+            </p>
+          </div>
+        </div>
+        <div class="flex shrink-0 items-center gap-2">
+          <LanguageSwitcher />
+          <span
+            v-if="user?.email"
+            class="hidden max-w-[14rem] truncate text-xs text-[var(--muted)] lg:inline"
+          >
+            {{ user.email }}
+          </span>
+          <button
+            type="button"
+            class="shrink-0 rounded-full border border-[var(--navy)]/10 bg-white px-3 py-1.5 text-xs font-bold text-[var(--navy)]"
+            @click="onSignOut"
+          >
+            {{ t("common.signOut") }}
+          </button>
+        </div>
       </div>
     </header>
-    <div class="accent-bar shrink-0" aria-hidden="true">
-      <span /><span /><span />
-    </div>
 
     <main class="min-h-0 flex-1 overflow-auto p-4 sm:p-6">
       <slot />
