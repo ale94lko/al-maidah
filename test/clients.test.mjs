@@ -37,6 +37,22 @@ test("browser client uses anon key only", () => {
   assert.match(client, /import\.meta\.server/)
 })
 
+test("useAuth is safe to call during SSR setup", () => {
+  const auth = read("composables/useAuth.ts")
+  assert.match(auth, /import\.meta\.server/)
+  assert.doesNotMatch(
+    auth,
+    /export function useAuth\(\) \{\s*const supabase = useSupabaseClient\(\)/,
+  )
+  assert.match(auth, /browserClient|useSupabaseClient\(\)/)
+  const kitchen = read("composables/useKitchenBoard.ts")
+  assert.match(kitchen, /browserSupabase|function browserSupabase/)
+  assert.doesNotMatch(
+    kitchen,
+    /const \{ accessToken, refreshSession \} = useAuth\(\)\s*\n\s*const supabase = useSupabaseClient\(\)/,
+  )
+})
+
 test("service role client lives only under server/", () => {
   assert.ok(existsSync(resolve(root, "server/utils/supabase.ts")))
   const server = read("server/utils/supabase.ts")

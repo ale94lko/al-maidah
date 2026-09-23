@@ -1,13 +1,24 @@
 import type { Session, User } from "@supabase/supabase-js"
 
+/**
+ * Owner auth helpers. Safe to call during SSR: session state is read/written
+ * only in the browser, where the Supabase anon client exists.
+ */
 export function useAuth() {
-  const supabase = useSupabaseClient()
   const user = useState<User | null>("auth-user", () => null)
   const session = useState<Session | null>("auth-session", () => null)
   const loading = useState("auth-loading", () => true)
 
+  function browserClient() {
+    return useSupabaseClient()
+  }
+
   async function refreshSession() {
-    const { data, error } = await supabase.auth.getSession()
+    if (import.meta.server) {
+      loading.value = false
+      return null
+    }
+    const { data, error } = await browserClient().auth.getSession()
     if (error) {
       user.value = null
       session.value = null
@@ -21,7 +32,10 @@ export function useAuth() {
   }
 
   async function signIn(email: string, password: string) {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    if (import.meta.server) {
+      throw new Error("Sign in is only available in the browser")
+    }
+    const { data, error } = await browserClient().auth.signInWithPassword({
       email,
       password,
     })
@@ -50,8 +64,8 @@ export function useAuth() {
         body: payload,
       })
 
-      if (response.session) {
-        await supabase.auth.setSession({
+      if (response.session && import.meta.client) {
+        await browserClient().auth.setSession({
           access_token: response.session.access_token,
           refresh_token: response.session.refresh_token,
         })
@@ -76,7 +90,9 @@ export function useAuth() {
   }
 
   async function signOut() {
-    await supabase.auth.signOut()
+    if (import.meta.client) {
+      await browserClient().auth.signOut()
+    }
     session.value = null
     user.value = null
   }
