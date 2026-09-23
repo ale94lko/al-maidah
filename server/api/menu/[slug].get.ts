@@ -1,7 +1,6 @@
 /**
  * Public guest menu for a restaurant slug.
- * Uses the service-role client on the server so reads work before MVP-04 RLS.
- * Response never includes cost_price.
+ * Uses the anon key so reads respect RLS; response never includes cost_price.
  */
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, "slug")
@@ -16,14 +15,13 @@ export default defineEventHandler(async (event) => {
       ? Number(tableNumberRaw)
       : NaN
 
-  const client = createServiceRoleClient()
+  const client = createAnonServerClient()
   const menu = await getPublicMenuBySlug(client, slug)
 
   if (!menu) {
     throw createError({ statusCode: 404, statusMessage: "Restaurant not found" })
   }
 
-  // Defense in depth: every dish must belong to this restaurant.
   const foreign = menu.dishes.find(
     (dish: { restaurant_id: string }) =>
       dish.restaurant_id !== menu.restaurant.id,
