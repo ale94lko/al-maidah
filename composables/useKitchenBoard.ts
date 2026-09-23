@@ -22,7 +22,6 @@ type KitchenBoardOptions = {
  */
 export function useKitchenBoard(options: KitchenBoardOptions = {}) {
   const { accessToken, refreshSession } = useAuth()
-  const supabase = useSupabaseClient()
 
   const restaurants = ref<MeResponse["restaurants"]>([])
   const restaurantId = ref<string | null>(null)
@@ -34,10 +33,17 @@ export function useKitchenBoard(options: KitchenBoardOptions = {}) {
   /** When false, new tickets are tracked silently (before Start shift). */
   const alertsEnabled = ref(false)
 
-  let channel: ReturnType<typeof supabase.channel> | null = null
+  type RealtimeChannel = ReturnType<
+    ReturnType<typeof useSupabaseClient>["channel"]
+  >
+  let channel: RealtimeChannel | null = null
   let pollTimer: ReturnType<typeof setInterval> | null = null
   let clockTimer: ReturnType<typeof setInterval> | null = null
   let knownIds = new Set<string>()
+
+  function browserSupabase() {
+    return useSupabaseClient()
+  }
 
   const pending = computed(() =>
     tickets.value.filter((ticket) => ticket.status === "pending"),
@@ -78,9 +84,10 @@ export function useKitchenBoard(options: KitchenBoardOptions = {}) {
   }
 
   function subscribeRealtime() {
-    if (!restaurantId.value) {
+    if (!restaurantId.value || import.meta.server) {
       return
     }
+    const supabase = browserSupabase()
     if (channel) {
       void supabase.removeChannel(channel)
       channel = null
@@ -213,8 +220,8 @@ export function useKitchenBoard(options: KitchenBoardOptions = {}) {
   }
 
   function dispose() {
-    if (channel) {
-      void supabase.removeChannel(channel)
+    if (channel && import.meta.client) {
+      void browserSupabase().removeChannel(channel)
       channel = null
     }
     if (pollTimer) {
