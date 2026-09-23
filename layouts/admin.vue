@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const route = useRoute()
-const { user, signOut } = useAuth()
+const { signOut } = useAuth()
 const { t } = useAppI18n()
 
 const links = computed(() => [
@@ -59,13 +59,6 @@ async function onSignOut() {
               {{ t("kitchen.title") }}
             </NuxtLink>
             <LanguageSwitcher />
-            <p
-              v-if="user?.email"
-              class="hidden max-w-[12rem] truncate text-xs text-[var(--muted)] md:block"
-              :title="user.email"
-            >
-              {{ user.email }}
-            </p>
             <button
               type="button"
               class="rounded-full border border-[var(--navy)]/10 bg-white px-3 py-1.5 text-xs font-bold text-[var(--navy)]"

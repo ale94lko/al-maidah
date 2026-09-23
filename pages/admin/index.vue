@@ -13,7 +13,7 @@ type MeResponse = {
 
 const RANGES: StatsRange[] = ["today", "week", "month", "last_30_days"]
 
-const { user, refreshSession, accessToken } = useAuth()
+const { refreshSession, accessToken } = useAuth()
 const { t, locale } = useAppI18n()
 
 const restaurants = ref<MeResponse["restaurants"]>([])
@@ -200,9 +200,7 @@ onMounted(async () => {
     />
     <template v-else-if="stats">
       <p class="mt-4 text-xs text-[var(--muted)]">
-        {{ t("admin.signedInAs") }}
-        <span class="font-medium text-[var(--ink)]">{{ user?.email }}</span>
-        · {{ t("admin.statsPaidOnly") }}
+        {{ t("admin.statsPaidOnly") }}
       </p>
 
       <div class="mt-2 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

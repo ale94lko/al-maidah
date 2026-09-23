@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { user, signOut } = useAuth()
+const { signOut } = useAuth()
 const { t } = useAppI18n()
 
 async function onSignOut() {
@@ -32,12 +32,6 @@ async function onSignOut() {
         </div>
         <div class="flex shrink-0 items-center gap-2">
           <LanguageSwitcher />
-          <span
-            v-if="user?.email"
-            class="hidden max-w-[14rem] truncate text-xs text-[var(--muted)] lg:inline"
-          >
-            {{ user.email }}
-          </span>
           <button
             type="button"
             class="shrink-0 rounded-full border border-[var(--navy)]/10 bg-white px-3 py-1.5 text-xs font-bold text-[var(--navy)]"
