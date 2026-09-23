@@ -9,7 +9,7 @@ const errorMessage = ref("")
 const pending = ref(false)
 const route = useRoute()
 const { signIn } = useAuth()
-const { t } = useAppI18n()
+const { t, dir } = useAppI18n()
 
 async function onSubmit() {
   errorMessage.value = ""
@@ -31,7 +31,11 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="auth-shell grid min-h-dvh lg:grid-cols-2">
+  <!--
+    Keep photo | form as physical LTR columns even when the document is RTL,
+    so the image stays on the left and the form on the right.
+  -->
+  <div class="auth-shell grid min-h-dvh lg:grid-cols-2" dir="ltr">
     <aside class="relative hidden overflow-hidden lg:block">
       <img
         src="/images/auth-kitchen.jpg"
@@ -60,11 +64,12 @@ async function onSubmit() {
       </div>
     </aside>
 
-    <div class="flex flex-col bg-[var(--paper)]">
-      <header class="flex items-center justify-between px-5 py-4 sm:px-8">
+    <div class="flex flex-col bg-[var(--paper)]" :dir="dir">
+      <header class="flex items-center justify-between gap-3 px-5 py-4 sm:px-8">
         <p class="font-display text-xl font-extrabold text-[var(--ink)]">
           Al-Maidah
         </p>
+        <LanguageSwitcher />
       </header>
 
       <div class="flex flex-1 items-center justify-center px-5 py-10 sm:px-8">
