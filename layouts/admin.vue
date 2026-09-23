@@ -97,11 +97,8 @@ async function onSignOut() {
         :class="isAuthPage ? 'w-full max-w-lg py-10' : 'px-4 py-6 pb-24 md:px-6 md:pb-8'"
       >
         <header v-if="isAuthPage" class="mb-6 flex items-center justify-between px-4">
-          <NuxtLink to="/" class="font-display text-xl font-bold text-[var(--navy)]">
+          <NuxtLink to="/admin/login" class="font-display text-xl font-bold text-[var(--navy)]">
             Al-Maidah
-          </NuxtLink>
-          <NuxtLink to="/" class="text-sm font-bold text-[var(--info)]">
-            {{ t("common.home") }}
           </NuxtLink>
         </header>
         <slot />

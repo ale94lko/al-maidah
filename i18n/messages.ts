@@ -8,7 +8,6 @@ export const messages = {
   en: {
     common: {
       loading: "Loading…",
-      home: "Home",
       signOut: "Sign out",
       signIn: "Sign in",
       language: "Language",
@@ -305,7 +304,6 @@ export const messages = {
   ar: {
     common: {
       loading: "جاري التحميل…",
-      home: "الرئيسية",
       signOut: "تسجيل الخروج",
       signIn: "تسجيل الدخول",
       language: "اللغة",

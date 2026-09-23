@@ -29,9 +29,10 @@ test("useAppI18n persists locale and exposes rtl direction", () => {
   assert.match(source, /setLocale/)
 })
 
-test("language switcher is on the guest layout", () => {
+test("language switcher is on the guest layout and owner login", () => {
   assert.ok(existsSync(resolve(root, "components/LanguageSwitcher.vue")))
   assert.match(read("layouts/client.vue"), /LanguageSwitcher/)
+  assert.match(read("pages/admin/login.vue"), /LanguageSwitcher/)
 })
 
 test("localizedName prefers Arabic names when locale is ar", () => {

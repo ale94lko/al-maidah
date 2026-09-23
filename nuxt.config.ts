@@ -7,6 +7,9 @@ export default defineNuxtConfig({
   },
   modules: ["@nuxtjs/tailwindcss"],
   css: ["~/assets/css/main.css"],
+  routeRules: {
+    "/": { redirect: "/admin/login" },
+  },
   app: {
     head: {
       title: "Al-Maidah",
@@ -23,7 +26,9 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: "manifest", href: "/manifest.webmanifest" },
-        { rel: "icon", type: "image/svg+xml", href: "/icon.svg" },
+        { rel: "icon", type: "image/png", href: "/favicon.png" },
+        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+        { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
         {
           rel: "preconnect",
           href: "https://fonts.googleapis.com",
