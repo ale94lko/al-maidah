@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const route = useRoute()
 const { venueName, tableNumber } = useClientShell()
 const { t } = useAppI18n()
 const { itemCount, syncFromStorage } = useCart()
@@ -11,8 +12,16 @@ const tableLabel = computed(() => {
   return t("guest.table", { n: tableNumber.value })
 })
 
+const cartBarHidden = computed(() => {
+  const path = route.path
+  return (
+    /\/m\/[^/]+\/cart\/?$/.test(path) ||
+    /\/m\/[^/]+\/(?:pay|status)\//.test(path)
+  )
+})
+
 const mainPadClass = computed(() =>
-  itemCount.value > 0
+  itemCount.value > 0 && !cartBarHidden.value
     ? "pb-[max(6.5rem,calc(env(safe-area-inset-bottom)+5.5rem))]"
     : "pb-[max(1.5rem,env(safe-area-inset-bottom))]",
 )
