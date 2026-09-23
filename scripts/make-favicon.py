@@ -1,73 +1,61 @@
-"""Clean solid favicon: navy silhouettes on white, no text."""
+"""Build favicons from the approved solid-silhouette example (no text)."""
 from __future__ import annotations
 
-import math
+from pathlib import Path
 
-from PIL import Image, ImageDraw
+from PIL import Image
 
-NAVY = (27, 39, 64)
+ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / "assets" / "favicon-source.png"
 WHITE = (255, 255, 255)
 
 
-def draw_mark(size: int) -> Image.Image:
-    im = Image.new("RGB", (size, size), WHITE)
-    d = ImageDraw.Draw(im)
-    s = float(size)
-    stroke = max(3, round(s * 0.065))
+def prepare_square(src: Image.Image, size: int, pad: float = 0.04) -> Image.Image:
+    im = src.convert("RGBA")
+    bg = Image.new("RGBA", im.size, (*WHITE, 255))
+    flat = Image.alpha_composite(bg, im).convert("RGB")
 
-    # Table
-    ty0, ty1 = s * 0.68, s * 0.82
-    d.polygon(
-        [(s * 0.16, ty0), (s * 0.84, ty0), (s * 0.92, ty1), (s * 0.08, ty1)],
-        fill=NAVY,
-    )
+    px = flat.load()
+    w, h = flat.size
+    xs, ys = [], []
+    for y in range(h):
+        for x in range(w):
+            r, g, b = px[x, y]
+            if r < 245 or g < 245 or b < 245:
+                xs.append(x)
+                ys.append(y)
+    if not xs:
+        return Image.new("RGB", (size, size), WHITE)
+    cropped = flat.crop((min(xs), min(ys), max(xs) + 1, max(ys) + 1))
 
-    # Arch ending at table bottom corners
-    cx, cy, r = s * 0.5, ty1, s * 0.44
-    pts = [
-        (cx + r * math.cos(math.radians(deg)), cy + r * math.sin(math.radians(deg)))
-        for deg in range(198, 343)
-    ]
-    d.line(pts, fill=NAVY, width=stroke, joint="curve")
-
-    # Cup — solid
-    d.polygon(
-        [
-            (s * 0.23, s * 0.26),
-            (s * 0.47, s * 0.26),
-            (s * 0.43, ty0),
-            (s * 0.27, ty0),
-        ],
-        fill=NAVY,
-    )
-    d.rectangle([s * 0.21, s * 0.20, s * 0.49, s * 0.28], fill=NAVY)
-    d.rectangle([s * 0.27, s * 0.14, s * 0.36, s * 0.21], fill=NAVY)
-
-    # Burger — one solid mass (no gaps)
-    # top dome
-    d.ellipse([s * 0.48, s * 0.26, s * 0.86, s * 0.55], fill=NAVY)
-    # body down to table
-    d.rectangle([s * 0.50, s * 0.40, s * 0.84, ty0], fill=NAVY)
-    d.ellipse([s * 0.50, ty0 - s * 0.12, s * 0.84, ty0 + s * 0.04], fill=NAVY)
-
-    return im
+    canvas = Image.new("RGB", (size, size), WHITE)
+    inner = int(size * (1 - pad * 2))
+    fitted = cropped.copy()
+    fitted.thumbnail((inner, inner), Image.Resampling.LANCZOS)
+    canvas.paste(fitted, ((size - fitted.width) // 2, (size - fitted.height) // 2))
+    return canvas
 
 
 def main() -> None:
-    for size, path in (
-        (64, "public/favicon.png"),
-        (180, "public/apple-touch-icon.png"),
-        (192, "public/icon-192.png"),
-        (512, "public/icon-512.png"),
-    ):
-        draw_mark(size).save(path, format="PNG")
+    src = Image.open(SRC)
+    print("source", SRC.relative_to(ROOT), src.size)
 
-    a, b, c = draw_mark(16), draw_mark(32), draw_mark(48)
-    b.save(
-        "public/favicon.ico",
+    for size, out, pad in (
+        (64, ROOT / "public/favicon.png", 0.05),
+        (180, ROOT / "public/apple-touch-icon.png", 0.05),
+        (192, ROOT / "public/icon-192.png", 0.05),
+        (512, ROOT / "public/icon-512.png", 0.05),
+    ):
+        prepare_square(src, size, pad).save(out, format="PNG")
+
+    i16 = prepare_square(src, 16, 0.04)
+    i32 = prepare_square(src, 32, 0.04)
+    i48 = prepare_square(src, 48, 0.05)
+    i32.save(
+        ROOT / "public/favicon.ico",
         format="ICO",
         sizes=[(16, 16), (32, 32), (48, 48)],
-        append_images=[a, c],
+        append_images=[i16, i48],
     )
     print("ok")
 
