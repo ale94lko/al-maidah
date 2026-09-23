@@ -279,8 +279,7 @@ export const messages = {
         "Remove table {n}? Past orders stay; new scans for this number will fail until you recreate it.",
       printQrCodes: "Print",
       printPreview: "Printable QR sheets",
-      scanPromptEn: "Scan to view the menu and order",
-      scanPromptAr: "امسح لعرض القائمة وطلب الطعام",
+      scanPrompt: "Scan to view the menu and order",
       tableNumberInvalid: "Enter a positive table number",
       tableNumberInUse:
         "That table number is already in use. Choose a different number.",
@@ -579,8 +578,7 @@ export const messages = {
         "إزالة الطاولة {n}؟ تبقى الطلبات السابقة؛ المسح الضوئي لهذا الرقم سيفشل حتى تعيد إنشاءها.",
       printQrCodes: "طباعة",
       printPreview: "صفحات QR للطباعة",
-      scanPromptEn: "Scan to view the menu and order",
-      scanPromptAr: "امسح لعرض القائمة وطلب الطعام",
+      scanPrompt: "امسح لعرض القائمة وطلب الطعام",
       tableNumberInvalid: "أدخل رقم طاولة موجبًا",
       tableNumberInUse:
         "رقم الطاولة مستخدم بالفعل. اختر رقمًا آخر.",
