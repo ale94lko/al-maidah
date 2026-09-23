@@ -71,6 +71,9 @@ test("kitchen board UI has three columns and ticket actions", () => {
   assert.match(composable, /postgres_changes/)
   assert.match(composable, /restaurant_id=eq\./)
   assert.match(composable, /POLL_FALLBACK_MS|setInterval/)
+  assert.match(composable, /enableAlerts|alertsEnabled/)
+  assert.match(composable, /onNewTickets/)
+  assert.doesNotMatch(composable, /playNewTicketSound|new AudioContext/)
 })
 
 test("kitchen i18n covers board actions in English and Arabic", () => {
