@@ -123,6 +123,7 @@ export interface Order {
   id: string
   restaurant_id: string
   table_id: string
+  guest_name: string | null
   status: OrderStatus
   payment_status: PaymentStatus
   payment_method: PaymentMethod | null
@@ -135,6 +136,34 @@ export interface Order {
   created_at: string
   ready_at: string | null
   updated_at: string
+}
+
+/** Guest-facing order payload: never includes total_cost or unit_cost. */
+export interface PublicOrder {
+  id: string
+  restaurant_id: string
+  table_id: string
+  guest_name: string | null
+  status: OrderStatus
+  payment_status: PaymentStatus
+  subtotal: string
+  vat: string
+  tip: string
+  total: string
+  created_at: string
+  ready_at: string | null
+  table_number: number | null
+}
+
+export interface PublicOrderItem {
+  id: string
+  menu_item_id: string | null
+  name_en: string
+  name_ar: string
+  quantity: number
+  unit_price: string
+  notes: string
+  selected_options: SelectedModifierOption[]
 }
 
 export interface OrderItem {
