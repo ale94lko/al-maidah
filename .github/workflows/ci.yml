@@ -143,6 +143,11 @@ jobs:
           create table if not exists auth.users (
             id uuid primary key
           );
+          create or replace function auth.uid()
+          returns uuid
+          language sql
+          stable
+          as $$ select null::uuid $$;
           create role anon nologin;
           create role authenticated nologin;
           SQL
@@ -181,6 +186,24 @@ jobs:
                 and data_type <> 'numeric'
             ) then
               raise exception 'money columns must be numeric';
+            end if;
+            if not exists (
+              select 1 from pg_policies
+              where schemaname = 'public'
+                and tablename = 'orders'
+                and policyname = 'orders_owner_select'
+            ) then
+              raise exception 'missing orders_owner_select policy';
+            end if;
+            if exists (
+              select 1 from information_schema.role_column_grants
+              where table_schema = 'public'
+                and table_name = 'menu_items'
+                and column_name = 'cost_price'
+                and grantee = 'anon'
+                and privilege_type = 'SELECT'
+            ) then
+              raise exception 'anon must not select cost_price';
             end if;
           end $$;
           SQL

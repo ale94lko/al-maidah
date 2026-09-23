@@ -74,7 +74,7 @@ test("public menu API scopes dishes to the requested restaurant", () => {
   assert.ok(existsSync(resolve(root, "server/api/menu/[slug].get.ts")))
   const api = read("server/api/menu/[slug].get.ts")
   assert.match(api, /getPublicMenuBySlug/)
-  assert.match(api, /createServiceRoleClient/)
+  assert.match(api, /createAnonServerClient/)
   assert.match(api, /dish\.restaurant_id !== menu\.restaurant\.id/)
 })
 

@@ -57,7 +57,7 @@ Do not commit secrets.
 
 ## How to build it
 
-Each MVP piece is tracked as an issue, in implementation order. Domain types and Supabase clients close **MVP-03**.
+Each MVP piece is tracked as an issue, in implementation order. Owner auth and multi-tenant RLS close **MVP-04**.
 
 ## Contributing
 

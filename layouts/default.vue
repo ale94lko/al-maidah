@@ -5,9 +5,14 @@
         <NuxtLink to="/" class="text-lg font-semibold tracking-tight text-teal-900">
           Al-Maidah
         </NuxtLink>
-        <span class="text-xs uppercase tracking-[0.2em] text-teal-800/70">
-          UAE table ordering
-        </span>
+        <nav class="flex items-center gap-4 text-sm text-teal-900/80">
+          <NuxtLink to="/admin/login" class="hover:text-teal-950">
+            Owner
+          </NuxtLink>
+          <NuxtLink to="/kitchen" class="hover:text-teal-950">
+            Kitchen
+          </NuxtLink>
+        </nav>
       </div>
     </header>
     <main>

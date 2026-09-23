@@ -43,6 +43,13 @@ Public menu endpoint (server uses the service role; guests never receive `cost_p
 curl "http://localhost:3000/api/menu/demo?table=1"
 ```
 
+Owner auth:
+
+- Sign up: [http://localhost:3000/admin/signup](http://localhost:3000/admin/signup)
+- Sign in: [http://localhost:3000/admin/login](http://localhost:3000/admin/login)
+
+Sign-up creates the Auth user, restaurant, and `restaurant_owners` row. `/admin/**` and `/kitchen/**` require a session.
+
 Useful scripts:
 
 - `npm run dev` — start the Nuxt development server

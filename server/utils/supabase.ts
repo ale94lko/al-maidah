@@ -28,3 +28,29 @@ export function createServiceRoleClient(): SupabaseClient {
     },
   })
 }
+
+/**
+ * Server client using the anon key so public reads respect RLS.
+ */
+export function createAnonServerClient(): SupabaseClient {
+  if (import.meta.client) {
+    throw new Error("createAnonServerClient() must not run in the browser")
+  }
+
+  const config = useRuntimeConfig()
+  const url = config.public.supabaseUrl
+  const anonKey = config.public.supabaseAnonKey
+
+  if (!url || !anonKey) {
+    throw new Error(
+      "Missing NUXT_PUBLIC_SUPABASE_URL or NUXT_PUBLIC_SUPABASE_ANON_KEY",
+    )
+  }
+
+  return createClient(url, anonKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  })
+}
