@@ -31,9 +31,26 @@ const orders = ref<OrderSummary[]>([])
 const receipt = ref<PublicReceipt | null>(null)
 const selectedOrderId = ref<string | null>(null)
 const loading = ref(true)
+const markingPaid = ref(false)
 const errorMessage = ref("")
 
 const settingsPath = computed(() => "/admin/settings")
+
+const canMarkCashPaid = computed(
+  () =>
+    receipt.value?.payment_method === "cash_at_table" &&
+    receipt.value?.payment_status === "pending",
+)
+
+function paymentStatusLabel(status: string) {
+  if (status === "paid") {
+    return t("admin.paymentPaid")
+  }
+  if (status === "pending") {
+    return t("admin.paymentPending")
+  }
+  return status
+}
 
 async function authHeaders() {
   const token = await accessToken()
@@ -80,6 +97,33 @@ async function openReceipt(orderId: string) {
     receipt.value = null
     errorMessage.value =
       error instanceof Error ? error.message : t("admin.receiptLoadError")
+  }
+}
+
+async function markCashPaid() {
+  if (!restaurantId.value || !selectedOrderId.value || !canMarkCashPaid.value) {
+    return
+  }
+  markingPaid.value = true
+  errorMessage.value = ""
+  try {
+    const result = await $fetch<{
+      alreadyPaid: boolean
+      receipt: PublicReceipt
+    }>(
+      `/api/admin/orders/${encodeURIComponent(restaurantId.value)}/${encodeURIComponent(selectedOrderId.value)}/mark-paid`,
+      {
+        method: "POST",
+        headers: await authHeaders(),
+      },
+    )
+    receipt.value = result.receipt
+    await loadOrders(restaurantId.value)
+  } catch (error) {
+    errorMessage.value =
+      error instanceof Error ? error.message : t("admin.markCashPaidError")
+  } finally {
+    markingPaid.value = false
   }
 }
 
@@ -235,14 +279,14 @@ onMounted(async () => {
                 "
               >
                 {{ formatWhen(order.created_at) }}
-                · {{ order.payment_status }}
+                · {{ paymentStatusLabel(order.payment_status) }}
               </p>
             </button>
           </li>
         </ul>
       </div>
 
-      <div>
+      <div class="space-y-4">
         <OrderReceipt
           v-if="receipt"
           :receipt="receipt"
@@ -252,6 +296,24 @@ onMounted(async () => {
         <p v-else class="text-sm text-stone-500">
           {{ t("admin.selectOrderForReceipt") }}
         </p>
+        <div
+          v-if="canMarkCashPaid"
+          class="rounded-xl border border-teal-900/15 bg-white/80 px-4 py-3"
+        >
+          <p class="text-sm leading-relaxed text-stone-600">
+            {{ t("admin.markCashPaidHint") }}
+          </p>
+          <button
+            type="button"
+            class="mt-3 inline-flex rounded-lg bg-teal-950 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+            :disabled="markingPaid"
+            @click="markCashPaid"
+          >
+            {{
+              markingPaid ? t("admin.markingCashPaid") : t("admin.markCashPaid")
+            }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
