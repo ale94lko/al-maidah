@@ -127,6 +127,20 @@ export const messages = {
       elapsed: "{n} min",
       payCash: "Cash at table",
       payOnline: "Paid online",
+      startShiftTitle: "Start shift",
+      startShiftHint:
+        "Tap once to enable kitchen sound. Browsers block audio until you interact.",
+      startShift: "Start shift",
+      startingShift: "Starting…",
+      startShiftSoundNote: "Sound stays off until you start the shift.",
+      alertNewOrder: "New order",
+      alertNewOrders: "New orders",
+      alertNewOrderHint: "A ticket just landed on the board.",
+      alertSoundBlocked: "Sound is blocked",
+      alertSoundBlockedHint:
+        "Allow sound for this site, or keep watching this visual alert.",
+      alertDismiss: "Dismiss",
+      installApp: "Install kitchen app",
     },
     admin: {
       owner: "Owner",
@@ -290,6 +304,20 @@ export const messages = {
       elapsed: "{n} د",
       payCash: "نقدًا على الطاولة",
       payOnline: "مدفوع إلكترونيًا",
+      startShiftTitle: "بدء الوردية",
+      startShiftHint:
+        "اضغط مرة واحدة لتفعيل صوت المطبخ. المتصفحات تمنع الصوت حتى تتفاعل.",
+      startShift: "بدء الوردية",
+      startingShift: "جاري البدء…",
+      startShiftSoundNote: "يبقى الصوت متوقفًا حتى تبدأ الوردية.",
+      alertNewOrder: "طلب جديد",
+      alertNewOrders: "طلبات جديدة",
+      alertNewOrderHint: "وصلت تذكرة جديدة إلى اللوحة.",
+      alertSoundBlocked: "الصوت محظور",
+      alertSoundBlockedHint:
+        "اسمح بالصوت لهذا الموقع، أو راقب هذا التنبيه المرئي.",
+      alertDismiss: "إغلاق",
+      installApp: "تثبيت تطبيق المطبخ",
     },
     admin: {
       owner: "المالك",

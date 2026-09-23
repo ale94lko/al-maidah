@@ -12,11 +12,15 @@ type KitchenListResponse = {
 
 const POLL_FALLBACK_MS = 15_000
 
+type KitchenBoardOptions = {
+  onNewTickets?: (tickets: KitchenTicket[]) => void
+}
+
 /**
  * Loads the kitchen board for the signed-in owner's restaurant,
  * keeps it fresh via Realtime plus a light poll fallback.
  */
-export function useKitchenBoard() {
+export function useKitchenBoard(options: KitchenBoardOptions = {}) {
   const { accessToken, refreshSession } = useAuth()
   const supabase = useSupabaseClient()
 
@@ -27,6 +31,8 @@ export function useKitchenBoard() {
   const errorMessage = ref("")
   const busyId = ref<string | null>(null)
   const nowMs = ref(Date.now())
+  /** When false, new tickets are tracked silently (before Start shift). */
+  const alertsEnabled = ref(false)
 
   let channel: ReturnType<typeof supabase.channel> | null = null
   let pollTimer: ReturnType<typeof setInterval> | null = null
@@ -43,34 +49,6 @@ export function useKitchenBoard() {
     tickets.value.filter((ticket) => ticket.status === "ready"),
   )
 
-  function playNewTicketSound() {
-    try {
-      const AudioCtx =
-        window.AudioContext ||
-        (window as unknown as { webkitAudioContext?: typeof AudioContext })
-          .webkitAudioContext
-      if (!AudioCtx) {
-        return
-      }
-      const ctx = new AudioCtx()
-      const oscillator = ctx.createOscillator()
-      const gain = ctx.createGain()
-      oscillator.type = "sine"
-      oscillator.frequency.value = 880
-      gain.gain.value = 0.08
-      oscillator.connect(gain)
-      gain.connect(ctx.destination)
-      oscillator.start()
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.35)
-      oscillator.stop(ctx.currentTime + 0.4)
-      window.setTimeout(() => {
-        void ctx.close()
-      }, 500)
-    } catch {
-      // Audio is optional on kitchen tablets.
-    }
-  }
-
   async function authHeaders() {
     const token = await accessToken()
     if (!token) {
@@ -79,7 +57,7 @@ export function useKitchenBoard() {
     return { Authorization: `Bearer ${token}` }
   }
 
-  async function loadTickets(options?: { announceNew?: boolean }) {
+  async function loadTickets(optionsLoad?: { announceNew?: boolean }) {
     if (!restaurantId.value) {
       return
     }
@@ -89,10 +67,10 @@ export function useKitchenBoard() {
       headers,
     })
     const next = response.tickets ?? []
-    if (options?.announceNew) {
+    if (optionsLoad?.announceNew && alertsEnabled.value) {
       const fresh = next.filter((ticket) => !knownIds.has(ticket.id))
       if (fresh.length > 0 && knownIds.size > 0) {
-        playNewTicketSound()
+        options.onNewTickets?.(fresh)
       }
     }
     knownIds = new Set(next.map((ticket) => ticket.id))
@@ -182,6 +160,14 @@ export function useKitchenBoard() {
     subscribeRealtime()
   }
 
+  /**
+   * Arm alerts after Start shift: existing tickets are baseline (no false beep).
+   */
+  function enableAlerts() {
+    knownIds = new Set(tickets.value.map((ticket) => ticket.id))
+    alertsEnabled.value = true
+  }
+
   async function transition(ticketId: string, action: KitchenTicketAction) {
     if (!restaurantId.value || busyId.value) {
       return
@@ -252,8 +238,10 @@ export function useKitchenBoard() {
     errorMessage,
     busyId,
     nowMs,
+    alertsEnabled,
     bootstrap,
     selectRestaurant,
+    enableAlerts,
     transition,
     elapsedMinutes,
     ticketsFor,
