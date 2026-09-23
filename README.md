@@ -1,48 +1,48 @@
 # Al-Maidah
 
-Menú digital por código QR para restaurantes y cafeterías en Emiratos Árabes Unidos. El cliente escanea la mesa, arma el pedido y la cocina lo recibe en vivo. El dueño gestiona la carta y ve ingresos, costos y tiempos.
+QR digital menu for restaurants and cafés in the United Arab Emirates. A guest scans the table, builds an order, and the kitchen receives it live. The owner manages the menu and sees revenue, costs, and timing.
 
-El nombre viene de *ma'idah* (المائدة): la mesa.
+The name comes from *ma'idah* (المائدة): the table.
 
-## Qué cubre el MVP
+## What the MVP covers
 
-- **Cliente (móvil):** menú por QR (`/m/{slug}?table={n}`), carrito, notas y modificadores, checkout con VAT 5% y seguimiento del pedido.
-- **Cocina (tablet, PWA):** comandero en tiempo real (pendiente, en preparación, listo) con alerta sonora.
-- **Administración (PC y tablet):** carta, mesas y QR imprimibles, estadísticas de ingresos y ganancia.
-- **Pagos en AED:** Google Pay, tarjeta y efectivo en mesa, con recibo que incluye el TRN.
-- **Idiomas:** inglés y árabe (RTL).
-- **Multi-tenant:** cada restaurante ve solo sus datos.
+- **Guest (mobile):** QR menu (`/m/{slug}?table={n}`), cart, notes and modifiers, checkout with 5% VAT, and order tracking.
+- **Kitchen (tablet, PWA):** live ticket board (pending, preparing, ready) with a sound alert.
+- **Admin (desktop and tablet):** menu, tables and printable QR codes, revenue and profit stats.
+- **Payments in AED:** Google Pay, card, and cash at the table, with a receipt that includes the TRN.
+- **Languages:** English and Arabic (RTL).
+- **Multi-tenant:** each restaurant sees only its own data.
 
-Queda fuera del MVP la impresión térmica, el modo sin conexión y pasarelas de pago a plazos.
+Thermal printing, offline mode, and buy-now-pay-later gateways are out of the MVP.
 
-## Stack previsto
+## Planned stack
 
-| Capa | Elección |
+| Layer | Choice |
 | --- | --- |
 | App | Nuxt 3, Vue 3, TypeScript |
 | UI | Tailwind CSS |
-| Datos y tiempo real | Supabase (PostgreSQL, Auth, Realtime, RLS) |
-| Pagos | Stripe UAE (AED, Google Pay) |
+| Data and realtime | Supabase (PostgreSQL, Auth, Realtime, RLS) |
+| Payments | Stripe UAE (AED, Google Pay) |
 | Hosting | Vercel |
 
-## Vistas
+## Views
 
-| Ruta | Quién | Para qué |
+| Route | Who | Purpose |
 | --- | --- | --- |
-| `/m/{slug}` | Cliente | Carta y pedido de la mesa |
-| `/m/{slug}/cart` | Cliente | Resumen, VAT y pago |
-| `/m/{slug}/status/{orderId}` | Cliente | Estado en vivo |
-| `/kitchen` | Cocina | Comandero |
-| `/admin` | Dueño | Estadísticas |
-| `/admin/menu` | Dueño | Carta |
-| `/admin/tables` | Dueño | Mesas y QR |
+| `/m/{slug}` | Guest | Menu and table order |
+| `/m/{slug}/cart` | Guest | Summary, VAT, and payment |
+| `/m/{slug}/status/{orderId}` | Guest | Live status |
+| `/kitchen` | Kitchen | Ticket board |
+| `/admin` | Owner | Statistics |
+| `/admin/menu` | Owner | Menu |
+| `/admin/tables` | Owner | Tables and QR codes |
 
-## Cómo se construye
+## How to build it
 
-Este repositorio arranca vacío a propósito. Cada pieza implementable hasta el MVP está en un issue, en el orden en que conviene construirla. Empieza por el issue **MVP-01**.
+This repository starts empty on purpose. Each piece that can be implemented up to the MVP is an issue, in the order it should be built. Start with **MVP-01**.
 
-Copia [`.env.example`](.env.example) a `.env` cuando exista la app. No subas secretos.
+Copy [`.env.example`](.env.example) to `.env` once the app exists. Do not commit secrets.
 
-## Licencia
+## License
 
 [MIT](LICENSE).
