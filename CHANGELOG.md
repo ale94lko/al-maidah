@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Checkout with server-side 5% UAE VAT and pending `orders` / `order_items` creation (MVP-09).
 - AED payments via Stripe PaymentIntent (Google Pay / card Express Checkout) and cash at the table (MVP-10).
 - Stripe webhook verifies signatures and marks online orders paid exactly once (MVP-11).
+- Live guest order tracking with secured status polling, kitchen status copy, and device-persisted order id (MVP-12).
 
 ## [0.1.0] - 2026-09-23
 

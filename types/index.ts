@@ -138,7 +138,7 @@ export interface Order {
   updated_at: string
 }
 
-/** Guest-facing order payload: never includes total_cost or unit_cost. */
+/** Guest-facing order payload: never includes total_cost, unit_cost, or gateway secrets. */
 export interface PublicOrder {
   id: string
   restaurant_id: string
@@ -147,7 +147,7 @@ export interface PublicOrder {
   status: OrderStatus
   payment_status: PaymentStatus
   payment_method: PaymentMethod | null
-  gateway_reference: string | null
+  guest_access_token: string
   subtotal: string
   vat: string
   tip: string
@@ -155,6 +155,7 @@ export interface PublicOrder {
   created_at: string
   ready_at: string | null
   table_number: number | null
+  restaurant_slug: string | null
 }
 
 export interface PublicOrderItem {

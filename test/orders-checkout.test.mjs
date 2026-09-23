@@ -73,6 +73,8 @@ test("public order GET omits cost fields", () => {
   const getApi = read("server/api/orders/[id].get.ts")
   const helper = read("server/utils/orders.ts")
   assert.match(getApi, /getPublicOrderById/)
+  assert.match(getApi, /slug/)
+  assert.match(getApi, /token/)
   assert.match(helper, /PublicOrder/)
   assert.doesNotMatch(
     helper.match(/\.select\(\s*"id, menu_item_id[\s\S]*?"/)?.[0] || "",

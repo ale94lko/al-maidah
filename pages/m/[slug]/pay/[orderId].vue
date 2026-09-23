@@ -9,6 +9,7 @@ const route = useRoute()
 const router = useRouter()
 const { setShell } = useClientShell()
 const { loadFromStorage, session } = useGuestSession()
+const { loadActiveOrder, saveActiveOrder } = useActiveOrder()
 const { appUrl } = usePublicRuntime()
 const { t } = useAppI18n()
 
@@ -20,27 +21,47 @@ const errorMessage = ref("")
 const order = ref<PublicOrder | null>(null)
 const paymentNote = ref("")
 
-const statusPath = computed(() => ({
-  path: `/m/${slug.value}/status/${orderId.value}`,
-  query:
-    order.value?.table_number != null
-      ? { table: String(order.value.table_number) }
-      : typeof route.query.table === "string"
-        ? { table: route.query.table }
-        : undefined,
-}))
+const accessToken = computed(() => {
+  const fromQuery = route.query.token
+  if (typeof fromQuery === "string" && fromQuery) {
+    return fromQuery
+  }
+  return loadActiveOrder(slug.value)?.accessToken || ""
+})
+
+const statusPath = computed(() => {
+  const query: Record<string, string> = {}
+  if (accessToken.value) {
+    query.token = accessToken.value
+  }
+  const table =
+    order.value?.table_number ??
+    (typeof route.query.table === "string" ? Number(route.query.table) : null)
+  if (table != null && Number.isFinite(table)) {
+    query.table = String(table)
+  }
+  return {
+    path: `/m/${slug.value}/status/${orderId.value}`,
+    query,
+  }
+})
 
 const returnUrl = computed(() => {
   const base = (appUrl.value || "").replace(/\/$/, "")
-  const table =
-    order.value?.table_number != null
-      ? `?table=${order.value.table_number}`
-      : ""
-  return `${base}/m/${slug.value}/status/${orderId.value}${table}`
+  const params = new URLSearchParams()
+  if (accessToken.value) {
+    params.set("token", accessToken.value)
+  }
+  if (order.value?.table_number != null) {
+    params.set("table", String(order.value.table_number))
+  }
+  const qs = params.toString()
+  return `${base}/m/${slug.value}/status/${orderId.value}${qs ? `?${qs}` : ""}`
 })
 
 onMounted(async () => {
   loadFromStorage()
+  const stored = loadActiveOrder(slug.value)
   const active = session.value
   if (active) {
     setShell({
@@ -49,11 +70,29 @@ onMounted(async () => {
     })
   }
 
+  if (!accessToken.value) {
+    errorMessage.value = t("guest.orderTrackingLost")
+    loading.value = false
+    return
+  }
+
   try {
     const result = await $fetch<{ order: PublicOrder }>(
       `/api/orders/${encodeURIComponent(orderId.value)}`,
+      {
+        query: {
+          slug: slug.value,
+          token: accessToken.value,
+        },
+      },
     )
     order.value = result.order
+    saveActiveOrder({
+      slug: slug.value,
+      orderId: result.order.id,
+      accessToken: result.order.guest_access_token,
+      tableNumber: result.order.table_number,
+    })
 
     if (result.order.payment_method === "cash_at_table") {
       await router.replace(statusPath.value)
@@ -65,7 +104,7 @@ onMounted(async () => {
     }
     if (result.order.table_number != null) {
       setShell({
-        venueName: active?.restaurantName || slug.value,
+        venueName: active?.restaurantName || stored?.slug || slug.value,
         tableNumber: result.order.table_number,
       })
     }
