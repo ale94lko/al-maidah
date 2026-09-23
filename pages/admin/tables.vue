@@ -421,12 +421,9 @@ async function copyMenuUrl(tableId: string) {
               :size="220"
               class="w-56"
             />
-            <div class="space-y-1 text-sm text-[var(--ink)]">
-              <p>{{ t("admin.scanPromptEn") }}</p>
-              <p dir="rtl" class="font-medium">
-                {{ t("admin.scanPromptAr") }}
-              </p>
-            </div>
+            <p class="text-sm text-[var(--ink)]">
+              {{ t("admin.scanPrompt") }}
+            </p>
             <p class="break-all font-mono text-[10px] text-[var(--muted)]">
               {{ viewingUrl }}
             </p>

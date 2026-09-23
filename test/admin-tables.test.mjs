@@ -48,7 +48,7 @@ test("admin tables page opens QR in a print modal", () => {
   const composable = read("composables/useAdminTables.ts")
   assert.match(page, /window\.print/)
   assert.match(page, /menuUrlForTable/)
-  assert.match(page, /scanPromptEn|scanPromptAr/)
+  assert.match(page, /scanPrompt|admin\.scanPrompt/)
   assert.match(page, /AdminTableQr/)
   assert.match(page, /viewQr|admin\.viewQr/)
   assert.match(page, /print-sheet/)
