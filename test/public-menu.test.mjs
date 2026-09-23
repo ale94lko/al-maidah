@@ -29,13 +29,11 @@ test("public menu API requires a valid table query", () => {
   assert.doesNotMatch(api, /table = null/)
 })
 
-test("public menu helper returns sold-out dishes and vegetarian flag", () => {
+test("public menu helper hides sold-out dishes and includes vegetarian flag", () => {
   const helpers = read("server/utils/restaurant.ts")
   assert.match(helpers, /is_vegetarian/)
-  assert.match(
-    helpers,
-    /\.from\("menu_items"\)\s*\n\s*\.select\(PUBLIC_DISH_COLUMNS\)\s*\n\s*\.eq\("restaurant_id", restaurantId\)\s*\n\s*\.order\("sort_order"/,
-  )
+  assert.match(helpers, /\.eq\("is_available", true\)/)
+  assert.match(helpers, /\.eq\("is_archived", false\)/)
   const publicColumns = helpers.match(
     /const PUBLIC_DISH_COLUMNS =\s*\n?\s*"([^"]+)"/,
   )

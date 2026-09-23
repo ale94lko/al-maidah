@@ -46,6 +46,8 @@ export interface Category {
   name_en: string
   name_ar: string
   sort_order: number
+  is_archived: boolean
+  archived_at: string | null
   created_at: string
   updated_at: string
 }
@@ -64,6 +66,8 @@ export interface MenuItem {
   photo_url: string | null
   is_available: boolean
   is_vegetarian: boolean
+  is_archived: boolean
+  archived_at: string | null
   allergens: string[]
   sort_order: number
   created_at: string
@@ -100,6 +104,26 @@ export interface ModifierOption {
 
 export interface ModifierGroupWithOptions extends ModifierGroup {
   options: ModifierOption[]
+}
+
+export type ModifierOptionInput = {
+  id?: string
+  name_en: string
+  name_ar: string
+  price_extra?: string | number
+  sort_order?: number
+  is_available?: boolean
+}
+
+export type ModifierGroupInput = {
+  id?: string
+  name_en: string
+  name_ar: string
+  is_required?: boolean
+  min_select?: number
+  max_select?: number
+  sort_order?: number
+  options?: ModifierOptionInput[]
 }
 
 export interface SelectedModifierOption {
