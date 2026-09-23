@@ -3,7 +3,7 @@
 [![CI](https://github.com/ale94lko/al-maidah/actions/workflows/ci.yml/badge.svg)](https://github.com/ale94lko/al-maidah/actions/workflows/ci.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/ale94lko/al-maidah/badge)](https://scorecard.dev/viewer/?uri=github.com/ale94lko/al-maidah)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/14770/badge)](https://www.bestpractices.dev/projects/14770)
-[![Repo Health](https://gitscope-micro.vercel.app/api/badge?repo=ale94lko/al-maidah)](https://gitscope-micro.vercel.app/api/deliver?repo=ale94lko/al-maidah)
+[![Repo Health](https://raw.githubusercontent.com/ale94lko/al-maidah/output/badge.svg)](https://github.com/ale94lko/repo-health-score)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 QR digital menu for restaurants and cafés in the United Arab Emirates. A guest scans the table, builds an order, and the kitchen receives it live. The owner manages the menu and sees revenue, costs, and timing.
@@ -72,7 +72,7 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) and the [Code of Conduct](CODE_OF_CONDUC
 - OpenSSF Scorecard workflow publishes results used by the badge above.
 - CodeQL runs on pushes and pull requests.
 - Dependabot keeps GitHub Actions (and npm, once present) updated.
-- [Repo Health Score](.github/workflows/repo-health.yml) refreshes the GitScope badge on push and weekly.
+- [Repo Health Score](.github/workflows/repo-health.yml) publishes the community health badge via [ale94lko/repo-health-score](https://github.com/ale94lko/repo-health-score).
 - OpenSSF Best Practices: [docs/OPENSSF_BEST_PRACTICES.md](docs/OPENSSF_BEST_PRACTICES.md).
 
 ## License
