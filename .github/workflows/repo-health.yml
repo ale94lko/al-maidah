@@ -1,0 +1,56 @@
+name: Repo Health Score
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    # Weekly refresh so the live badge stays warm.
+    - cron: "0 0 * * 1"
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  repo-health-badge:
+    name: Repo Health Score badge
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Generate GitScope badge snippet
+        uses: promptpolish-ai/gitscope-action@f0c7982643fde53fc08238910bd9dd3ab54c2c08 # v1
+        with:
+          github-token: ${{ github.token }}
+
+      - name: Verify live Repo Health Score badge
+        shell: bash
+        env:
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          badge_url="https://gitscope-micro.vercel.app/api/badge?repo=${REPO}"
+          deliver_url="https://gitscope-micro.vercel.app/api/deliver?repo=${REPO}"
+
+          echo "Fetching ${badge_url}"
+          code="$(curl -fsS -o /tmp/repo-health.svg -w '%{http_code}' "${badge_url}")"
+          test "${code}" = "200"
+          grep -q '<svg' /tmp/repo-health.svg
+          echo "Badge SVG ok (${code})"
+
+          echo "Warming deliver page ${deliver_url}"
+          curl -fsS -o /dev/null -w 'deliver=%{http_code}\n' "${deliver_url}"
+
+          expected="[![Repo Health](${badge_url})](${deliver_url})"
+          if ! grep -F "${expected}" README.md; then
+            echo "README.md is missing the Repo Health Score badge:"
+            echo "${expected}"
+            exit 1
+          fi
+          echo "README badge is present"

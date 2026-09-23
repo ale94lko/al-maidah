@@ -47,6 +47,7 @@ jobs:
             .github/workflows/ci.yml
             .github/workflows/scorecard.yml
             .github/workflows/codeql.yml
+            .github/workflows/repo-health.yml
           )
           for path in "${required[@]}"; do
             if [[ ! -f "$path" ]]; then
