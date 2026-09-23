@@ -16,7 +16,7 @@ async function onSignOut() {
       class="shell-header flex shrink-0 items-center justify-between gap-3 px-4 py-3 sm:px-6"
     >
       <div class="min-w-0">
-        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--citrus)]">
+        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--gold)]">
           {{ t("kitchen.title") }}
         </p>
         <p class="font-display truncate text-2xl font-bold tracking-tight text-white">

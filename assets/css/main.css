@@ -18,9 +18,14 @@
   --warning: var(--citrus-deep);
   --danger: var(--chili);
   --danger-deep: var(--chili-deep);
-  --paper: #f7faf5;
-  --paper-deep: #e4efe0;
-  --ink: #0f1c14;
+  --paper: #f4f1e6;
+  --paper-deep: #e7e2d4;
+  --ink: #1b2740;
+  --sage: #8ea394;
+  --sage-deep: #6d8776;
+  --navy: #1b2740;
+  --nav: #2c3330;
+  --gold: #c6a15b;
   --muted: #5c6f62;
   --surface: #ffffff;
   --kitchen: #0a130e;
@@ -214,14 +219,9 @@ body:has(.kitchen-shell) {
     transform: translateY(-2px);
   }
 
-  .metric-tile {
-    @apply rounded-3xl border bg-white p-5;
-    border-color: color-mix(in srgb, var(--ink) 8%, transparent);
-  }
-
   .metric-tile .value {
-    @apply mt-3 font-display text-3xl font-extrabold tracking-tight;
-    color: var(--ink);
+    @apply mt-2 font-display text-3xl font-extrabold tracking-tight;
+    color: var(--navy);
   }
 
   .kitchen-ticket {
@@ -232,9 +232,26 @@ body:has(.kitchen-shell) {
 
   .admin-shell {
     background:
-      radial-gradient(ellipse 50% 40% at 100% 0%, rgba(255, 193, 7, 0.16), transparent 50%),
-      radial-gradient(ellipse 45% 35% at 0% 100%, rgba(47, 158, 68, 0.14), transparent 50%),
+      radial-gradient(ellipse 40% 30% at 0% 0%, rgba(198, 161, 91, 0.18), transparent 55%),
+      radial-gradient(ellipse 35% 28% at 100% 100%, rgba(142, 163, 148, 0.22), transparent 50%),
       var(--paper);
+  }
+
+  .admin-pill {
+    @apply inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold whitespace-nowrap transition;
+    background: var(--sage);
+    color: #fff;
+  }
+
+  .admin-pill.is-active {
+    background: #eef3fb;
+    color: var(--navy);
+    box-shadow: 0 8px 18px -12px rgba(27, 39, 64, 0.45);
+  }
+
+  .metric-tile {
+    @apply rounded-2xl border bg-white p-4;
+    border-color: color-mix(in srgb, var(--navy) 8%, transparent);
   }
 
   .admin-workspace {
@@ -359,28 +376,24 @@ body:has(.kitchen-shell) {
   }
 
   .guest-header .lang-segment,
-  .admin-shell aside .lang-segment,
   .kitchen-shell .lang-segment {
     border-color: rgba(255, 255, 255, 0.15);
     background: rgba(0, 0, 0, 0.25);
   }
 
   .guest-header .lang-segment button:not(.is-active),
-  .admin-shell aside .lang-segment button:not(.is-active),
   .kitchen-shell .lang-segment button:not(.is-active) {
     color: rgba(255, 255, 255, 0.65);
   }
 
   .guest-header .lang-segment button.is-active,
-  .admin-shell aside .lang-segment button.is-active,
   .kitchen-shell .lang-segment button.is-active {
     background: var(--info);
     color: #fff;
   }
 
   .guest-header {
-    background:
-      linear-gradient(135deg, var(--ink) 0%, #163222 55%, var(--herb-deep) 100%);
+    background: linear-gradient(135deg, var(--navy) 0%, #24344f 55%, var(--sage-deep) 140%);
     color: white;
   }
 
