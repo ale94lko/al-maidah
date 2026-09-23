@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Supabase multi-tenant schema, RLS deny-by-default for order writes, and demo seed restaurant (MVP-02).
 - Shared domain types plus browser (anon) and server (service role) Supabase clients with restaurant/menu helpers (MVP-03).
 - Owner email/password auth, multi-tenant RLS, and session guards for `/admin` and `/kitchen` (MVP-04).
+- Distinct guest, kitchen, and admin layouts with shared loading/empty states (MVP-05).
 
 ## [0.1.0] - 2026-09-23
 
