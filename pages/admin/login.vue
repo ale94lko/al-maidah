@@ -48,9 +48,9 @@ async function onSubmit() {
         <div class="w-full max-w-md">
           <div class="mb-8 text-center">
             <img
-              src="/logo.svg"
+              src="/logo.png"
               alt="Al-Maidah"
-              class="mx-auto h-48 w-48 sm:h-56 sm:w-56"
+              class="mx-auto h-48 w-48 object-contain sm:h-56 sm:w-56"
               width="224"
               height="224"
             >
