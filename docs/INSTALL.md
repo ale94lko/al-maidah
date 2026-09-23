@@ -43,6 +43,16 @@ Public menu endpoint (server uses the service role; guests never receive `cost_p
 curl "http://localhost:3000/api/menu/demo?table=1"
 ```
 
+### Stripe webhook (local)
+
+Point the Stripe CLI at `POST /api/stripe/webhook` so `payment_intent.succeeded` can mark orders paid:
+
+```bash
+stripe listen --forward-to localhost:3000/api/stripe/webhook
+```
+
+Copy the printed `whsec_…` into `STRIPE_WEBHOOK_SECRET` in `.env`. The handler verifies the signature, is idempotent on retries, and never marks cash orders paid from Stripe.
+
 Owner auth:
 
 - Sign up: [http://localhost:3000/admin/signup](http://localhost:3000/admin/signup)

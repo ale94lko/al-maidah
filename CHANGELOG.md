@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Guest cart with dish modifiers, notes, quantity edits, and a fixed bar to `/m/{slug}/cart` (MVP-08).
 - Checkout with server-side 5% UAE VAT and pending `orders` / `order_items` creation (MVP-09).
 - AED payments via Stripe PaymentIntent (Google Pay / card Express Checkout) and cash at the table (MVP-10).
+- Stripe webhook verifies signatures and marks online orders paid exactly once (MVP-11).
 
 ## [0.1.0] - 2026-09-23
 
