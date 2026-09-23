@@ -46,6 +46,8 @@ jobs:
             .env.example
             .editorconfig
             docs/INSTALL.md
+            supabase/config.toml
+            supabase/seed.sql
             .github/CODEOWNERS
             .github/dependabot.yml
             .github/PULL_REQUEST_TEMPLATE.md
@@ -54,6 +56,11 @@ jobs:
             .github/workflows/codeql.yml
             .github/workflows/repo-health.yml
           )
+          if ! compgen -G "supabase/migrations/*.sql" > /dev/null; then
+            echo "Missing supabase/migrations/*.sql"
+            exit 1
+          fi
+          echo "ok supabase/migrations/*.sql"
           for path in "${required[@]}"; do
             if [[ ! -f "$path" ]]; then
               echo "Missing required file: $path"
@@ -95,3 +102,85 @@ jobs:
             exit 1
           fi
           echo "No obvious committed secrets"
+
+  apply-supabase-schema:
+    name: Apply Supabase schema and seed
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_DB: al_maidah
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d al_maidah"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install psql client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Apply migration and seed on an empty database
+        env:
+          PGPASSWORD: postgres
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PGHOST=localhost
+          export PGUSER=postgres
+          export PGDATABASE=al_maidah
+
+          # Minimal Auth stub so restaurant_owners can reference auth.users.
+          psql -v ON_ERROR_STOP=1 <<'SQL'
+          create schema if not exists auth;
+          create table if not exists auth.users (
+            id uuid primary key
+          );
+          create role anon nologin;
+          create role authenticated nologin;
+          SQL
+
+          for migration in supabase/migrations/*.sql; do
+            echo "Applying ${migration}"
+            psql -v ON_ERROR_STOP=1 -f "${migration}"
+          done
+
+          echo "Applying supabase/seed.sql"
+          psql -v ON_ERROR_STOP=1 -f supabase/seed.sql
+
+          psql -v ON_ERROR_STOP=1 <<'SQL'
+          do $$
+          begin
+            if (select count(*) from public.restaurants) <> 1 then
+              raise exception 'expected 1 demo restaurant';
+            end if;
+            if (select count(*) from public.tables) < 3 then
+              raise exception 'expected demo tables';
+            end if;
+            if (select count(*) from public.categories) < 3 then
+              raise exception 'expected demo categories';
+            end if;
+            if (select count(*) from public.menu_items) < 4 then
+              raise exception 'expected demo dishes';
+            end if;
+            if exists (
+              select 1
+              from information_schema.columns
+              where table_schema = 'public'
+                and column_name in (
+                  'price', 'cost_price', 'price_extra', 'subtotal', 'vat',
+                  'tip', 'total', 'total_cost', 'unit_price', 'unit_cost'
+                )
+                and data_type <> 'numeric'
+            ) then
+              raise exception 'money columns must be numeric';
+            end if;
+          end $$;
+          SQL

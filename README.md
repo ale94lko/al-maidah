@@ -57,7 +57,7 @@ Do not commit secrets.
 
 ## How to build it
 
-Each MVP piece is tracked as an issue, in implementation order. This scaffold closes **MVP-01**.
+Each MVP piece is tracked as an issue, in implementation order. The Supabase schema and demo seed close **MVP-02**.
 
 ## Contributing
 

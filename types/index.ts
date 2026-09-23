@@ -15,3 +15,9 @@ export type OrderStatus =
   | "cancelled"
 
 export type PaymentStatus = "pending" | "paid" | "refunded"
+
+export type PaymentMethod =
+  | "google_pay"
+  | "apple_pay"
+  | "card"
+  | "cash_at_table"
