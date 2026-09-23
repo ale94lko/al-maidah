@@ -12,7 +12,7 @@ const emit = defineEmits<{
 
 <template>
   <div
-    class="fixed inset-0 z-40 flex items-center justify-center bg-[var(--espresso)]/95 px-6 backdrop-blur-sm"
+    class="fixed inset-0 z-40 flex items-center justify-center bg-[var(--chili)]/95 px-6 backdrop-blur-sm"
     role="dialog"
     aria-modal="true"
     aria-labelledby="kitchen-start-shift-title"
@@ -20,13 +20,13 @@ const emit = defineEmits<{
     <div class="w-full max-w-md space-y-6 text-center">
       <div class="space-y-2">
         <p
-          class="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--brass)]"
+          class="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--citrus-deep)]"
         >
           {{ t("kitchen.title") }}
         </p>
         <h2
           id="kitchen-start-shift-title"
-          class="font-display text-2xl font-semibold tracking-tight text-[var(--ivory)] sm:text-3xl"
+          class="font-display text-2xl font-bold tracking-tight text-[var(--ivory)] sm:text-3xl"
         >
           {{ t("kitchen.startShiftTitle") }}
         </h2>
@@ -36,7 +36,7 @@ const emit = defineEmits<{
       </div>
       <button
         type="button"
-        class="w-full rounded-xl bg-[var(--olive)] px-4 py-3.5 text-base font-semibold text-[var(--ivory)] hover:bg-[var(--olive-deep)] disabled:opacity-60"
+        class="w-full rounded-2xl bg-[var(--herb)] px-4 py-3.5 text-base font-semibold text-[var(--ivory)] hover:bg-[var(--herb-deep)] disabled:opacity-60"
         :disabled="busy"
         @click="emit('start')"
       >

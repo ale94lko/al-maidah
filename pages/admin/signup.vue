@@ -50,7 +50,7 @@ async function onSubmit() {
           v-model="restaurantName"
           type="text"
           required
-          class="mt-1 w-full rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
+          class="mt-1 w-full rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
         >
       </label>
       <label class="block text-sm font-medium text-[var(--espresso)]">
@@ -60,7 +60,7 @@ async function onSubmit() {
           type="text"
           pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
           placeholder="my-cafe"
-          class="mt-1 w-full rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
+          class="mt-1 w-full rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
         >
       </label>
       <label class="block text-sm font-medium text-[var(--espresso)]">
@@ -68,7 +68,7 @@ async function onSubmit() {
         <input
           v-model="trn"
           type="text"
-          class="mt-1 w-full rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
+          class="mt-1 w-full rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
         >
       </label>
       <label class="block text-sm font-medium text-[var(--espresso)]">
@@ -78,7 +78,7 @@ async function onSubmit() {
           type="email"
           required
           autocomplete="email"
-          class="mt-1 w-full rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
+          class="mt-1 w-full rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
         >
       </label>
       <label class="block text-sm font-medium text-[var(--espresso)]">
@@ -89,7 +89,7 @@ async function onSubmit() {
           required
           minlength="8"
           autocomplete="new-password"
-          class="mt-1 w-full rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
+          class="mt-1 w-full rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
         >
       </label>
       <p v-if="errorMessage" class="text-sm text-rose-700">
@@ -106,7 +106,7 @@ async function onSubmit() {
 
     <p class="mt-6 text-sm text-[var(--muted)]">
       {{ t("admin.alreadyRegistered") }}
-      <NuxtLink to="/admin/login" class="font-medium text-[var(--olive)] underline">
+      <NuxtLink to="/admin/login" class="font-medium text-[var(--herb)] underline">
         {{ t("common.signIn") }}
       </NuxtLink>
     </p>

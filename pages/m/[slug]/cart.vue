@@ -176,17 +176,17 @@ onMounted(() => {
     <div v-else-if="ready" class="space-y-5">
       <div class="flex items-center justify-between gap-3">
         <div class="min-w-0">
-          <h1 class="font-display text-xl font-semibold tracking-tight text-[var(--espresso)]">
+          <h1 class="font-display text-xl font-bold tracking-tight text-[var(--espresso)]">
             {{ t("guest.cartTitle") }}
           </h1>
           <p
             v-if="tableNumber != null"
-            class="mt-1 text-xs font-medium uppercase tracking-[0.14em] text-[var(--brass)]"
+            class="mt-1 text-xs font-medium uppercase tracking-[0.14em] text-[var(--citrus-deep)]"
           >
             {{ t("guest.tableLabelCheckout", { n: tableNumber }) }}
           </p>
         </div>
-        <NuxtLink :to="menuPath" class="text-sm font-medium text-[var(--olive)]">
+        <NuxtLink :to="menuPath" class="text-sm font-medium text-[var(--herb)]">
           {{ t("guest.browseMenu") }}
         </NuxtLink>
       </div>
@@ -233,7 +233,7 @@ onMounted(() => {
                   {{ item.notes }}
                 </p>
               </div>
-              <p class="shrink-0 font-mono text-sm text-[var(--olive)]">
+              <p class="shrink-0 font-mono text-sm text-[var(--herb)]">
                 {{ t("guest.priceAed", { price: lineTotal(item) }) }}
               </p>
             </div>
@@ -242,7 +242,7 @@ onMounted(() => {
               <div class="flex items-center gap-2">
                 <button
                   type="button"
-                  class="h-9 w-9 rounded-xl border border-[var(--espresso)]/20 bg-[var(--ivory)] text-base font-semibold text-[var(--espresso)]"
+                  class="h-9 w-9 rounded-2xl border border-[var(--espresso)]/20 bg-[var(--ivory)] text-base font-semibold text-[var(--espresso)]"
                   :aria-label="t('guest.decreaseQty')"
                   @click="setQuantity(cartLineKey(item), item.quantity - 1)"
                 >
@@ -253,7 +253,7 @@ onMounted(() => {
                 </span>
                 <button
                   type="button"
-                  class="h-9 w-9 rounded-xl border border-[var(--espresso)]/20 bg-[var(--ivory)] text-base font-semibold text-[var(--espresso)]"
+                  class="h-9 w-9 rounded-2xl border border-[var(--espresso)]/20 bg-[var(--ivory)] text-base font-semibold text-[var(--espresso)]"
                   :aria-label="t('guest.increaseQty')"
                   @click="setQuantity(cartLineKey(item), item.quantity + 1)"
                 >
@@ -279,7 +279,7 @@ onMounted(() => {
             v-model="guestName"
             type="text"
             :placeholder="t('guest.guestNamePlaceholder')"
-            class="w-full rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--ink)] outline-none ring-[var(--olive)]/30 placeholder:text-[var(--muted)] focus:ring-2"
+            class="w-full rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--ink)] outline-none ring-[var(--herb)]/30 placeholder:text-[var(--muted)] focus:ring-2"
             autocomplete="name"
           />
         </label>
@@ -292,7 +292,7 @@ onMounted(() => {
             class="flex cursor-pointer gap-3 rounded-2xl border px-3 py-3"
             :class="
               paymentMethod === 'cash_at_table'
-                ? 'border-[var(--olive)] bg-[var(--olive)] text-[var(--ivory)]'
+                ? 'border-[var(--herb)] bg-[var(--herb)] text-[var(--ivory)]'
                 : 'border-[var(--espresso)]/15 bg-[var(--ivory)] text-[var(--espresso)]'
             "
           >
@@ -311,7 +311,7 @@ onMounted(() => {
             class="flex cursor-pointer gap-3 rounded-2xl border px-3 py-3"
             :class="
               paymentMethod === 'card'
-                ? 'border-[var(--olive)] bg-[var(--olive)] text-[var(--ivory)]'
+                ? 'border-[var(--herb)] bg-[var(--herb)] text-[var(--ivory)]'
                 : 'border-[var(--espresso)]/15 bg-[var(--ivory)] text-[var(--espresso)]'
             "
           >

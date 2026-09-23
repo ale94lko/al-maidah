@@ -16,7 +16,7 @@ withDefaults(
     aria-live="polite"
   >
     <span
-      class="h-8 w-8 animate-spin rounded-xl border-2 border-current border-r-transparent opacity-70"
+      class="h-8 w-8 animate-spin rounded-2xl border-2 border-current border-r-transparent opacity-70"
       aria-hidden="true"
     />
     <p class="text-sm font-medium tracking-wide">

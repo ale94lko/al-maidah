@@ -10,16 +10,16 @@ async function onSignOut() {
 
 <template>
   <div
-    class="kitchen-shell flex min-h-dvh flex-col bg-[var(--espresso)] text-[var(--ivory)]"
+    class="kitchen-shell flex min-h-dvh flex-col bg-[var(--kitchen)] text-[var(--paper)]"
   >
     <header
       class="shell-header flex shrink-0 items-center justify-between gap-3 px-4 py-3 sm:px-6"
     >
       <div class="min-w-0">
-        <p class="eyebrow text-[var(--brass)]">
+        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--citrus)]">
           {{ t("kitchen.title") }}
         </p>
-        <p class="font-display truncate text-xl font-semibold tracking-tight text-[var(--ivory)]">
+        <p class="font-display truncate text-2xl font-bold tracking-tight text-white">
           {{ t("kitchen.ticketBoard") }}
         </p>
       </div>
@@ -27,7 +27,7 @@ async function onSignOut() {
         <LanguageSwitcher />
         <span
           v-if="user?.email"
-          class="hidden max-w-[14rem] truncate text-xs text-[var(--brass-soft)]/70 sm:inline"
+          class="hidden max-w-[14rem] truncate text-xs text-white/45 sm:inline"
         >
           {{ user.email }}
         </span>
@@ -40,6 +40,9 @@ async function onSignOut() {
         </button>
       </div>
     </header>
+    <div class="accent-bar shrink-0" aria-hidden="true">
+      <span /><span /><span />
+    </div>
 
     <main class="min-h-0 flex-1 overflow-auto p-4 sm:p-6">
       <slot />

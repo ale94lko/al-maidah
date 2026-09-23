@@ -112,7 +112,7 @@ function onPrint() {
   <div>
     <div class="no-print flex flex-wrap items-start justify-between gap-4">
       <div>
-        <h1 class="font-display text-3xl font-semibold tracking-tight text-[var(--espresso)]">
+        <h1 class="font-display text-3xl font-bold tracking-tight text-[var(--espresso)]">
           {{ t("admin.tablesTitle") }}
         </h1>
         <p class="mt-2 text-sm text-[var(--muted)]">
@@ -126,7 +126,7 @@ function onPrint() {
         >
           {{ t("admin.restaurant") }}
           <select
-            class="rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--espresso)]"
+            class="rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--espresso)]"
             :value="restaurantId ?? undefined"
             @change="onRestaurantChange"
           >
@@ -187,14 +187,14 @@ function onPrint() {
                 type="number"
                 min="1"
                 step="1"
-                class="rounded-xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+                class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
               >
             </label>
             <label class="flex min-w-[10rem] flex-1 flex-col gap-1 text-xs text-[var(--muted)]">
               {{ t("admin.tableLabelOptional") }}
               <input
                 v-model="newLabel"
-                class="rounded-xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+                class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
               >
             </label>
             <button
@@ -224,7 +224,7 @@ function onPrint() {
                     {{ table.label }}
                   </span>
                 </p>
-                <p class="truncate font-mono text-xs text-[var(--olive)]/80">
+                <p class="truncate font-mono text-xs text-[var(--herb)]/80">
                   {{ menuUrlForTable(table.table_number) }}
                 </p>
               </div>
@@ -234,7 +234,7 @@ function onPrint() {
                     v-model.number="editNumber"
                     type="number"
                     min="1"
-                    class="w-20 rounded-xl border border-[var(--espresso)]/15 px-2 py-1 text-sm"
+                    class="w-20 rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-sm"
                   >
                   <button
                     type="button"
@@ -246,7 +246,7 @@ function onPrint() {
                   </button>
                   <button
                     type="button"
-                    class="rounded-xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
+                    class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
                     @click="editingId = null"
                   >
                     {{ t("admin.cancel") }}
@@ -255,7 +255,7 @@ function onPrint() {
                 <template v-else>
                   <button
                     type="button"
-                    class="rounded-xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
+                    class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
                     :disabled="saving"
                     @click="startRenumber(table.id, table.table_number)"
                   >
@@ -263,7 +263,7 @@ function onPrint() {
                   </button>
                   <button
                     type="button"
-                    class="rounded-xl border border-red-300 px-2 py-1 text-xs text-rose-700"
+                    class="rounded-2xl border border-red-300 px-2 py-1 text-xs text-rose-700"
                     :disabled="saving"
                     @click="onRemove(table.id, table.table_number)"
                   >
@@ -295,13 +295,13 @@ function onPrint() {
             :key="`print-${table.id}`"
             class="print-sheet mx-auto flex max-w-sm flex-col items-center gap-4 rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] p-8 text-center"
           >
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--olive)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--herb)]">
               Al-Maidah
             </p>
-            <h3 class="text-2xl font-semibold tracking-tight text-[var(--espresso)]">
+            <h3 class="text-2xl font-bold tracking-tight text-[var(--espresso)]">
               {{ restaurant.name }}
             </h3>
-            <p class="text-4xl font-bold tabular-nums text-[var(--olive)]">
+            <p class="text-4xl font-bold tabular-nums text-[var(--herb)]">
               {{ t("admin.tableHeading", { n: table.table_number }) }}
             </p>
             <AdminTableQr

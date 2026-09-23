@@ -291,10 +291,10 @@ onBeforeUnmount(() => {
     />
     <div v-else class="space-y-5">
       <div>
-        <p class="text-xs font-medium uppercase tracking-[0.14em] text-[var(--brass)]">
+        <p class="text-xs font-medium uppercase tracking-[0.14em] text-[var(--citrus-deep)]">
           {{ statusEyebrow }}
         </p>
-        <h1 class="font-display mt-1 text-xl font-semibold tracking-tight text-[var(--espresso)]">
+        <h1 class="font-display mt-1 text-xl font-bold tracking-tight text-[var(--espresso)]">
           {{ kitchenHeadline }}
         </h1>
         <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
@@ -302,7 +302,7 @@ onBeforeUnmount(() => {
         </p>
         <p
           v-if="order.table_number != null"
-          class="mt-2 text-sm font-medium text-[var(--olive)]"
+          class="mt-2 text-sm font-medium text-[var(--herb)]"
         >
           {{ t("guest.tableLabelCheckout", { n: order.table_number }) }}
         </p>
@@ -325,11 +325,11 @@ onBeforeUnmount(() => {
           class="flex items-center gap-3"
         >
           <span
-            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-xs font-bold"
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl text-xs font-bold"
             :class="{
-              'bg-[var(--espresso)] text-[var(--ivory)]': stepState(step.status) === 'current',
-              'bg-[var(--olive)]/15 text-[var(--olive-deep)]': stepState(step.status) === 'done',
-              'bg-[var(--espresso)]/5 text-[var(--muted)]': stepState(step.status) === 'upcoming',
+              'bg-[var(--chili)] text-[var(--ivory)]': stepState(step.status) === 'current',
+              'bg-[var(--herb)]/15 text-[var(--olive-deep)]': stepState(step.status) === 'done',
+              'bg-[var(--chili)]/5 text-[var(--muted)]': stepState(step.status) === 'upcoming',
             }"
             aria-hidden="true"
           >
@@ -373,7 +373,7 @@ onBeforeUnmount(() => {
                   </li>
                 </ul>
               </div>
-              <p class="shrink-0 font-mono text-sm text-[var(--olive)]">
+              <p class="shrink-0 font-mono text-sm text-[var(--herb)]">
                 {{ t("guest.priceAed", { price: lineAmount(item) }) }}
               </p>
             </div>

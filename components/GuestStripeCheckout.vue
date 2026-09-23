@@ -60,8 +60,8 @@ onMounted(async () => {
       appearance: {
         theme: "stripe",
         variables: {
-          colorPrimary: "#134e4a",
-          borderRadius: "12px",
+          colorPrimary: "#e03131",
+          borderRadius: "16px",
         },
       },
     })
@@ -148,10 +148,10 @@ async function confirmPayment() {
       >
         {{ t("guest.orPayWithCard") }}
       </p>
-      <div ref="paymentMount" class="rounded-xl bg-white p-1" />
+      <div ref="paymentMount" class="rounded-2xl bg-white p-1" />
       <button
         type="button"
-        class="w-full rounded-2xl bg-[var(--espresso)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
+        class="w-full rounded-2xl bg-[var(--chili)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
         :disabled="!cardReady || confirming"
         @click="confirmPayment"
       >

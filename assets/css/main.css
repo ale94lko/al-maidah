@@ -4,44 +4,56 @@
 
 :root {
   color-scheme: light;
-  /* Maidah night table */
-  --espresso: #1a1410;
-  --olive: #3d4f3f;
-  --olive-deep: #2a372c;
-  --brass: #c4a574;
-  --brass-soft: #d4bc94;
-  --ivory: #f3efe6;
-  --ivory-deep: #e8e1d4;
-  --ink: #1c1612;
-  --muted: #6b5e52;
-  --surface: rgba(255, 252, 247, 0.88);
-  --brand: var(--olive);
-  --brand-ink: var(--olive-deep);
-  --sand: var(--ivory);
+  /* Fresh market — tomato, herb, citrus */
+  --chili: #e03131;
+  --chili-deep: #c92a2a;
+  --herb: #2f9e44;
+  --herb-deep: #2b8a3e;
+  --citrus: #fab005;
+  --citrus-soft: #ffd43b;
+  --citrus-deep: #f59f00;
+  --paper: #f5faf3;
+  --paper-deep: #e6f0e2;
+  --ink: #102018;
+  --muted: #5a6b60;
+  --surface: #ffffff;
+  --kitchen: #0c1610;
+  --kitchen-panel: #14241a;
+  --brand: var(--herb);
+  --brand-ink: var(--herb-deep);
+  /* Compat aliases used across templates */
+  --espresso: var(--ink);
+  --olive: var(--herb);
+  --olive-deep: var(--herb-deep);
+  --brass: var(--citrus-deep);
+  --brass-soft: var(--citrus);
+  --ivory: var(--paper);
+  --ivory-deep: var(--paper-deep);
+  --sand: var(--paper);
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: var(--ivory);
+  background-color: var(--paper);
   background-image:
-    radial-gradient(ellipse 80% 50% at 0% 0%, rgba(61, 79, 63, 0.14), transparent 55%),
-    radial-gradient(ellipse 60% 40% at 100% 10%, rgba(196, 165, 116, 0.16), transparent 50%),
-    linear-gradient(165deg, var(--ivory) 0%, var(--ivory-deep) 100%);
+    radial-gradient(ellipse 70% 45% at 0% -10%, rgba(47, 158, 68, 0.16), transparent 55%),
+    radial-gradient(ellipse 55% 40% at 100% 0%, rgba(250, 176, 5, 0.18), transparent 50%),
+    radial-gradient(ellipse 40% 30% at 80% 100%, rgba(224, 49, 49, 0.08), transparent 50%);
   color: var(--ink);
-  font-family: "Figtree", "Segoe UI", sans-serif;
+  font-family: "Manrope", "Segoe UI", sans-serif;
 }
 
 body:has(.kitchen-shell) {
-  background: var(--espresso);
+  background: var(--kitchen);
   background-image:
-    radial-gradient(ellipse 70% 45% at 20% 0%, rgba(61, 79, 63, 0.35), transparent 55%),
-    radial-gradient(ellipse 50% 30% at 100% 100%, rgba(196, 165, 116, 0.08), transparent 45%);
-  color: #f3efe6;
+    radial-gradient(ellipse 60% 40% at 10% 0%, rgba(47, 158, 68, 0.28), transparent 55%),
+    radial-gradient(ellipse 45% 35% at 100% 80%, rgba(250, 176, 5, 0.12), transparent 50%);
+  color: #f5faf3;
 }
 
 .font-display {
-  font-family: "Fraunces", "Georgia", serif;
+  font-family: "Syne", "Segoe UI", sans-serif;
   font-optical-sizing: auto;
 }
 
@@ -51,10 +63,9 @@ body:has(.kitchen-shell) {
 }
 
 [dir="rtl"] body {
-  font-family: "Figtree", "Tahoma", "Segoe UI", sans-serif;
+  font-family: "Manrope", "Tahoma", "Segoe UI", sans-serif;
 }
 
-/* Keep flex shells stable in RTL for guest cart / kitchen kanban / admin nav. */
 .client-shell,
 .kitchen-shell,
 .admin-shell {
@@ -63,73 +74,133 @@ body:has(.kitchen-shell) {
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition;
-    background: var(--espresso);
-    color: var(--ivory);
+    @apply inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-bold tracking-tight transition;
+    background: var(--chili);
+    color: #fff;
+    box-shadow: 0 10px 24px -12px rgba(224, 49, 49, 0.55);
   }
 
   .btn-primary:hover {
-    background: var(--olive-deep);
+    background: var(--chili-deep);
   }
 
   .btn-primary:disabled {
-    @apply opacity-60;
+    @apply opacity-60 shadow-none;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-xl border px-4 py-2.5 text-sm font-semibold transition;
-    border-color: rgba(26, 20, 16, 0.18);
+    @apply inline-flex items-center justify-center rounded-2xl border px-5 py-3 text-sm font-bold tracking-tight transition;
+    border-color: color-mix(in srgb, var(--herb) 35%, transparent);
     background: var(--surface);
-    color: var(--ink);
+    color: var(--herb-deep);
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--herb);
+    background: color-mix(in srgb, var(--herb) 8%, white);
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center rounded-xl border px-3 py-1.5 text-sm transition;
-    border-color: rgba(243, 239, 230, 0.2);
-    color: var(--ivory);
+    @apply inline-flex items-center justify-center rounded-2xl border px-3 py-1.5 text-sm font-semibold transition;
+    border-color: rgba(245, 250, 243, 0.18);
+    color: #f5faf3;
+  }
+
+  .btn-ghost:hover {
+    background: rgba(245, 250, 243, 0.08);
   }
 
   .surface-card {
-    @apply rounded-2xl border p-5;
-    border-color: rgba(26, 20, 16, 0.08);
+    @apply rounded-3xl border p-5;
+    border-color: color-mix(in srgb, var(--ink) 8%, transparent);
     background: var(--surface);
-    box-shadow: 0 1px 0 rgba(26, 20, 16, 0.04);
+    box-shadow: 0 12px 32px -20px rgba(16, 32, 24, 0.35);
   }
 
   .shell-header {
-    @apply sticky top-0 z-20 border-b backdrop-blur;
-    border-color: rgba(26, 20, 16, 0.08);
-    background: color-mix(in srgb, var(--ivory) 92%, transparent);
+    @apply sticky top-0 z-20 border-b backdrop-blur-xl;
+    border-color: color-mix(in srgb, var(--ink) 8%, transparent);
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
   }
 
   .kitchen-shell .shell-header {
-    border-color: rgba(196, 165, 116, 0.15);
-    background: color-mix(in srgb, var(--espresso) 92%, transparent);
+    border-color: rgba(245, 250, 243, 0.08);
+    background: color-mix(in srgb, var(--kitchen) 90%, transparent);
   }
 
   .nav-pill-active {
-    @apply rounded-xl px-3 py-2 text-sm font-semibold;
-    background: var(--olive);
-    color: var(--ivory);
+    @apply rounded-2xl px-3 py-2 text-sm font-bold;
+    background: var(--chili);
+    color: #fff;
   }
 
   .nav-pill {
-    @apply rounded-xl px-3 py-2 text-sm font-medium transition;
-    color: color-mix(in srgb, var(--ink) 75%, transparent);
+    @apply rounded-2xl px-3 py-2 text-sm font-semibold transition;
+    color: color-mix(in srgb, var(--ink) 70%, transparent);
   }
 
   .nav-pill:hover {
-    background: rgba(61, 79, 63, 0.08);
+    background: color-mix(in srgb, var(--herb) 10%, transparent);
   }
 
   .eyebrow {
-    @apply text-xs font-semibold uppercase tracking-[0.18em];
-    color: var(--olive);
+    @apply text-[11px] font-bold uppercase tracking-[0.2em];
+    color: var(--herb-deep);
   }
 
   .metric-label {
-    @apply text-xs font-semibold uppercase tracking-[0.14em];
+    @apply text-[11px] font-bold uppercase tracking-[0.16em];
     color: var(--muted);
+  }
+
+  .accent-bar {
+    display: flex;
+    height: 0.35rem;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 999px;
+  }
+
+  .accent-bar > span:nth-child(1) {
+    flex: 1.1;
+    background: var(--chili);
+  }
+
+  .accent-bar > span:nth-child(2) {
+    flex: 1;
+    background: var(--herb);
+  }
+
+  .accent-bar > span:nth-child(3) {
+    flex: 0.9;
+    background: var(--citrus);
+  }
+
+  .dish-row {
+    @apply overflow-hidden rounded-3xl border bg-white transition;
+    border-color: color-mix(in srgb, var(--ink) 8%, transparent);
+    box-shadow: 0 8px 24px -18px rgba(16, 32, 24, 0.4);
+  }
+
+  .dish-row:hover {
+    border-color: color-mix(in srgb, var(--herb) 35%, transparent);
+    transform: translateY(-1px);
+  }
+
+  .metric-tile {
+    @apply rounded-3xl border bg-white p-5;
+    border-color: color-mix(in srgb, var(--ink) 8%, transparent);
+  }
+
+  .metric-tile .value {
+    @apply mt-3 font-display text-3xl font-bold tracking-tight;
+    color: var(--ink);
+  }
+
+  .kitchen-ticket {
+    @apply flex flex-col gap-3 rounded-3xl border p-4;
+    border-color: rgba(245, 250, 243, 0.1);
+    background: var(--kitchen-panel);
   }
 }
 

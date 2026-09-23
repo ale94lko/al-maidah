@@ -133,7 +133,7 @@ async function onInstall() {
     <div v-else class="space-y-4" :class="{ 'pt-14': visualAlertActive }">
       <div class="flex flex-wrap items-end justify-between gap-3">
         <div class="min-w-0">
-          <h1 class="font-display text-xl font-semibold tracking-tight text-[var(--ivory)] sm:text-2xl">
+          <h1 class="font-display text-xl font-bold tracking-tight text-[var(--ivory)] sm:text-2xl">
             {{ t("kitchen.ticketBoard") }}
           </h1>
           <p class="mt-1 text-sm text-[var(--brass-soft)]/70">
@@ -161,7 +161,7 @@ async function onInstall() {
           >
             {{ t("kitchen.restaurant") }}
             <select
-              class="rounded-xl border border-[var(--brass)]/20 bg-[color-mix(in_srgb,var(--espresso)_88%,#2a241c)] px-3 py-2 text-sm text-[var(--ivory)]"
+              class="rounded-2xl border border-[var(--brass)]/20 bg-[color-mix(in_srgb,var(--espresso)_88%,#2a241c)] px-3 py-2 text-sm text-[var(--ivory)]"
               :value="restaurantId ?? undefined"
               @change="onRestaurantChange"
             >

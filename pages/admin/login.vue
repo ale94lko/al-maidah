@@ -47,7 +47,7 @@ async function onSubmit() {
           type="email"
           required
           autocomplete="email"
-          class="mt-1 w-full rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
+          class="mt-1 w-full rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
         >
       </label>
       <label class="block text-sm font-medium text-[var(--espresso)]">
@@ -58,7 +58,7 @@ async function onSubmit() {
           required
           minlength="8"
           autocomplete="current-password"
-          class="mt-1 w-full rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
+          class="mt-1 w-full rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
         >
       </label>
       <p v-if="errorMessage" class="text-sm text-rose-700">
@@ -75,7 +75,7 @@ async function onSubmit() {
 
     <p class="mt-6 text-sm text-[var(--muted)]">
       {{ t("admin.newRestaurant") }}
-      <NuxtLink to="/admin/signup" class="font-medium text-[var(--olive)] underline">
+      <NuxtLink to="/admin/signup" class="font-medium text-[var(--herb)] underline">
         {{ t("admin.createOwnerAccount") }}
       </NuxtLink>
     </p>

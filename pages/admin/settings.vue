@@ -138,7 +138,7 @@ onMounted(async () => {
   <div>
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <h1 class="font-display text-3xl font-semibold tracking-tight text-[var(--espresso)]">
+        <h1 class="font-display text-3xl font-bold tracking-tight text-[var(--espresso)]">
           {{ t("admin.settingsTitle") }}
         </h1>
         <p class="mt-2 text-sm text-[var(--muted)]">
@@ -151,7 +151,7 @@ onMounted(async () => {
       >
         {{ t("admin.restaurant") }}
         <select
-          class="rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--espresso)]"
+          class="rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--espresso)]"
           :value="restaurantId ?? undefined"
           @change="onRestaurantChange"
         >
@@ -178,7 +178,7 @@ onMounted(async () => {
 
       <div
         v-if="trnMissing"
-        class="mt-6 rounded-xl border border-amber-300/80 bg-amber-50 px-4 py-3 text-amber-950"
+        class="mt-6 rounded-2xl border border-amber-300/80 bg-amber-50 px-4 py-3 text-amber-950"
       >
         <p class="font-semibold">{{ t("admin.trnMissingTitle") }}</p>
         <p class="mt-1 text-sm leading-relaxed">
@@ -200,14 +200,14 @@ onMounted(async () => {
             v-model="trnInput"
             type="text"
             autocomplete="off"
-            class="rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 font-mono text-sm"
+            class="rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 font-mono text-sm"
             :placeholder="t('admin.trnPlaceholder')"
           >
         </label>
         <p class="text-xs text-[var(--muted)]">
           {{ t("admin.trnFieldHint") }}
         </p>
-        <p v-if="savedMessage" class="text-sm text-[var(--olive)]">
+        <p v-if="savedMessage" class="text-sm text-[var(--herb)]">
           {{ savedMessage }}
         </p>
         <button

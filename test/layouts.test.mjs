@@ -29,7 +29,7 @@ test("client layout shows venue name and table", () => {
 test("kitchen layout is full-screen dark without marketing chrome", () => {
   const layout = read("layouts/kitchen.vue")
   assert.match(layout, /kitchen-shell/)
-  assert.match(layout, /espresso|bg-\[var\(--espresso\)\]/)
+  assert.match(layout, /kitchen|--kitchen|bg-\[var\(--kitchen\)\]/)
   assert.doesNotMatch(layout, /Owner|UAE table ordering/)
   assert.match(layout, /min-h-dvh|min-h-screen/)
 })

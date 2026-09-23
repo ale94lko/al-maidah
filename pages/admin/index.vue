@@ -138,7 +138,7 @@ async function onSignOut() {
   <div>
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <h1 class="font-display text-3xl font-semibold tracking-tight text-[var(--espresso)]">
+        <h1 class="font-display text-3xl font-bold tracking-tight text-[var(--espresso)]">
           {{ t("admin.statsTitle") }}
         </h1>
         <p class="mt-2 text-sm text-[var(--muted)]">
@@ -184,10 +184,10 @@ async function onSignOut() {
         v-for="option in RANGES"
         :key="option"
         type="button"
-        class="rounded-xl px-3 py-1.5 text-sm font-semibold transition"
+        class="rounded-2xl px-3 py-1.5 text-sm font-semibold transition"
         :class="
           range === option
-            ? 'bg-[var(--espresso)] text-white'
+            ? 'bg-[var(--chili)] text-white'
             : 'border border-[var(--espresso)]/15 bg-[var(--surface)] text-[var(--espresso)]'
         "
         @click="onRangeChange(option)"
@@ -218,38 +218,38 @@ async function onSignOut() {
       </p>
 
       <div class="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <div class="rounded-2xl border border-[var(--espresso)]/10 bg-[var(--surface)]/80 p-4">
-          <p class="text-xs uppercase tracking-wide text-[var(--muted)]">
+        <div class="metric-tile">
+          <p class="metric-label">
             {{ t("admin.statsRevenue") }}
           </p>
-          <p class="mt-2 font-mono text-2xl font-semibold text-[var(--espresso)]">
+          <p class="value" style="color: var(--herb)">
             {{ t("guest.priceAed", { price: stats.revenue }) }}
           </p>
         </div>
-        <div class="rounded-2xl border border-[var(--espresso)]/10 bg-[var(--surface)]/80 p-4">
-          <p class="text-xs uppercase tracking-wide text-[var(--muted)]">
+        <div class="metric-tile">
+          <p class="metric-label">
             {{ t("admin.statsCost") }}
           </p>
-          <p class="mt-2 font-mono text-2xl font-semibold text-[var(--ink)]">
+          <p class="value">
             {{ t("guest.priceAed", { price: stats.total_cost }) }}
           </p>
         </div>
-        <div class="rounded-2xl border border-[var(--espresso)]/10 bg-[var(--surface)]/80 p-4">
-          <p class="text-xs uppercase tracking-wide text-[var(--muted)]">
+        <div class="metric-tile">
+          <p class="metric-label">
             {{ t("admin.statsProfit") }}
           </p>
-          <p class="mt-2 font-mono text-2xl font-semibold text-[var(--espresso)]">
+          <p class="value" style="color: var(--chili)">
             {{ t("guest.priceAed", { price: stats.gross_profit }) }}
           </p>
           <p class="mt-1 text-xs text-[var(--muted)]">
             {{ t("admin.statsMargin") }}: {{ formatMargin(stats.margin_bps) }}
           </p>
         </div>
-        <div class="rounded-2xl border border-[var(--espresso)]/10 bg-[var(--surface)]/80 p-4">
-          <p class="text-xs uppercase tracking-wide text-[var(--muted)]">
+        <div class="metric-tile">
+          <p class="metric-label">
             {{ t("admin.statsAvgTicket") }}
           </p>
-          <p class="mt-2 font-mono text-2xl font-semibold text-[var(--ink)]">
+          <p class="value" style="color: var(--citrus-deep)">
             {{ t("guest.priceAed", { price: stats.average_ticket }) }}
           </p>
           <p class="mt-1 text-xs text-[var(--muted)]">
@@ -260,7 +260,7 @@ async function onSignOut() {
         </div>
       </div>
 
-      <section class="mt-8 rounded-2xl border border-[var(--espresso)]/10 bg-[var(--surface)]/80 p-4">
+      <section class="mt-8 rounded-3xl border border-[var(--ink)]/8 bg-[var(--surface)]/80 p-4">
         <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
           {{ t("admin.statsSeriesTitle") }}
         </h2>
@@ -274,9 +274,9 @@ async function onSignOut() {
             class="grid grid-cols-[4.5rem_1fr_auto] items-center gap-3 text-sm"
           >
             <span class="font-mono text-xs text-[var(--muted)]">{{ point.label }}</span>
-            <div class="h-2 overflow-hidden rounded-xl bg-[var(--ivory-deep)]">
+            <div class="h-2 overflow-hidden rounded-2xl bg-[var(--ivory-deep)]">
               <div
-                class="h-full rounded-xl bg-[var(--olive)]"
+                class="h-full rounded-2xl bg-[var(--herb)]"
                 :style="{ width: barWidth(Number(point.revenue), seriesMax) }"
               />
             </div>
@@ -289,7 +289,7 @@ async function onSignOut() {
       </section>
 
       <div class="mt-8 grid gap-6 lg:grid-cols-2">
-        <section class="rounded-2xl border border-[var(--espresso)]/10 bg-[var(--surface)]/80 p-4">
+        <section class="rounded-3xl border border-[var(--ink)]/8 bg-[var(--surface)]/80 p-4">
           <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
             {{ t("admin.statsBestSellers") }}
           </h2>
@@ -316,7 +316,7 @@ async function onSignOut() {
           </ol>
         </section>
 
-        <section class="rounded-2xl border border-[var(--espresso)]/10 bg-[var(--surface)]/80 p-4">
+        <section class="rounded-3xl border border-[var(--ink)]/8 bg-[var(--surface)]/80 p-4">
           <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
             {{ t("admin.statsPeakHours") }}
           </h2>
@@ -329,9 +329,9 @@ async function onSignOut() {
               <span class="font-mono text-[var(--muted)]">
                 {{ String(bucket.hour).padStart(2, "0") }}:00
               </span>
-              <div class="h-1.5 overflow-hidden rounded-xl bg-[var(--ivory-deep)]">
+              <div class="h-1.5 overflow-hidden rounded-2xl bg-[var(--ivory-deep)]">
                 <div
-                  class="h-full rounded-xl bg-amber-700/70"
+                  class="h-full rounded-2xl bg-amber-700/70"
                   :style="{ width: barWidth(bucket.order_count, peakMax) }"
                 />
               </div>
@@ -342,7 +342,7 @@ async function onSignOut() {
       </div>
 
       <div class="mt-8 grid gap-6 lg:grid-cols-2">
-        <section class="rounded-2xl border border-[var(--espresso)]/10 bg-[var(--surface)]/80 p-4">
+        <section class="rounded-3xl border border-[var(--ink)]/8 bg-[var(--surface)]/80 p-4">
           <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
             {{ t("admin.statsWeeksTitle") }}
           </h2>
@@ -359,7 +359,7 @@ async function onSignOut() {
             </li>
           </ul>
         </section>
-        <section class="rounded-2xl border border-[var(--espresso)]/10 bg-[var(--surface)]/80 p-4">
+        <section class="rounded-3xl border border-[var(--ink)]/8 bg-[var(--surface)]/80 p-4">
           <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
             {{ t("admin.statsMonthsTitle") }}
           </h2>

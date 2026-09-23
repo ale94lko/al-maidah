@@ -36,17 +36,17 @@ onMounted(() => {
   <div class="client-shell min-h-dvh text-[var(--ink)]">
     <header class="shell-header">
       <div
-        class="mx-auto flex w-full max-w-lg items-center justify-between gap-3 px-4 py-3 safe-px"
+        class="mx-auto flex w-full max-w-lg items-center justify-between gap-3 px-4 py-3.5 safe-px"
       >
         <div class="min-w-0">
           <p
-            class="font-display truncate text-lg font-semibold tracking-tight text-[var(--espresso)]"
+            class="font-display truncate text-xl font-bold tracking-tight text-[var(--ink)]"
           >
             {{ venueName }}
           </p>
           <p
             v-if="tableLabel"
-            class="truncate text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brass)]"
+            class="mt-0.5 truncate text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--chili)]"
           >
             {{ tableLabel }}
           </p>
@@ -59,7 +59,7 @@ onMounted(() => {
     </header>
 
     <main
-      class="mx-auto w-full max-w-lg px-4 py-4"
+      class="mx-auto w-full max-w-lg px-4 py-5"
       :class="mainPadClass"
     >
       <slot />

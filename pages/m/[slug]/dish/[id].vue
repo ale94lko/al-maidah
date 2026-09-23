@@ -244,13 +244,13 @@ onMounted(async () => {
     <div v-else class="space-y-5">
       <NuxtLink
         :to="menuPath"
-        class="inline-flex text-sm font-medium text-[var(--olive)]"
+        class="inline-flex text-sm font-medium text-[var(--herb)]"
       >
         ← {{ t("guest.backToMenu") }}
       </NuxtLink>
 
-      <div class="overflow-hidden rounded-2xl border border-[var(--espresso)]/10 bg-[var(--surface)]">
-        <div class="aspect-[16/10] bg-[var(--olive)]/10">
+      <div class="overflow-hidden rounded-3xl border border-[var(--ink)]/8 bg-[var(--surface)]">
+        <div class="aspect-[16/10] bg-[var(--herb)]/10">
           <img
             v-if="dish.photo_url"
             :src="dish.photo_url"
@@ -260,10 +260,10 @@ onMounted(async () => {
         </div>
         <div class="space-y-2 p-4">
           <div class="flex items-start justify-between gap-3">
-            <h1 class="font-display text-xl font-semibold tracking-tight text-[var(--espresso)]">
+            <h1 class="font-display text-xl font-bold tracking-tight text-[var(--espresso)]">
               {{ localizedName(dish, locale) }}
             </h1>
-            <p class="shrink-0 font-mono text-sm text-[var(--olive)]">
+            <p class="shrink-0 font-mono text-sm text-[var(--herb)]">
               {{ t("guest.priceAed", { price: dish.price }) }}
             </p>
           </div>
@@ -306,10 +306,10 @@ onMounted(async () => {
         <ul class="space-y-2">
           <li v-for="option in group.options" :key="option.id">
             <label
-              class="flex cursor-pointer items-center justify-between gap-3 rounded-xl border px-3 py-2 text-sm transition"
+              class="flex cursor-pointer items-center justify-between gap-3 rounded-2xl border px-3 py-2 text-sm transition"
               :class="
                 isSelected(option.id)
-                  ? 'border-[var(--olive)] bg-[var(--olive)] text-[var(--ivory)]'
+                  ? 'border-[var(--herb)] bg-[var(--herb)] text-[var(--ivory)]'
                   : 'border-[var(--espresso)]/15 bg-[var(--ivory)] text-[var(--espresso)]'
               "
             >
@@ -344,7 +344,7 @@ onMounted(async () => {
           v-model="notes"
           rows="3"
           :placeholder="t('guest.notesPlaceholder')"
-          class="w-full rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--ink)] outline-none ring-[var(--olive)]/30 placeholder:text-[var(--muted)] focus:ring-2"
+          class="w-full rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--ink)] outline-none ring-[var(--herb)]/30 placeholder:text-[var(--muted)] focus:ring-2"
         />
       </label>
 
@@ -352,7 +352,7 @@ onMounted(async () => {
         <div class="flex items-center gap-2">
           <button
             type="button"
-            class="h-10 w-10 rounded-xl border border-[var(--espresso)]/20 bg-[var(--ivory)] text-lg font-semibold text-[var(--espresso)]"
+            class="h-10 w-10 rounded-2xl border border-[var(--espresso)]/20 bg-[var(--ivory)] text-lg font-semibold text-[var(--espresso)]"
             :aria-label="t('guest.decreaseQty')"
             @click="quantity = Math.max(1, quantity - 1)"
           >
@@ -361,14 +361,14 @@ onMounted(async () => {
           <span class="min-w-8 text-center font-mono text-sm text-[var(--espresso)]">{{ quantity }}</span>
           <button
             type="button"
-            class="h-10 w-10 rounded-xl border border-[var(--espresso)]/20 bg-[var(--ivory)] text-lg font-semibold text-[var(--espresso)]"
+            class="h-10 w-10 rounded-2xl border border-[var(--espresso)]/20 bg-[var(--ivory)] text-lg font-semibold text-[var(--espresso)]"
             :aria-label="t('guest.increaseQty')"
             @click="quantity += 1"
           >
             +
           </button>
         </div>
-        <p class="font-mono text-sm font-semibold text-[var(--olive)]">
+        <p class="font-mono text-sm font-semibold text-[var(--herb)]">
           {{ t("guest.priceAed", { price: previewUnitPrice }) }}
         </p>
       </div>

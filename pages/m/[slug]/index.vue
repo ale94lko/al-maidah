@@ -249,30 +249,30 @@ onMounted(async () => {
       :title="errorTitle"
       :description="errorDescription"
     />
-    <div v-else class="space-y-5">
+    <div v-else class="space-y-6">
       <p class="text-sm leading-relaxed text-[var(--muted)]">
         {{ t("guest.shellIntro", { name: restaurantName }) }}
       </p>
 
-      <div class="surface-card space-y-3 !p-3">
+      <div class="surface-card space-y-3 !rounded-3xl !p-4">
         <label class="block">
           <span class="sr-only">{{ t("guest.searchPlaceholder") }}</span>
           <input
             v-model="searchQuery"
             type="search"
             :placeholder="t('guest.searchPlaceholder')"
-            class="w-full rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--ink)] outline-none ring-[var(--olive)]/30 placeholder:text-[var(--muted)] focus:ring-2"
+            class="w-full rounded-2xl border border-[var(--ink)]/10 bg-[var(--paper)] px-4 py-2.5 text-sm text-[var(--ink)] outline-none ring-[var(--herb)]/25 placeholder:text-[var(--muted)] focus:ring-2"
           />
         </label>
 
         <div class="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            class="rounded-xl border px-3 py-1.5 text-xs font-semibold transition"
+            class="rounded-2xl border px-3 py-1.5 text-xs font-bold transition"
             :class="
               vegetarianOnly
-                ? 'border-[var(--olive)] bg-[var(--olive)] text-[var(--ivory)]'
-                : 'border-[var(--espresso)]/15 bg-[var(--ivory)] text-[var(--espresso)]'
+                ? 'border-[var(--herb)] bg-[var(--herb)] text-white'
+                : 'border-[var(--ink)]/10 bg-white text-[var(--ink)]'
             "
             @click="vegetarianOnly = !vegetarianOnly"
           >
@@ -282,11 +282,11 @@ onMounted(async () => {
             v-for="allergen in allergenOptions"
             :key="allergen"
             type="button"
-            class="rounded-xl border px-3 py-1.5 text-xs font-semibold capitalize transition"
+            class="rounded-2xl border px-3 py-1.5 text-xs font-bold capitalize transition"
             :class="
               excludedAllergens.includes(allergen)
-                ? 'border-rose-900 bg-rose-900 text-white'
-                : 'border-[var(--espresso)]/15 bg-[var(--ivory)] text-[var(--espresso)]'
+                ? 'border-[var(--chili)] bg-[var(--chili)] text-white'
+                : 'border-[var(--ink)]/10 bg-white text-[var(--ink)]'
             "
             :aria-pressed="excludedAllergens.includes(allergen)"
             @click="toggleAllergen(allergen)"
@@ -296,7 +296,7 @@ onMounted(async () => {
           <button
             v-if="hasActiveFilters"
             type="button"
-            class="rounded-xl border border-[var(--espresso)]/20 px-3 py-1.5 text-xs font-medium text-[var(--muted)]"
+            class="rounded-2xl border border-[var(--ink)]/10 px-3 py-1.5 text-xs font-semibold text-[var(--muted)]"
             @click="clearFilters"
           >
             {{ t("guest.clearFilters") }}
@@ -320,22 +320,22 @@ onMounted(async () => {
         :key="group.category.id"
         class="space-y-3"
       >
-        <h2 class="font-display text-xl font-semibold tracking-tight text-[var(--espresso)]">
+        <h2 class="font-display text-2xl font-bold tracking-tight text-[var(--ink)]">
           {{ localizedName(group.category, locale) }}
         </h2>
         <ul class="space-y-3">
           <li
             v-for="dish in group.dishes"
             :key="dish.id"
-            class="overflow-hidden rounded-2xl border border-[var(--espresso)]/10 bg-[var(--surface)]"
+            class="dish-row"
             :class="{ 'opacity-70': !dish.is_available }"
           >
             <NuxtLink
               :to="dishPath(dish.id)"
-              class="flex gap-0 sm:gap-0"
+              class="flex"
             >
               <div
-                class="relative h-28 w-28 shrink-0 overflow-hidden bg-[var(--olive)]/10 sm:h-32 sm:w-32"
+                class="relative h-28 w-28 shrink-0 overflow-hidden bg-[var(--herb)]/10 sm:h-32 sm:w-32"
               >
                 <img
                   v-if="dish.photo_url"
@@ -346,22 +346,22 @@ onMounted(async () => {
                 />
                 <div
                   v-else
-                  class="font-display flex h-full w-full items-center justify-center text-xs font-medium text-[var(--olive)]/50"
+                  class="font-display flex h-full w-full items-center justify-center text-xs font-bold text-[var(--herb)]/40"
                   aria-hidden="true"
                 >
                   Al-Maidah
                 </div>
                 <span
                   v-if="!dish.is_available"
-                  class="absolute inset-x-2 bottom-2 rounded-md bg-[var(--espresso)]/90 px-2 py-1 text-center text-[10px] font-semibold uppercase tracking-wide text-[var(--ivory)]"
+                  class="absolute inset-x-2 bottom-2 rounded-xl bg-[var(--ink)]/90 px-2 py-1 text-center text-[10px] font-bold uppercase tracking-wide text-white"
                 >
                   {{ t("guest.soldOut") }}
                 </span>
               </div>
-              <div class="flex min-w-0 flex-1 flex-col gap-2 p-3">
+              <div class="flex min-w-0 flex-1 flex-col gap-2 p-3.5">
                 <div class="flex items-start justify-between gap-2">
                   <div class="min-w-0">
-                    <p class="font-semibold text-[var(--espresso)]">
+                    <p class="font-bold text-[var(--ink)]">
                       {{ localizedName(dish, locale) }}
                     </p>
                     <p
@@ -371,27 +371,27 @@ onMounted(async () => {
                       {{ localizedDescription(dish, locale) }}
                     </p>
                   </div>
-                  <p class="shrink-0 font-mono text-sm text-[var(--olive)]">
+                  <p class="shrink-0 font-mono text-sm font-bold text-[var(--chili)]">
                     {{ formatPrice(dish.price) }}
                   </p>
                 </div>
                 <div class="mt-auto flex flex-wrap gap-1.5">
                   <span
                     v-if="dish.is_vegetarian"
-                    class="rounded-md bg-[var(--olive)]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--olive-deep)]"
+                    class="rounded-xl bg-[var(--herb)]/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--herb-deep)]"
                   >
                     {{ t("guest.vegetarian") }}
                   </span>
                   <span
                     v-for="allergen in dish.allergens"
                     :key="`${dish.id}-${allergen}`"
-                    class="rounded-md bg-[var(--brass)]/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--espresso)]"
+                    class="rounded-xl bg-[var(--citrus)]/25 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--ink)]"
                   >
                     {{ allergen }}
                   </span>
                   <span
                     v-if="!dish.is_available"
-                    class="rounded-md bg-[var(--espresso)]/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-[var(--espresso)]"
+                    class="rounded-xl bg-[var(--ink)]/8 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[var(--ink)]"
                   >
                     {{ t("guest.soldOut") }}
                   </span>

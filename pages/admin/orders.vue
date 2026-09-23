@@ -185,7 +185,7 @@ onMounted(async () => {
   <div>
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <h1 class="font-display text-3xl font-semibold tracking-tight text-[var(--espresso)]">
+        <h1 class="font-display text-3xl font-bold tracking-tight text-[var(--espresso)]">
           {{ t("admin.ordersTitle") }}
         </h1>
         <p class="mt-2 text-sm text-[var(--muted)]">
@@ -198,7 +198,7 @@ onMounted(async () => {
       >
         {{ t("admin.restaurant") }}
         <select
-          class="rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--espresso)]"
+          class="rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--espresso)]"
           :value="restaurantId ?? undefined"
           @change="onRestaurantChange"
         >
@@ -215,7 +215,7 @@ onMounted(async () => {
 
     <div
       v-if="!loading && !restaurantTrn"
-      class="mt-6 rounded-xl border border-amber-300/80 bg-amber-50 px-4 py-3 text-amber-950"
+      class="mt-6 rounded-2xl border border-amber-300/80 bg-amber-50 px-4 py-3 text-amber-950"
     >
       <p class="font-semibold">{{ t("admin.trnMissingTitle") }}</p>
       <p class="mt-1 text-sm leading-relaxed">{{ t("admin.trnMissingHint") }}</p>
@@ -249,10 +249,10 @@ onMounted(async () => {
           <li v-for="order in orders" :key="order.id">
             <button
               type="button"
-              class="w-full rounded-xl border px-4 py-3 text-start transition"
+              class="w-full rounded-2xl border px-4 py-3 text-start transition"
               :class="
                 selectedOrderId === order.id
-                  ? 'border-[var(--olive)] bg-[var(--olive)] text-[var(--ivory)]'
+                  ? 'border-[var(--herb)] bg-[var(--herb)] text-[var(--ivory)]'
                   : 'border-[var(--espresso)]/10 bg-[var(--surface)] text-[var(--espresso)] hover:border-[var(--espresso)]/30'
               "
               @click="openReceipt(order.id)"
@@ -298,7 +298,7 @@ onMounted(async () => {
         </p>
         <div
           v-if="canMarkCashPaid"
-          class="rounded-xl border border-[var(--espresso)]/15 bg-[var(--surface)] px-4 py-3"
+          class="rounded-2xl border border-[var(--espresso)]/15 bg-[var(--surface)] px-4 py-3"
         >
           <p class="text-sm leading-relaxed text-[var(--muted)]">
             {{ t("admin.markCashPaidHint") }}

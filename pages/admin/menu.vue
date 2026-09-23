@@ -145,7 +145,7 @@ async function onPhotoChange(event: Event) {
   <div>
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <h1 class="font-display text-3xl font-semibold tracking-tight text-[var(--espresso)]">
+        <h1 class="font-display text-3xl font-bold tracking-tight text-[var(--espresso)]">
           {{ t("admin.menuTitle") }}
         </h1>
         <p class="mt-2 text-sm text-[var(--muted)]">
@@ -159,7 +159,7 @@ async function onPhotoChange(event: Event) {
         >
           {{ t("admin.restaurant") }}
           <select
-            class="rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--espresso)]"
+            class="rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--espresso)]"
             :value="restaurantId ?? undefined"
             @change="onRestaurantChange"
           >
@@ -213,7 +213,7 @@ async function onPhotoChange(event: Event) {
               <input
                 v-model="newCategoryEn"
                 required
-                class="rounded-xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+                class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
               >
             </label>
             <label class="flex min-w-[10rem] flex-1 flex-col gap-1 text-xs text-[var(--muted)]">
@@ -222,7 +222,7 @@ async function onPhotoChange(event: Event) {
                 v-model="newCategoryAr"
                 required
                 dir="rtl"
-                class="rounded-xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+                class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
               >
             </label>
             <button
@@ -256,7 +256,7 @@ async function onPhotoChange(event: Event) {
             <div class="flex flex-wrap gap-2">
               <button
                 type="button"
-                class="rounded-xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
+                class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
                 :disabled="saving"
                 @click="moveCategory(category.id, -1)"
               >
@@ -264,7 +264,7 @@ async function onPhotoChange(event: Event) {
               </button>
               <button
                 type="button"
-                class="rounded-xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
+                class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
                 :disabled="saving"
                 @click="moveCategory(category.id, 1)"
               >
@@ -272,7 +272,7 @@ async function onPhotoChange(event: Event) {
               </button>
               <button
                 type="button"
-                class="rounded-xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
+                class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
                 :disabled="saving"
                 @click="
                   patchCategory(category.id, {
@@ -313,7 +313,7 @@ async function onPhotoChange(event: Event) {
                   </span>
                   <span
                     v-if="dish.is_archived"
-                    class="ms-2 rounded bg-[var(--espresso)]/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-[var(--ink)]"
+                    class="ms-2 rounded bg-[var(--chili)]/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-[var(--ink)]"
                   >
                     {{ t("admin.archived") }}
                   </span>
@@ -326,7 +326,7 @@ async function onPhotoChange(event: Event) {
               <div class="flex flex-wrap gap-2">
                 <button
                   type="button"
-                  class="rounded-xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
+                  class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
                   :disabled="saving"
                   @click="moveDish(dish.id, -1)"
                 >
@@ -334,7 +334,7 @@ async function onPhotoChange(event: Event) {
                 </button>
                 <button
                   type="button"
-                  class="rounded-xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
+                  class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
                   :disabled="saving"
                   @click="moveDish(dish.id, 1)"
                 >
@@ -342,7 +342,7 @@ async function onPhotoChange(event: Event) {
                 </button>
                 <button
                   type="button"
-                  class="rounded-xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
+                  class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
                   :disabled="saving"
                   @click="
                     patchDish(dish.id, { is_available: !dish.is_available })
@@ -356,7 +356,7 @@ async function onPhotoChange(event: Event) {
                 </button>
                 <button
                   type="button"
-                  class="rounded-xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
+                  class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
                   :disabled="saving"
                   @click="
                     patchDish(dish.id, { is_archived: !dish.is_archived })
@@ -368,7 +368,7 @@ async function onPhotoChange(event: Event) {
                 </button>
                 <button
                   type="button"
-                  class="rounded-xl border border-[var(--olive)] px-2 py-1 text-xs text-[var(--olive)]"
+                  class="rounded-2xl border border-[var(--herb)] px-2 py-1 text-xs text-[var(--herb)]"
                   @click="openEditDish(dish.id)"
                 >
                   {{ t("admin.edit") }}
@@ -394,7 +394,7 @@ async function onPhotoChange(event: Event) {
 
     <div
       v-if="editingDish"
-      class="fixed inset-0 z-40 flex items-end justify-center bg-[var(--espresso)]/40 p-4 sm:items-center"
+      class="fixed inset-0 z-40 flex items-end justify-center bg-[var(--chili)]/40 p-4 sm:items-center"
       role="dialog"
       aria-modal="true"
     >
@@ -423,7 +423,7 @@ async function onPhotoChange(event: Event) {
               <input
                 v-model="editingDish.name_en"
                 required
-                class="rounded-xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+                class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
               >
             </label>
             <label class="flex flex-col gap-1 text-xs text-[var(--muted)]">
@@ -432,7 +432,7 @@ async function onPhotoChange(event: Event) {
                 v-model="editingDish.name_ar"
                 required
                 dir="rtl"
-                class="rounded-xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+                class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
               >
             </label>
             <label class="flex flex-col gap-1 text-xs text-[var(--muted)] sm:col-span-2">
@@ -440,7 +440,7 @@ async function onPhotoChange(event: Event) {
               <textarea
                 v-model="editingDish.description_en"
                 rows="2"
-                class="rounded-xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+                class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
               />
             </label>
             <label class="flex flex-col gap-1 text-xs text-[var(--muted)] sm:col-span-2">
@@ -449,7 +449,7 @@ async function onPhotoChange(event: Event) {
                 v-model="editingDish.description_ar"
                 rows="2"
                 dir="rtl"
-                class="rounded-xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+                class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
               />
             </label>
             <label class="flex flex-col gap-1 text-xs text-[var(--muted)]">
@@ -460,7 +460,7 @@ async function onPhotoChange(event: Event) {
                 type="number"
                 min="0"
                 step="0.01"
-                class="rounded-xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+                class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
               >
             </label>
             <label class="flex flex-col gap-1 text-xs text-[var(--muted)]">
@@ -471,7 +471,7 @@ async function onPhotoChange(event: Event) {
                 type="number"
                 min="0"
                 step="0.01"
-                class="rounded-xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+                class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
               >
             </label>
             <label class="flex flex-col gap-1 text-xs text-[var(--muted)] sm:col-span-2">
@@ -479,7 +479,7 @@ async function onPhotoChange(event: Event) {
               <input
                 v-model="editingDish.allergens"
                 :placeholder="t('admin.allergensHint')"
-                class="rounded-xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+                class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
               >
             </label>
           </div>
@@ -499,7 +499,7 @@ async function onPhotoChange(event: Event) {
             {{ t("admin.photoUrl") }}
             <input
               v-model="editingDish.photo_url"
-              class="rounded-xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+              class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
             >
           </label>
           <label
@@ -522,7 +522,7 @@ async function onPhotoChange(event: Event) {
               </h3>
               <button
                 type="button"
-                class="text-xs font-medium text-[var(--olive)]"
+                class="text-xs font-medium text-[var(--herb)]"
                 @click="addModifierGroup"
               >
                 {{ t("admin.addModifierGroup") }}
@@ -531,19 +531,19 @@ async function onPhotoChange(event: Event) {
             <div
               v-for="(group, groupIndex) in editingDish.modifiers"
               :key="groupIndex"
-              class="rounded-xl border border-[var(--espresso)]/10 p-3"
+              class="rounded-3xl border border-[var(--ink)]/8 p-3"
             >
               <div class="grid gap-2 sm:grid-cols-2">
                 <input
                   v-model="group.name_en"
                   :placeholder="t('admin.nameEn')"
-                  class="rounded-xl border border-[var(--espresso)]/15 px-2 py-1.5 text-sm"
+                  class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1.5 text-sm"
                 >
                 <input
                   v-model="group.name_ar"
                   dir="rtl"
                   :placeholder="t('admin.nameAr')"
-                  class="rounded-xl border border-[var(--espresso)]/15 px-2 py-1.5 text-sm"
+                  class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1.5 text-sm"
                 >
               </div>
               <div class="mt-2 flex flex-wrap gap-3 text-xs text-[var(--muted)]">
@@ -571,7 +571,7 @@ async function onPhotoChange(event: Event) {
                 </label>
                 <button
                   type="button"
-                  class="text-[var(--olive)]"
+                  class="text-[var(--herb)]"
                   @click="addModifierOption(group)"
                 >
                   {{ t("admin.addOption") }}
@@ -623,7 +623,7 @@ async function onPhotoChange(event: Event) {
           <div class="flex justify-end gap-2 pt-2">
             <button
               type="button"
-              class="rounded-xl border border-[var(--espresso)]/15 px-4 py-2 text-sm"
+              class="rounded-2xl border border-[var(--espresso)]/15 px-4 py-2 text-sm"
               @click="editingDish = null"
             >
               {{ t("admin.cancel") }}
