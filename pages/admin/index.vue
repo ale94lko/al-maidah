@@ -172,7 +172,7 @@ onMounted(async () => {
         class="rounded-2xl px-3.5 py-2 text-sm font-bold transition"
         :class="
           range === option
-            ? 'bg-[var(--chili)] text-white shadow-lg shadow-[var(--chili)]/25'
+            ? 'bg-[var(--info)] text-white shadow-lg shadow-[var(--info)]/25'
             : 'border border-[var(--ink)]/10 bg-white text-[var(--ink)] hover:border-[var(--herb)]/40'
         "
         @click="onRangeChange(option)"

@@ -264,7 +264,7 @@ function onPrint() {
                   </button>
                   <button
                     type="button"
-                    class="rounded-2xl border border-red-300 px-2 py-1 text-xs text-rose-700"
+                    class="btn-danger !px-2 !py-1 !text-xs"
                     :disabled="saving"
                     @click="onRemove(table.id, table.table_number)"
                   >

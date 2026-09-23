@@ -51,7 +51,7 @@ onMounted(() => {
   >
     <NuxtLink
       :to="cartTo"
-      class="pointer-events-auto mx-auto flex w-full max-w-lg items-center justify-between gap-3 rounded-3xl bg-[var(--chili)] px-5 py-3.5 text-white shadow-xl shadow-[var(--chili)]/35"
+      class="pointer-events-auto mx-auto flex w-full max-w-lg items-center justify-between gap-3 rounded-3xl bg-[var(--info)] px-5 py-3.5 text-white shadow-xl shadow-[var(--info)]/35"
     >
       <div class="min-w-0">
         <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-white/80">

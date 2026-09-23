@@ -10,6 +10,14 @@
   --herb-deep: #1e7a32;
   --citrus: #ffc107;
   --citrus-deep: #f59f00;
+  /* Action semantics: info / success / warning / error */
+  --info: #1c7ed6;
+  --info-deep: #1864ab;
+  --success: var(--herb);
+  --success-deep: var(--herb-deep);
+  --warning: var(--citrus-deep);
+  --danger: var(--chili);
+  --danger-deep: var(--chili-deep);
   --paper: #f7faf5;
   --paper-deep: #e4efe0;
   --ink: #0f1c14;
@@ -78,30 +86,65 @@ body:has(.kitchen-shell) {
 @layer components {
   .btn-primary {
     @apply inline-flex items-center justify-center rounded-2xl px-5 py-3.5 text-sm font-extrabold tracking-tight transition;
-    background: var(--chili);
+    background: var(--info);
     color: #fff;
-    box-shadow: 0 14px 28px -14px rgba(224, 49, 49, 0.65);
+    box-shadow: 0 14px 28px -14px rgba(28, 126, 214, 0.65);
   }
 
   .btn-primary:hover {
-    background: var(--chili-deep);
+    background: var(--info-deep);
     transform: translateY(-1px);
   }
 
-  .btn-primary:disabled {
+  .btn-primary:disabled,
+  .btn-success:disabled,
+  .btn-warning:disabled,
+  .btn-danger:disabled {
     @apply opacity-60 shadow-none;
     transform: none;
   }
 
+  .btn-success {
+    @apply inline-flex items-center justify-center rounded-2xl px-5 py-3.5 text-sm font-extrabold tracking-tight transition;
+    background: var(--success);
+    color: #fff;
+    box-shadow: 0 14px 28px -14px rgba(47, 158, 68, 0.55);
+  }
+
+  .btn-success:hover {
+    background: var(--success-deep);
+  }
+
+  .btn-warning {
+    @apply inline-flex items-center justify-center rounded-2xl px-5 py-3.5 text-sm font-extrabold tracking-tight transition;
+    background: var(--warning);
+    color: var(--ink);
+  }
+
+  .btn-warning:hover {
+    background: #e08e00;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center rounded-2xl px-5 py-3.5 text-sm font-extrabold tracking-tight transition;
+    background: var(--danger);
+    color: #fff;
+    box-shadow: 0 14px 28px -14px rgba(224, 49, 49, 0.55);
+  }
+
+  .btn-danger:hover {
+    background: var(--danger-deep);
+  }
+
   .btn-secondary {
     @apply inline-flex items-center justify-center rounded-2xl border-2 px-5 py-3.5 text-sm font-extrabold tracking-tight transition;
-    border-color: var(--herb);
+    border-color: color-mix(in srgb, var(--info) 45%, transparent);
     background: transparent;
-    color: var(--herb-deep);
+    color: var(--info-deep);
   }
 
   .btn-secondary:hover {
-    background: color-mix(in srgb, var(--herb) 12%, white);
+    background: color-mix(in srgb, var(--info) 10%, white);
   }
 
   .btn-ghost {
@@ -254,8 +297,8 @@ body:has(.kitchen-shell) {
   }
 
   .field-input:focus {
-    border-color: var(--herb);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--herb) 22%, transparent);
+    border-color: var(--info);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--info) 22%, transparent);
   }
 
   .status-chip {
@@ -282,9 +325,9 @@ body:has(.kitchen-shell) {
   }
 
   .admin-nav-link.is-active {
-    background: var(--chili);
+    background: var(--info);
     color: #fff;
-    box-shadow: 0 12px 24px -14px rgba(224, 49, 49, 0.75);
+    box-shadow: 0 12px 24px -14px rgba(28, 126, 214, 0.7);
   }
 
   .admin-nav-link:not(.is-active) {
@@ -307,7 +350,7 @@ body:has(.kitchen-shell) {
   }
 
   .lang-segment button.is-active {
-    background: var(--herb);
+    background: var(--info);
     color: #fff;
   }
 
@@ -331,8 +374,8 @@ body:has(.kitchen-shell) {
   .guest-header .lang-segment button.is-active,
   .admin-shell aside .lang-segment button.is-active,
   .kitchen-shell .lang-segment button.is-active {
-    background: var(--citrus);
-    color: var(--ink);
+    background: var(--info);
+    color: #fff;
   }
 
   .guest-header {
@@ -349,8 +392,8 @@ body:has(.kitchen-shell) {
   }
 
   .category-chip.is-active {
-    border-color: var(--chili);
-    background: var(--chili);
+    border-color: var(--info);
+    background: var(--info);
     color: white;
   }
 

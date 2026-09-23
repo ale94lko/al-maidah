@@ -266,7 +266,7 @@ async function onSignOut() {
             class="flex flex-col items-center rounded-2xl px-1 py-2 text-center text-[11px] font-bold"
             :class="
               isActive(link.match)
-                ? 'bg-[var(--chili)] text-white'
+                ? 'bg-[var(--info)] text-white'
                 : 'text-[var(--ink)]/75'
             "
           >

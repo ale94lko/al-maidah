@@ -8,7 +8,7 @@ const props = defineProps<{
   busy: boolean
   action: KitchenTicketAction | null
   actionLabel: string
-  accent?: "citrus" | "chili" | "herb"
+  accent?: "citrus" | "chili" | "herb" | "info"
 }>()
 
 const emit = defineEmits<{
@@ -18,9 +18,10 @@ const emit = defineEmits<{
 const { t, locale } = useAppI18n()
 
 const accentColor = computed(() => {
-  if (props.accent === "chili") return "var(--chili)"
-  if (props.accent === "herb") return "var(--herb)"
-  return "var(--citrus)"
+  if (props.accent === "chili") return "var(--danger)"
+  if (props.accent === "herb") return "var(--success)"
+  if (props.accent === "info") return "var(--info)"
+  return "var(--warning)"
 })
 
 const placedAt = computed(() => {
@@ -102,8 +103,11 @@ const paymentHint = computed(() => {
     <button
       v-if="action"
       type="button"
-      class="mt-auto w-full rounded-2xl px-3 py-3 text-sm font-bold text-white transition disabled:cursor-not-allowed disabled:opacity-60"
-      :style="{ background: accentColor }"
+      class="mt-auto w-full rounded-2xl px-3 py-3 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-60"
+      :style="{
+        background: accentColor,
+        color: accent === 'citrus' || !accent ? 'var(--ink)' : '#fff',
+      }"
       :disabled="busy"
       @click="emit('action', action)"
     >

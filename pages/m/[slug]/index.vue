@@ -386,7 +386,7 @@ onMounted(async () => {
                       {{ localizedDescription(dish, locale) }}
                     </p>
                   </div>
-                  <p class="shrink-0 rounded-xl bg-[var(--chili)]/10 px-2 py-1 font-mono text-sm font-extrabold text-[var(--chili)]">
+                  <p class="shrink-0 rounded-xl bg-[var(--ink)]/6 px-2 py-1 font-mono text-sm font-extrabold text-[var(--ink)]">
                     {{ formatPrice(dish.price) }}
                   </p>
                 </div>

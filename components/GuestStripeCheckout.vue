@@ -60,7 +60,7 @@ onMounted(async () => {
       appearance: {
         theme: "stripe",
         variables: {
-          colorPrimary: "#e03131",
+          colorPrimary: "#1c7ed6",
           borderRadius: "16px",
         },
       },
@@ -151,7 +151,7 @@ async function confirmPayment() {
       <div ref="paymentMount" class="rounded-2xl bg-white p-1" />
       <button
         type="button"
-        class="w-full rounded-2xl bg-[var(--chili)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
+        class="btn-primary w-full disabled:opacity-50"
         :disabled="!cardReady || confirming"
         @click="confirmPayment"
       >

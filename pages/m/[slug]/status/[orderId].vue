@@ -327,9 +327,9 @@ onBeforeUnmount(() => {
           <span
             class="flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl text-xs font-bold"
             :class="{
-              'bg-[var(--chili)] text-[var(--ivory)]': stepState(step.status) === 'current',
-              'bg-[var(--herb)]/15 text-[var(--olive-deep)]': stepState(step.status) === 'done',
-              'bg-[var(--chili)]/5 text-[var(--muted)]': stepState(step.status) === 'upcoming',
+              'bg-[var(--info)] text-white': stepState(step.status) === 'current',
+              'bg-[var(--success)]/15 text-[var(--success-deep)]': stepState(step.status) === 'done',
+              'bg-[var(--ink)]/5 text-[var(--muted)]': stepState(step.status) === 'upcoming',
             }"
             aria-hidden="true"
           >

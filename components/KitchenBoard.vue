@@ -39,7 +39,7 @@ const { t } = useAppI18n()
       :action-label="t('kitchen.actionReady')"
       :busy-id="busyId"
       :elapsed-minutes="elapsedMinutes"
-      accent="chili"
+      accent="info"
       @action="(id, action) => emit('action', id, action)"
     />
     <KitchenColumn

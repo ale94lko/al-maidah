@@ -302,7 +302,7 @@ onMounted(async () => {
           </p>
           <button
             type="button"
-            class="btn-primary mt-3 disabled:opacity-60"
+            class="btn-success mt-3 disabled:opacity-60"
             :disabled="markingPaid"
             @click="markCashPaid"
           >

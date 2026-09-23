@@ -45,7 +45,7 @@ onMounted(() => {
           <div class="mt-1.5 flex flex-wrap items-center gap-2">
             <span
               v-if="tableLabel"
-              class="inline-flex rounded-xl bg-[var(--chili)] px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide text-white"
+              class="inline-flex rounded-xl bg-[var(--info)] px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wide text-white"
             >
               {{ tableLabel }}
             </span>

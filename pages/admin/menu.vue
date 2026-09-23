@@ -269,7 +269,8 @@ async function onPhotoChange(event: Event) {
               </button>
               <button
                 type="button"
-                class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
+                class="!px-2 !py-1 !text-xs"
+                :class="category.is_archived ? 'btn-success' : 'btn-warning'"
                 :disabled="saving"
                 @click="
                   patchCategory(category.id, {
@@ -310,7 +311,7 @@ async function onPhotoChange(event: Event) {
                   </span>
                   <span
                     v-if="dish.is_archived"
-                    class="ms-2 rounded bg-[var(--chili)]/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-[var(--ink)]"
+                    class="status-chip status-chip-warn ms-2"
                   >
                     {{ t("admin.archived") }}
                   </span>
@@ -339,7 +340,8 @@ async function onPhotoChange(event: Event) {
                 </button>
                 <button
                   type="button"
-                  class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
+                  class="!px-2 !py-1 !text-xs"
+                  :class="dish.is_available ? 'btn-warning' : 'btn-success'"
                   :disabled="saving"
                   @click="
                     patchDish(dish.id, { is_available: !dish.is_available })
@@ -353,7 +355,8 @@ async function onPhotoChange(event: Event) {
                 </button>
                 <button
                   type="button"
-                  class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
+                  class="!px-2 !py-1 !text-xs"
+                  :class="dish.is_archived ? 'btn-success' : 'btn-warning'"
                   :disabled="saving"
                   @click="
                     patchDish(dish.id, { is_archived: !dish.is_archived })
@@ -391,7 +394,7 @@ async function onPhotoChange(event: Event) {
 
     <div
       v-if="editingDish"
-      class="fixed inset-0 z-40 flex items-end justify-center bg-[var(--chili)]/40 p-4 sm:items-center"
+      class="fixed inset-0 z-40 flex items-end justify-center bg-[var(--ink)]/45 p-4 sm:items-center"
       role="dialog"
       aria-modal="true"
     >
@@ -568,7 +571,7 @@ async function onPhotoChange(event: Event) {
                 </label>
                 <button
                   type="button"
-                  class="text-[var(--herb)]"
+                  class="text-[var(--info)]"
                   @click="addModifierOption(group)"
                 >
                   {{ t("admin.addOption") }}

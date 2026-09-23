@@ -9,7 +9,7 @@ const props = defineProps<{
   actionLabel: string
   busyId: string | null
   elapsedMinutes: (createdAt: string) => number
-  accent?: "citrus" | "chili" | "herb"
+  accent?: "citrus" | "chili" | "herb" | "info"
 }>()
 
 const emit = defineEmits<{
@@ -17,9 +17,10 @@ const emit = defineEmits<{
 }>()
 
 const accentColor = computed(() => {
-  if (props.accent === "chili") return "var(--chili)"
-  if (props.accent === "herb") return "var(--herb)"
-  return "var(--citrus)"
+  if (props.accent === "chili") return "var(--danger)"
+  if (props.accent === "herb") return "var(--success)"
+  if (props.accent === "info") return "var(--info)"
+  return "var(--warning)"
 })
 </script>
 
@@ -36,8 +37,11 @@ const accentColor = computed(() => {
         {{ title }}
       </h2>
       <span
-        class="rounded-xl px-2.5 py-0.5 text-xs font-bold tabular-nums text-white"
-        :style="{ background: accentColor }"
+        class="rounded-xl px-2.5 py-0.5 text-xs font-bold tabular-nums"
+        :style="{
+          background: accentColor,
+          color: accent === 'citrus' || !accent ? 'var(--ink)' : '#fff',
+        }"
       >
         {{ tickets.length }}
       </span>

@@ -12,7 +12,7 @@ const emit = defineEmits<{
 
 <template>
   <div
-    class="fixed inset-0 z-40 flex items-center justify-center bg-[var(--chili)]/95 px-6 backdrop-blur-sm"
+    class="fixed inset-0 z-40 flex items-center justify-center bg-[var(--kitchen)]/95 px-6 backdrop-blur-sm"
     role="dialog"
     aria-modal="true"
     aria-labelledby="kitchen-start-shift-title"
