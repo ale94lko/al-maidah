@@ -37,6 +37,12 @@ supabase db reset
 
 Demo restaurant slug: `demo` (tables 1–4, bilingual categories and dishes).
 
+Public menu endpoint (server uses the service role; guests never receive `cost_price`):
+
+```bash
+curl "http://localhost:3000/api/menu/demo?table=1"
+```
+
 Useful scripts:
 
 - `npm run dev` — start the Nuxt development server

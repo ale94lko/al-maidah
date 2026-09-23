@@ -57,7 +57,7 @@ Do not commit secrets.
 
 ## How to build it
 
-Each MVP piece is tracked as an issue, in implementation order. The Supabase schema and demo seed close **MVP-02**.
+Each MVP piece is tracked as an issue, in implementation order. Domain types and Supabase clients close **MVP-03**.
 
 ## Contributing
 

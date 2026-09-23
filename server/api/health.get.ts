@@ -6,5 +6,8 @@ export default defineEventHandler(() => {
     status: "ok",
     appUrl: config.public.appUrl,
     surfaces: ["guest", "kitchen", "admin"] as const,
+    supabaseConfigured: Boolean(
+      config.public.supabaseUrl && config.supabaseServiceRoleKey,
+    ),
   }
 })
