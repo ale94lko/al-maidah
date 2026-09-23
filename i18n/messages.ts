@@ -14,6 +14,8 @@ export const messages = {
       language: "Language",
       english: "English",
       arabic: "العربية",
+      errorTitle: "Something went wrong",
+      ok: "OK",
     },
     guest: {
       table: "Table {n}",
@@ -276,7 +278,10 @@ export const messages = {
       scanPromptEn: "Scan to view the menu and order",
       scanPromptAr: "امسح لعرض القائمة وطلب الطعام",
       tableNumberInvalid: "Enter a positive table number",
+      tableNumberInUse:
+        "That table number is already in use. Choose a different number.",
       tablesSaveError: "Could not save table changes",
+      tablesLoadError: "Could not load tables. Try again.",
       signInTitle: "Owner sign in",
       signInHint: "Access the kitchen board and admin panel for your restaurant.",
       signUpTitle: "Owner sign up",
@@ -303,6 +308,8 @@ export const messages = {
       language: "اللغة",
       english: "English",
       arabic: "العربية",
+      errorTitle: "حدث خطأ ما",
+      ok: "حسنًا",
     },
     guest: {
       table: "طاولة {n}",
@@ -567,7 +574,10 @@ export const messages = {
       scanPromptEn: "Scan to view the menu and order",
       scanPromptAr: "امسح لعرض القائمة وطلب الطعام",
       tableNumberInvalid: "أدخل رقم طاولة موجبًا",
+      tableNumberInUse:
+        "رقم الطاولة مستخدم بالفعل. اختر رقمًا آخر.",
       tablesSaveError: "تعذر حفظ تغييرات الطاولات",
+      tablesLoadError: "تعذر تحميل الطاولات. حاول مرة أخرى.",
       signInTitle: "تسجيل دخول المالك",
       signInHint: "ادخل إلى لوحة المطبخ ولوحة الإدارة لمطعمك.",
       signUpTitle: "تسجيل مالك جديد",

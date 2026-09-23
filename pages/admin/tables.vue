@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { extractApiErrorMessage } from "~/utils/errors"
+
 definePageMeta({
   layout: "admin",
 })
@@ -12,7 +14,6 @@ const {
   tables,
   loading,
   saving,
-  errorMessage,
   menuUrlForTable,
   bootstrap,
   selectRestaurant,
@@ -20,14 +21,35 @@ const {
   renumberTable,
   removeTable,
 } = useAdminTables()
+const {
+  errorOpen,
+  errorTitle,
+  errorMessage,
+  showError,
+  dismissError,
+} = useErrorDialog()
 
 const ready = ref(false)
 const newNumber = ref<number | null>(null)
 const newLabel = ref("")
-const formError = ref("")
 const editingId = ref<string | null>(null)
 const editNumber = ref<number | null>(null)
 const copiedId = ref<string | null>(null)
+
+function friendlyTablesError(error: unknown) {
+  const raw = (extractApiErrorMessage(error) || "").toLowerCase()
+  if (
+    raw.includes("already") ||
+    raw.includes("in use") ||
+    raw.includes("مستخدم")
+  ) {
+    return t("admin.tableNumberInUse")
+  }
+  if (raw.includes("positive") || raw.includes("موجب")) {
+    return t("admin.tableNumberInvalid")
+  }
+  return t("admin.tablesSaveError")
+}
 
 onMounted(async () => {
   const session = await refreshSession()
@@ -41,19 +63,26 @@ onMounted(async () => {
   ready.value = true
   try {
     await bootstrap()
-  } catch {
-    /* errorMessage set */
+  } catch (error) {
+    showError(
+      extractApiErrorMessage(error) || t("admin.tablesLoadError"),
+    )
   }
 })
 
 async function onRestaurantChange(event: Event) {
-  await selectRestaurant((event.target as HTMLSelectElement).value)
+  try {
+    await selectRestaurant((event.target as HTMLSelectElement).value)
+  } catch (error) {
+    showError(
+      extractApiErrorMessage(error) || t("admin.tablesLoadError"),
+    )
+  }
 }
 
 async function onCreate() {
-  formError.value = ""
   if (!newNumber.value || newNumber.value <= 0) {
-    formError.value = t("admin.tableNumberInvalid")
+    showError(t("admin.tableNumberInvalid"))
     return
   }
   try {
@@ -61,8 +90,7 @@ async function onCreate() {
     newNumber.value = null
     newLabel.value = ""
   } catch (error) {
-    formError.value =
-      error instanceof Error ? error.message : t("admin.tablesSaveError")
+    showError(friendlyTablesError(error))
   }
 }
 
@@ -73,17 +101,15 @@ function startRenumber(tableId: string, current: number) {
 
 async function confirmRenumber() {
   if (!editingId.value || !editNumber.value || editNumber.value <= 0) {
-    formError.value = t("admin.tableNumberInvalid")
+    showError(t("admin.tableNumberInvalid"))
     return
   }
-  formError.value = ""
   try {
     await renumberTable(editingId.value, editNumber.value)
     editingId.value = null
     editNumber.value = null
   } catch (error) {
-    formError.value =
-      error instanceof Error ? error.message : t("admin.tablesSaveError")
+    showError(friendlyTablesError(error))
   }
 }
 
@@ -95,12 +121,10 @@ async function onRemove(tableId: string, tableNumber: number) {
   ) {
     return
   }
-  formError.value = ""
   try {
     await removeTable(tableId)
   } catch (error) {
-    formError.value =
-      error instanceof Error ? error.message : t("admin.tablesSaveError")
+    showError(friendlyTablesError(error))
   }
 }
 
@@ -113,18 +137,29 @@ async function copyMenuUrl(tableId: string) {
   if (!url) {
     return
   }
-  await navigator.clipboard.writeText(url)
-  copiedId.value = tableId
-  window.setTimeout(() => {
-    if (copiedId.value === tableId) {
-      copiedId.value = null
-    }
-  }, 1600)
+  try {
+    await navigator.clipboard.writeText(url)
+    copiedId.value = tableId
+    window.setTimeout(() => {
+      if (copiedId.value === tableId) {
+        copiedId.value = null
+      }
+    }, 1600)
+  } catch {
+    showError(t("admin.tablesSaveError"))
+  }
 }
 </script>
 
 <template>
   <div>
+    <AppErrorDialog
+      :open="errorOpen"
+      :title="errorTitle"
+      :message="errorMessage"
+      @dismiss="dismissError"
+    />
+
     <header class="admin-page-hero no-print">
       <div>
         <p class="eyebrow">{{ t("admin.owner") }}</p>
@@ -168,13 +203,6 @@ async function copyMenuUrl(tableId: string) {
       :label="t('admin.loadingOwner')"
     />
     <template v-else>
-      <p v-if="errorMessage" class="no-print mt-4 text-sm text-rose-700">
-        {{ errorMessage }}
-      </p>
-      <p v-if="formError" class="no-print mt-4 text-sm text-rose-700">
-        {{ formError }}
-      </p>
-
       <AppEmptyState
         v-if="!restaurants.length"
         class="no-print mt-8"

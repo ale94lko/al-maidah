@@ -11,6 +11,8 @@ type TablesResponse = {
   tables: DiningTable[]
 }
 
+import { extractApiErrorMessage } from "~/utils/errors"
+
 /**
  * Owner table manager: CRUD + menu URLs for printable QR codes.
  */
@@ -88,8 +90,7 @@ export function useAdminTables() {
       }
       await loadTables()
     } catch (error) {
-      errorMessage.value =
-        error instanceof Error ? error.message : "Could not load tables"
+      errorMessage.value = extractApiErrorMessage(error) || "Could not load tables"
       throw error
     } finally {
       loading.value = false
@@ -116,8 +117,6 @@ export function useAdminTables() {
       })
       await loadTables()
     } catch (error) {
-      errorMessage.value =
-        error instanceof Error ? error.message : "Could not create table"
       throw error
     } finally {
       saving.value = false
@@ -139,8 +138,6 @@ export function useAdminTables() {
       })
       await loadTables()
     } catch (error) {
-      errorMessage.value =
-        error instanceof Error ? error.message : "Could not renumber table"
       throw error
     } finally {
       saving.value = false
@@ -161,8 +158,6 @@ export function useAdminTables() {
       })
       await loadTables()
     } catch (error) {
-      errorMessage.value =
-        error instanceof Error ? error.message : "Could not remove table"
       throw error
     } finally {
       saving.value = false

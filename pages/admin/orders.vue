@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PublicReceipt } from "~/types"
+import { extractApiErrorMessage } from "~/utils/errors"
 
 definePageMeta({
   layout: "admin",
@@ -23,6 +24,13 @@ type OrderSummary = {
 const route = useRoute()
 const { accessToken, refreshSession } = useAuth()
 const { t, locale } = useAppI18n()
+const {
+  errorOpen,
+  errorTitle,
+  errorMessage: dialogMessage,
+  showError,
+  dismissError,
+} = useErrorDialog()
 
 const restaurants = ref<MeResponse["restaurants"]>([])
 const restaurantId = ref<string | null>(null)
@@ -32,7 +40,6 @@ const receipt = ref<PublicReceipt | null>(null)
 const selectedOrderId = ref<string | null>(null)
 const loading = ref(true)
 const markingPaid = ref(false)
-const errorMessage = ref("")
 
 const settingsPath = computed(() => "/admin/settings")
 
@@ -86,7 +93,6 @@ async function openReceipt(orderId: string) {
     return
   }
   selectedOrderId.value = orderId
-  errorMessage.value = ""
   try {
     const result = await $fetch<{ receipt: PublicReceipt }>(
       `/api/admin/orders/${encodeURIComponent(restaurantId.value)}/${encodeURIComponent(orderId)}`,
@@ -95,8 +101,9 @@ async function openReceipt(orderId: string) {
     receipt.value = result.receipt
   } catch (error) {
     receipt.value = null
-    errorMessage.value =
-      error instanceof Error ? error.message : t("admin.receiptLoadError")
+    showError(
+      extractApiErrorMessage(error) || t("admin.receiptLoadError"),
+    )
   }
 }
 
@@ -105,7 +112,6 @@ async function markCashPaid() {
     return
   }
   markingPaid.value = true
-  errorMessage.value = ""
   try {
     const result = await $fetch<{
       alreadyPaid: boolean
@@ -120,8 +126,9 @@ async function markCashPaid() {
     receipt.value = result.receipt
     await loadOrders(restaurantId.value)
   } catch (error) {
-    errorMessage.value =
-      error instanceof Error ? error.message : t("admin.markCashPaidError")
+    showError(
+      extractApiErrorMessage(error) || t("admin.markCashPaidError"),
+    )
   } finally {
     markingPaid.value = false
   }
@@ -129,7 +136,6 @@ async function markCashPaid() {
 
 async function bootstrap() {
   loading.value = true
-  errorMessage.value = ""
   try {
     const me = await $fetch<MeResponse>("/api/auth/me", {
       headers: await authHeaders(),
@@ -152,8 +158,9 @@ async function bootstrap() {
       }
     }
   } catch (error) {
-    errorMessage.value =
-      error instanceof Error ? error.message : t("admin.receiptLoadError")
+    showError(
+      extractApiErrorMessage(error) || t("admin.receiptLoadError"),
+    )
   } finally {
     loading.value = false
   }
@@ -183,6 +190,13 @@ onMounted(async () => {
 
 <template>
   <div>
+    <AppErrorDialog
+      :open="errorOpen"
+      :title="errorTitle"
+      :message="dialogMessage"
+      @dismiss="dismissError"
+    />
+
     <header class="admin-page-hero">
       <div>
         <p class="eyebrow">{{ t("admin.owner") }}</p>
@@ -229,9 +243,6 @@ onMounted(async () => {
       class="mt-8"
       :label="t('admin.loadingOwner')"
     />
-    <p v-else-if="errorMessage" class="mt-6 text-sm text-rose-700">
-      {{ errorMessage }}
-    </p>
     <div v-else class="mt-6 grid gap-6 lg:grid-cols-2">
       <div class="space-y-2">
         <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">

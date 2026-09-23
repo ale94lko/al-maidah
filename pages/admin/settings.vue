@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { extractApiErrorMessage } from "~/utils/errors"
+
 definePageMeta({
   layout: "admin",
 })
@@ -15,13 +17,19 @@ type MeResponse = {
 
 const { accessToken, refreshSession } = useAuth()
 const { t } = useAppI18n()
+const {
+  errorOpen,
+  errorTitle,
+  errorMessage: dialogMessage,
+  showError,
+  dismissError,
+} = useErrorDialog()
 
 const restaurants = ref<MeResponse["restaurants"]>([])
 const restaurantId = ref<string | null>(null)
 const trnInput = ref("")
 const loading = ref(true)
 const saving = ref(false)
-const errorMessage = ref("")
 const savedMessage = ref("")
 
 const selected = computed(
@@ -57,7 +65,6 @@ async function loadRestaurant(id: string) {
 
 async function bootstrap() {
   loading.value = true
-  errorMessage.value = ""
   try {
     const me = await $fetch<MeResponse>("/api/auth/me", {
       headers: await authHeaders(),
@@ -71,8 +78,9 @@ async function bootstrap() {
       await loadRestaurant(restaurantId.value)
     }
   } catch (error) {
-    errorMessage.value =
-      error instanceof Error ? error.message : t("admin.settingsSaveError")
+    showError(
+      extractApiErrorMessage(error) || t("admin.settingsSaveError"),
+    )
   } finally {
     loading.value = false
   }
@@ -91,7 +99,6 @@ async function onSave() {
     return
   }
   saving.value = true
-  errorMessage.value = ""
   savedMessage.value = ""
   try {
     const result = await $fetch<{
@@ -114,8 +121,9 @@ async function onSave() {
     trnInput.value = result.restaurant.trn || ""
     savedMessage.value = t("admin.settingsSaved")
   } catch (error) {
-    errorMessage.value =
-      error instanceof Error ? error.message : t("admin.settingsSaveError")
+    showError(
+      extractApiErrorMessage(error) || t("admin.settingsSaveError"),
+    )
   } finally {
     saving.value = false
   }
@@ -136,6 +144,13 @@ onMounted(async () => {
 
 <template>
   <div>
+    <AppErrorDialog
+      :open="errorOpen"
+      :title="errorTitle"
+      :message="dialogMessage"
+      @dismiss="dismissError"
+    />
+
     <header class="admin-page-hero">
       <div>
         <p class="eyebrow">{{ t("admin.owner") }}</p>
@@ -168,10 +183,6 @@ onMounted(async () => {
       :label="t('admin.loadingOwner')"
     />
     <template v-else>
-      <p v-if="errorMessage" class="mb-4 text-sm text-rose-700">
-        {{ errorMessage }}
-      </p>
-
       <div
         v-if="trnMissing && selected"
         class="mb-5 flex flex-wrap items-start gap-3 rounded-3xl border border-[var(--citrus)]/40 bg-[color-mix(in_srgb,var(--citrus)_18%,white)] px-5 py-4"

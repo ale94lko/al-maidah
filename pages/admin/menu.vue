@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { DishFormState } from "~/composables/useAdminMenu"
 import type { ModifierGroupInput } from "~/types"
+import { extractApiErrorMessage } from "~/utils/errors"
 
 definePageMeta({
   layout: "admin",
@@ -13,7 +14,6 @@ const {
   restaurantId,
   loading,
   saving,
-  errorMessage,
   showArchived,
   visibleCategories,
   itemsForCategory,
@@ -29,12 +29,22 @@ const {
   emptyDishForm,
   dishFormFromItem,
 } = useAdminMenu()
+const {
+  errorOpen,
+  errorTitle,
+  errorMessage: dialogMessage,
+  showError,
+  dismissError,
+} = useErrorDialog()
 
 const ready = ref(false)
 const newCategoryEn = ref("")
 const newCategoryAr = ref("")
 const editingDish = ref<DishFormState | null>(null)
-const formError = ref("")
+
+function menuError(error: unknown) {
+  return extractApiErrorMessage(error) || t("admin.menuSaveError")
+}
 
 onMounted(async () => {
   const session = await refreshSession()
@@ -48,30 +58,31 @@ onMounted(async () => {
   ready.value = true
   try {
     await bootstrap()
-  } catch {
-    /* errorMessage set */
+  } catch (error) {
+    showError(menuError(error))
   }
 })
 
 async function onRestaurantChange(event: Event) {
-  await selectRestaurant((event.target as HTMLSelectElement).value)
+  try {
+    await selectRestaurant((event.target as HTMLSelectElement).value)
+  } catch (error) {
+    showError(menuError(error))
+  }
 }
 
 async function onAddCategory() {
-  formError.value = ""
   try {
     await createCategory(newCategoryEn.value, newCategoryAr.value)
     newCategoryEn.value = ""
     newCategoryAr.value = ""
   } catch (error) {
-    formError.value =
-      error instanceof Error ? error.message : t("admin.menuSaveError")
+    showError(menuError(error))
   }
 }
 
 function openNewDish(categoryId: string) {
   editingDish.value = emptyDishForm(categoryId)
-  formError.value = ""
 }
 
 function openEditDish(itemId: string) {
@@ -82,7 +93,6 @@ function openEditDish(itemId: string) {
     return
   }
   editingDish.value = dishFormFromItem(found)
-  formError.value = ""
 }
 
 function addModifierGroup() {
@@ -110,13 +120,11 @@ async function onSaveDish() {
   if (!editingDish.value) {
     return
   }
-  formError.value = ""
   try {
     await saveDish(editingDish.value)
     editingDish.value = null
   } catch (error) {
-    formError.value =
-      error instanceof Error ? error.message : t("admin.menuSaveError")
+    showError(menuError(error))
   }
 }
 
@@ -124,17 +132,14 @@ async function onPhotoChange(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
   if (!file || !editingDish.value?.id) {
-    formError.value = t("admin.menuPhotoSaveFirst")
+    showError(t("admin.menuPhotoSaveFirst"))
     return
   }
-  formError.value = ""
   try {
     await uploadPhoto(editingDish.value.id, file)
-    // Reload form from saved item
     openEditDish(editingDish.value.id)
   } catch (error) {
-    formError.value =
-      error instanceof Error ? error.message : t("admin.menuSaveError")
+    showError(menuError(error))
   } finally {
     input.value = ""
   }
@@ -143,6 +148,13 @@ async function onPhotoChange(event: Event) {
 
 <template>
   <div>
+    <AppErrorDialog
+      :open="errorOpen"
+      :title="errorTitle"
+      :message="dialogMessage"
+      @dismiss="dismissError"
+    />
+
     <header class="admin-page-hero">
       <div>
         <p class="eyebrow">{{ t("admin.owner") }}</p>
@@ -182,13 +194,6 @@ async function onPhotoChange(event: Event) {
       :label="t('admin.loadingOwner')"
     />
     <template v-else>
-      <p v-if="errorMessage" class="mt-4 text-sm text-rose-700">
-        {{ errorMessage }}
-      </p>
-      <p v-if="formError" class="mt-4 text-sm text-rose-700">
-        {{ formError }}
-      </p>
-
       <AppEmptyState
         v-if="!restaurants.length"
         class="mt-8"

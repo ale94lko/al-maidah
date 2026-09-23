@@ -1,3 +1,4 @@
+import { extractApiErrorMessage } from "~/utils/errors"
 import type {
   Category,
   MenuItem,
@@ -114,8 +115,7 @@ export function useAdminMenu() {
       }
       await loadMenu()
     } catch (error) {
-      errorMessage.value =
-        error instanceof Error ? error.message : "Could not load menu"
+      errorMessage.value = extractApiErrorMessage(error) || "Could not load menu"
       throw error
     } finally {
       loading.value = false
@@ -142,8 +142,6 @@ export function useAdminMenu() {
       })
       await loadMenu()
     } catch (error) {
-      errorMessage.value =
-        error instanceof Error ? error.message : "Could not create category"
       throw error
     } finally {
       saving.value = false
@@ -167,8 +165,6 @@ export function useAdminMenu() {
       )
       await loadMenu()
     } catch (error) {
-      errorMessage.value =
-        error instanceof Error ? error.message : "Could not update category"
       throw error
     } finally {
       saving.value = false
@@ -214,8 +210,6 @@ export function useAdminMenu() {
       }
       await loadMenu()
     } catch (error) {
-      errorMessage.value =
-        error instanceof Error ? error.message : "Could not save dish"
       throw error
     } finally {
       saving.value = false
@@ -237,8 +231,6 @@ export function useAdminMenu() {
       })
       await loadMenu()
     } catch (error) {
-      errorMessage.value =
-        error instanceof Error ? error.message : "Could not update dish"
       throw error
     } finally {
       saving.value = false
@@ -261,8 +253,6 @@ export function useAdminMenu() {
       )
       await loadMenu()
     } catch (error) {
-      errorMessage.value =
-        error instanceof Error ? error.message : "Could not upload photo"
       throw error
     } finally {
       saving.value = false

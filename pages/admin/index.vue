@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { OwnerStatsResponse, StatsRange } from "~/types"
 import { localizedName } from "~/utils/localize"
+import { extractApiErrorMessage } from "~/utils/errors"
 
 definePageMeta({
   layout: "admin",
@@ -15,13 +16,19 @@ const RANGES: StatsRange[] = ["today", "week", "month", "last_30_days"]
 
 const { refreshSession, accessToken } = useAuth()
 const { t, locale } = useAppI18n()
+const {
+  errorOpen,
+  errorTitle,
+  errorMessage: dialogMessage,
+  showError,
+  dismissError,
+} = useErrorDialog()
 
 const restaurants = ref<MeResponse["restaurants"]>([])
 const restaurantId = ref<string | null>(null)
 const range = ref<StatsRange>("last_30_days")
 const stats = ref<OwnerStatsResponse | null>(null)
 const loading = ref(true)
-const errorMessage = ref("")
 
 async function authHeaders() {
   const token = await accessToken()
@@ -36,7 +43,6 @@ async function loadStats() {
     stats.value = null
     return
   }
-  errorMessage.value = ""
   try {
     const result = await $fetch<{ stats: OwnerStatsResponse }>(
       `/api/admin/stats/${encodeURIComponent(restaurantId.value)}`,
@@ -48,14 +54,14 @@ async function loadStats() {
     stats.value = result.stats
   } catch (error) {
     stats.value = null
-    errorMessage.value =
-      error instanceof Error ? error.message : t("admin.statsLoadError")
+    showError(
+      extractApiErrorMessage(error) || t("admin.statsLoadError"),
+    )
   }
 }
 
 async function bootstrap() {
   loading.value = true
-  errorMessage.value = ""
   try {
     const me = await $fetch<MeResponse>("/api/auth/me", {
       headers: await authHeaders(),
@@ -64,8 +70,9 @@ async function bootstrap() {
     restaurantId.value = me.restaurants[0]?.id ?? null
     await loadStats()
   } catch (error) {
-    errorMessage.value =
-      error instanceof Error ? error.message : t("admin.statsLoadError")
+    showError(
+      extractApiErrorMessage(error) || t("admin.statsLoadError"),
+    )
   } finally {
     loading.value = false
   }
@@ -142,6 +149,13 @@ onMounted(async () => {
 
 <template>
   <div>
+    <AppErrorDialog
+      :open="errorOpen"
+      :title="errorTitle"
+      :message="dialogMessage"
+      @dismiss="dismissError"
+    />
+
     <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
       <div
         class="inline-flex flex-wrap gap-1 rounded-full bg-white p-1 shadow-sm"
@@ -189,9 +203,6 @@ onMounted(async () => {
       class="mt-8"
       :label="t('admin.loadingOwner')"
     />
-    <p v-else-if="errorMessage" class="mt-8 text-sm text-red-700">
-      {{ errorMessage }}
-    </p>
     <AppEmptyState
       v-else-if="!restaurants.length"
       class="mt-8"
