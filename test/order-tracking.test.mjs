@@ -67,6 +67,15 @@ test("PublicOrder exposes guest_access_token not gateway_reference", () => {
     /interface PublicOrder \{([\s\S]*?)\n\}/,
   )?.[1]
   assert.ok(publicBlock)
+  assert.match(publicBlock, /restaurant_name/)
   assert.doesNotMatch(publicBlock, /gateway_reference/)
   assert.doesNotMatch(publicBlock, /total_cost/)
+})
+
+test("status and pay pages prefer restaurant_name for the guest header", () => {
+  const status = read("pages/m/[slug]/status/[orderId].vue")
+  const pay = read("pages/m/[slug]/pay/[orderId].vue")
+  assert.match(status, /restaurant_name/)
+  assert.match(pay, /restaurant_name/)
+  assert.match(read("server/utils/orders.ts"), /restaurant_name: restaurant\.name/)
 })
