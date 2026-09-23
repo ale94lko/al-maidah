@@ -4,6 +4,7 @@ definePageMeta({
 })
 
 const { user, loading, refreshSession, signOut, accessToken } = useAuth()
+const { t } = useAppI18n()
 
 type MeResponse = {
   user: { id: string; email?: string }
@@ -45,10 +46,10 @@ async function onSignOut() {
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
         <h1 class="text-3xl font-semibold tracking-tight text-stone-900">
-          Statistics
+          {{ t("admin.statsTitle") }}
         </h1>
         <p class="mt-2 text-sm text-stone-600">
-          Revenue and timing charts land in a later MVP issue.
+          {{ t("admin.statsHint") }}
         </p>
       </div>
       <button
@@ -56,17 +57,21 @@ async function onSignOut() {
         class="rounded-lg border border-stone-300 px-3 py-1.5 text-sm md:hidden"
         @click="onSignOut"
       >
-        Sign out
+        {{ t("common.signOut") }}
       </button>
     </div>
 
-    <AppLoadingState v-if="loading || pageLoading" class="mt-8" label="Loading owner data…" />
+    <AppLoadingState
+      v-if="loading || pageLoading"
+      class="mt-8"
+      :label="t('admin.loadingOwner')"
+    />
     <p v-else-if="errorMessage" class="mt-8 text-sm text-red-700">
       {{ errorMessage }}
     </p>
     <div v-else class="mt-8 space-y-4">
       <p class="text-sm text-stone-700">
-        Signed in as
+        {{ t("admin.signedInAs") }}
         <span class="font-medium">{{ user?.email || me?.user.email }}</span>
       </p>
       <ul v-if="me?.restaurants?.length" class="space-y-2">
@@ -88,8 +93,8 @@ async function onSignOut() {
       </ul>
       <AppEmptyState
         v-else
-        title="No restaurants yet"
-        description="Create an owner account to attach a venue."
+        :title="t('admin.noRestaurants')"
+        :description="t('admin.noRestaurantsHint')"
       />
     </div>
   </div>

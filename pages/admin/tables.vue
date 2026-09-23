@@ -2,20 +2,22 @@
 definePageMeta({
   layout: "admin",
 })
+
+const { t } = useAppI18n()
 </script>
 
 <template>
   <div>
     <h1 class="text-3xl font-semibold tracking-tight text-stone-900">
-      Tables
+      {{ t("admin.tablesTitle") }}
     </h1>
     <p class="mt-2 text-sm text-stone-600">
-      Table numbers and printable QR codes will live here.
+      {{ t("admin.tablesHint") }}
     </p>
     <AppEmptyState
       class="mt-8"
-      title="No tables configured in the UI yet"
-      description="This admin layout is ready for table and QR management."
+      :title="t('admin.tablesEmpty')"
+      :description="t('admin.tablesEmptyHint')"
     />
   </div>
 </template>

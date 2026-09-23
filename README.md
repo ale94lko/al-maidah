@@ -16,7 +16,7 @@ The name comes from *ma'idah* (المائدة): the table.
 - **Kitchen (tablet, PWA):** live ticket board (pending, preparing, ready) with a sound alert.
 - **Admin (desktop and tablet):** menu, tables and printable QR codes, revenue and profit stats.
 - **Payments in AED:** Google Pay, card, and cash at the table, with a receipt that includes the TRN.
-- **Languages:** English and Arabic (RTL).
+- **Languages:** English and Arabic (RTL), with a guest language switcher remembered on the device.
 - **Multi-tenant:** each restaurant sees only its own data.
 
 Thermal printing, offline mode, and buy-now-pay-later gateways are out of the MVP.
@@ -57,7 +57,7 @@ Do not commit secrets.
 
 ## How to build it
 
-Each MVP piece is tracked as an issue, in implementation order. Guest, kitchen, and admin layouts close **MVP-05**.
+Each MVP piece is tracked as an issue, in implementation order. English/Arabic and RTL support close **MVP-06**.
 
 ## Contributing
 

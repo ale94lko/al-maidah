@@ -9,6 +9,7 @@ const errorMessage = ref("")
 const pending = ref(false)
 const route = useRoute()
 const { signIn } = useAuth()
+const { t } = useAppI18n()
 
 async function onSubmit() {
   errorMessage.value = ""
@@ -22,7 +23,7 @@ async function onSubmit() {
     await navigateTo(redirect)
   } catch (error) {
     errorMessage.value =
-      error instanceof Error ? error.message : "Could not sign in"
+      error instanceof Error ? error.message : t("common.signIn")
   } finally {
     pending.value = false
   }
@@ -31,14 +32,16 @@ async function onSubmit() {
 
 <template>
   <div class="mx-auto max-w-md px-4 py-12">
-    <h1 class="text-3xl font-semibold text-stone-900">Owner sign in</h1>
+    <h1 class="text-3xl font-semibold text-stone-900">
+      {{ t("admin.signInTitle") }}
+    </h1>
     <p class="mt-2 text-sm text-stone-600">
-      Access the kitchen board and admin panel for your restaurant.
+      {{ t("admin.signInHint") }}
     </p>
 
     <form class="mt-8 space-y-4" @submit.prevent="onSubmit">
       <label class="block text-sm font-medium text-stone-800">
-        Email
+        {{ t("admin.email") }}
         <input
           v-model="email"
           type="email"
@@ -48,7 +51,7 @@ async function onSubmit() {
         >
       </label>
       <label class="block text-sm font-medium text-stone-800">
-        Password
+        {{ t("admin.password") }}
         <input
           v-model="password"
           type="password"
@@ -66,14 +69,14 @@ async function onSubmit() {
         class="w-full rounded-lg bg-teal-800 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
         :disabled="pending"
       >
-        {{ pending ? "Signing in…" : "Sign in" }}
+        {{ pending ? t("admin.signingIn") : t("common.signIn") }}
       </button>
     </form>
 
     <p class="mt-6 text-sm text-stone-600">
-      New restaurant?
+      {{ t("admin.newRestaurant") }}
       <NuxtLink to="/admin/signup" class="font-medium text-teal-800 underline">
-        Create an owner account
+        {{ t("admin.createOwnerAccount") }}
       </NuxtLink>
     </p>
   </div>

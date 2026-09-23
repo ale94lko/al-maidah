@@ -2,20 +2,22 @@
 definePageMeta({
   layout: "admin",
 })
+
+const { t } = useAppI18n()
 </script>
 
 <template>
   <div>
     <h1 class="text-3xl font-semibold tracking-tight text-stone-900">
-      Menu
+      {{ t("admin.menuTitle") }}
     </h1>
     <p class="mt-2 text-sm text-stone-600">
-      Categories, dishes, and modifiers will be managed here.
+      {{ t("admin.menuHint") }}
     </p>
     <AppEmptyState
       class="mt-8"
-      title="Menu editor coming soon"
-      description="This admin layout is ready for the menu management screens."
+      :title="t('admin.menuEmpty')"
+      :description="t('admin.menuEmptyHint')"
     />
   </div>
 </template>

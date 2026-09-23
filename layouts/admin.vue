@@ -1,12 +1,13 @@
 <script setup lang="ts">
 const route = useRoute()
 const { user, signOut } = useAuth()
+const { t } = useAppI18n()
 
-const links = [
-  { to: "/admin", label: "Statistics", match: /^\/admin\/?$/ },
-  { to: "/admin/menu", label: "Menu", match: /^\/admin\/menu/ },
-  { to: "/admin/tables", label: "Tables", match: /^\/admin\/tables/ },
-] as const
+const links = computed(() => [
+  { to: "/admin", label: t("admin.statistics"), match: /^\/admin\/?$/ },
+  { to: "/admin/menu", label: t("admin.menu"), match: /^\/admin\/menu/ },
+  { to: "/admin/tables", label: t("admin.tables"), match: /^\/admin\/tables/ },
+])
 
 const isAuthPage = computed(
   () => route.path === "/admin/login" || route.path === "/admin/signup",
@@ -25,10 +26,9 @@ async function onSignOut() {
 <template>
   <div class="admin-shell min-h-dvh bg-[var(--sand)] text-[var(--ink)]">
     <div class="mx-auto flex min-h-dvh w-full max-w-6xl">
-      <!-- Desktop / tablet side nav -->
       <aside
         v-if="!isAuthPage"
-        class="hidden w-56 shrink-0 flex-col border-r border-teal-900/10 bg-white/70 p-4 md:flex lg:w-64"
+        class="hidden w-56 shrink-0 flex-col border-e border-teal-900/10 bg-white/70 p-4 md:flex lg:w-64"
       >
         <NuxtLink
           to="/admin"
@@ -37,9 +37,9 @@ async function onSignOut() {
           Al-Maidah
         </NuxtLink>
         <p class="mt-1 text-xs uppercase tracking-[0.16em] text-teal-800/60">
-          Owner
+          {{ t("admin.owner") }}
         </p>
-        <nav class="mt-8 flex flex-col gap-1" aria-label="Admin">
+        <nav class="mt-8 flex flex-col gap-1" :aria-label="t('admin.ownerPanel')">
           <NuxtLink
             v-for="link in links"
             :key="link.to"
@@ -55,6 +55,7 @@ async function onSignOut() {
           </NuxtLink>
         </nav>
         <div class="mt-auto space-y-2 pt-8">
+          <LanguageSwitcher />
           <p
             v-if="user?.email"
             class="truncate text-xs text-stone-500"
@@ -64,10 +65,10 @@ async function onSignOut() {
           </p>
           <button
             type="button"
-            class="w-full rounded-lg border border-stone-300 px-3 py-2 text-left text-sm"
+            class="w-full rounded-lg border border-stone-300 px-3 py-2 text-start text-sm"
             @click="onSignOut"
           >
-            Sign out
+            {{ t("common.signOut") }}
           </button>
         </div>
       </aside>
@@ -79,19 +80,22 @@ async function onSignOut() {
           <div class="flex items-center justify-between gap-3">
             <div class="min-w-0 md:hidden">
               <p class="text-base font-semibold text-teal-950">
-                {{ isAuthPage ? "Al-Maidah" : "Owner panel" }}
+                {{ isAuthPage ? "Al-Maidah" : t("admin.ownerPanel") }}
               </p>
             </div>
             <p class="hidden text-sm text-stone-600 md:block">
-              Desktop and tablet ready
+              {{ t("admin.desktopReady") }}
             </p>
-            <NuxtLink
-              v-if="isAuthPage"
-              to="/"
-              class="text-sm font-medium text-teal-800"
-            >
-              Home
-            </NuxtLink>
+            <div class="flex items-center gap-3">
+              <LanguageSwitcher class="md:hidden" />
+              <NuxtLink
+                v-if="isAuthPage"
+                to="/"
+                class="text-sm font-medium text-teal-800"
+              >
+                {{ t("common.home") }}
+              </NuxtLink>
+            </div>
           </div>
         </header>
 
@@ -101,12 +105,11 @@ async function onSignOut() {
       </div>
     </div>
 
-    <!-- Mobile bottom nav: never clipped -->
     <nav
       v-if="!isAuthPage"
       class="fixed inset-x-0 bottom-0 z-30 border-t border-teal-900/10 bg-white/95 backdrop-blur md:hidden"
       style="padding-bottom: env(safe-area-inset-bottom)"
-      aria-label="Admin mobile"
+      :aria-label="t('admin.ownerPanel')"
     >
       <ul class="mx-auto flex max-w-lg items-stretch justify-between gap-1 px-2 py-2">
         <li v-for="link in links" :key="link.to" class="min-w-0 flex-1">

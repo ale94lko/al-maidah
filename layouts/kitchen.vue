@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { user, signOut } = useAuth()
+const { t } = useAppI18n()
 
 async function onSignOut() {
   await signOut()
@@ -16,13 +17,14 @@ async function onSignOut() {
     >
       <div class="min-w-0">
         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-emerald-400/90">
-          Kitchen
+          {{ t("kitchen.title") }}
         </p>
         <p class="truncate text-lg font-semibold tracking-tight text-zinc-50">
-          Ticket board
+          {{ t("kitchen.ticketBoard") }}
         </p>
       </div>
       <div class="flex shrink-0 items-center gap-3">
+        <LanguageSwitcher />
         <span
           v-if="user?.email"
           class="hidden max-w-[14rem] truncate text-xs text-zinc-400 sm:inline"
@@ -34,7 +36,7 @@ async function onSignOut() {
           class="rounded-lg border border-zinc-700 px-3 py-1.5 text-sm text-zinc-200 hover:bg-zinc-900"
           @click="onSignOut"
         >
-          Sign out
+          {{ t("common.signOut") }}
         </button>
       </div>
     </header>
