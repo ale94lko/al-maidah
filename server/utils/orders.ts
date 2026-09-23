@@ -1,8 +1,12 @@
 import type { SupabaseClient } from "@supabase/supabase-js"
 import type {
+  KitchenTicket,
+  KitchenTicketAction,
   ModifierGroupWithOptions,
   ModifierOption,
+  OrderStatus,
   PaymentMethod,
+  PaymentStatus,
   PublicOrder,
   PublicOrderItem,
   SelectedModifierOption,
@@ -479,4 +483,258 @@ export async function getPublicOrderById(
       selected_options: (item.selected_options ?? []) as SelectedModifierOption[],
     })),
   }
+}
+
+const KITCHEN_BOARD_STATUSES: OrderStatus[] = [
+  "pending",
+  "in_preparation",
+  "ready",
+]
+
+type KitchenOrderRow = {
+  id: string
+  restaurant_id: string
+  table_id: string
+  guest_name: string | null
+  status: OrderStatus
+  payment_status: PaymentStatus
+  payment_method: PaymentMethod | null
+  created_at: string
+  ready_at: string | null
+  tables:
+    | { table_number: number }
+    | { table_number: number }[]
+    | null
+  order_items:
+    | Array<{
+        id: string
+        menu_item_id: string | null
+        name_en: string
+        name_ar: string
+        quantity: number
+        unit_price: string | number
+        notes: string
+        selected_options: SelectedModifierOption[] | null
+      }>
+    | null
+}
+
+/**
+ * Cash at the table always appears on the kitchen board.
+ * Online orders appear only after payment_status is paid.
+ */
+export function isKitchenVisibleOrder(order: {
+  payment_method: PaymentMethod | null
+  payment_status: PaymentStatus
+  status: OrderStatus
+}): boolean {
+  if (!KITCHEN_BOARD_STATUSES.includes(order.status)) {
+    return false
+  }
+  if (order.payment_method === "cash_at_table") {
+    return true
+  }
+  return order.payment_status === "paid"
+}
+
+function mapKitchenTicket(row: KitchenOrderRow): KitchenTicket {
+  const tableRel = Array.isArray(row.tables) ? row.tables[0] : row.tables
+  return {
+    id: row.id,
+    restaurant_id: row.restaurant_id,
+    table_id: row.table_id,
+    table_number: tableRel?.table_number ?? null,
+    guest_name: row.guest_name,
+    status: row.status,
+    payment_status: row.payment_status,
+    payment_method: row.payment_method,
+    created_at: row.created_at,
+    ready_at: row.ready_at,
+    items: (row.order_items ?? []).map((item) => ({
+      id: item.id,
+      menu_item_id: item.menu_item_id,
+      name_en: item.name_en,
+      name_ar: item.name_ar,
+      quantity: item.quantity,
+      unit_price: String(item.unit_price),
+      notes: item.notes ?? "",
+      selected_options: (item.selected_options ?? []) as SelectedModifierOption[],
+    })),
+  }
+}
+
+const KITCHEN_ORDER_SELECT = `
+  id,
+  restaurant_id,
+  table_id,
+  guest_name,
+  status,
+  payment_status,
+  payment_method,
+  created_at,
+  ready_at,
+  tables ( table_number ),
+  order_items (
+    id,
+    menu_item_id,
+    name_en,
+    name_ar,
+    quantity,
+    unit_price,
+    notes,
+    selected_options
+  )
+`
+
+export async function listKitchenTickets(
+  client: SupabaseClient,
+  restaurantId: string,
+): Promise<KitchenTicket[]> {
+  const { data, error } = await client
+    .from("orders")
+    .select(KITCHEN_ORDER_SELECT)
+    .eq("restaurant_id", restaurantId)
+    .in("status", KITCHEN_BOARD_STATUSES)
+    .or("payment_method.eq.cash_at_table,payment_status.eq.paid")
+    .order("created_at", { ascending: true })
+
+  if (error) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: `Failed to load kitchen tickets: ${error.message}`,
+    })
+  }
+
+  return ((data ?? []) as unknown as KitchenOrderRow[])
+    .map(mapKitchenTicket)
+    .filter(isKitchenVisibleOrder)
+}
+
+export async function transitionKitchenOrder(
+  client: SupabaseClient,
+  options: {
+    orderId: string
+    restaurantId: string
+    action: KitchenTicketAction
+  },
+): Promise<KitchenTicket> {
+  const action = options.action
+  if (action !== "start" && action !== "ready" && action !== "deliver") {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "action must be start, ready, or deliver",
+    })
+  }
+
+  const { data: orderRow, error: loadError } = await client
+    .from("orders")
+    .select(
+      "id, restaurant_id, status, payment_status, payment_method, ready_at",
+    )
+    .eq("id", options.orderId)
+    .maybeSingle()
+
+  if (loadError) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: `Failed to load order: ${loadError.message}`,
+    })
+  }
+  if (!orderRow || orderRow.restaurant_id !== options.restaurantId) {
+    throw createError({ statusCode: 404, statusMessage: "Order not found" })
+  }
+
+  if (
+    !isKitchenVisibleOrder({
+      payment_method: orderRow.payment_method,
+      payment_status: orderRow.payment_status,
+      status: orderRow.status,
+    }) &&
+    !(action === "deliver" && orderRow.status === "ready")
+  ) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: "Order is not visible on the kitchen board",
+    })
+  }
+
+  let nextStatus: OrderStatus
+  const patch: Record<string, string> = {}
+
+  if (action === "start") {
+    if (orderRow.status !== "pending") {
+      throw createError({
+        statusCode: 409,
+        statusMessage: "Only pending tickets can start preparation",
+      })
+    }
+    nextStatus = "in_preparation"
+  } else if (action === "ready") {
+    if (orderRow.status !== "in_preparation") {
+      throw createError({
+        statusCode: 409,
+        statusMessage: "Only preparing tickets can be marked ready",
+      })
+    }
+    nextStatus = "ready"
+    if (!orderRow.ready_at) {
+      patch.ready_at = new Date().toISOString()
+    }
+  } else {
+    if (orderRow.status !== "ready") {
+      throw createError({
+        statusCode: 409,
+        statusMessage: "Only ready tickets can be marked delivered",
+      })
+    }
+    nextStatus = "completed"
+  }
+
+  patch.status = nextStatus
+
+  const { error: updateError } = await client
+    .from("orders")
+    .update(patch)
+    .eq("id", options.orderId)
+    .eq("restaurant_id", options.restaurantId)
+
+  if (updateError) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: `Failed to update order: ${updateError.message}`,
+    })
+  }
+
+  if (nextStatus === "completed") {
+    // Delivered tickets leave the board; return a minimal ticket snapshot.
+    return {
+      id: orderRow.id,
+      restaurant_id: options.restaurantId,
+      table_id: "",
+      table_number: null,
+      guest_name: null,
+      status: "completed",
+      payment_status: orderRow.payment_status,
+      payment_method: orderRow.payment_method,
+      created_at: "",
+      ready_at: patch.ready_at ?? orderRow.ready_at,
+      items: [],
+    }
+  }
+
+  const { data: refreshed, error: refreshError } = await client
+    .from("orders")
+    .select(KITCHEN_ORDER_SELECT)
+    .eq("id", options.orderId)
+    .eq("restaurant_id", options.restaurantId)
+    .maybeSingle()
+
+  if (refreshError || !refreshed) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: `Failed to reload ticket: ${refreshError?.message || "unknown"}`,
+    })
+  }
+
+  return mapKitchenTicket(refreshed as unknown as KitchenOrderRow)
 }

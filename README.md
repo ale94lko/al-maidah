@@ -57,7 +57,7 @@ Do not commit secrets.
 
 ## How to build it
 
-Each MVP piece is tracked as an issue, in implementation order. Live guest order tracking closes **MVP-12**.
+Each MVP piece is tracked as an issue, in implementation order. The realtime kitchen ticket board closes **MVP-13**.
 
 ## Contributing
 
