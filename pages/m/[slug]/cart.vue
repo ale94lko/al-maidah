@@ -29,6 +29,7 @@ const {
   syncFromStorage,
   clearCart,
 } = useCart()
+const { saveActiveOrder } = useActiveOrder()
 const { t, locale } = useAppI18n()
 
 const slug = computed(() => String(route.params.slug || ""))
@@ -101,18 +102,28 @@ async function placeOrder() {
     })
 
     clearCart()
-    const tableQuery =
-      tableNumber.value != null ? { table: String(tableNumber.value) } : undefined
+    saveActiveOrder({
+      slug: slug.value,
+      orderId: result.order.id,
+      accessToken: result.order.guest_access_token,
+      tableNumber: result.order.table_number,
+    })
+    const nextQuery: Record<string, string> = {
+      token: result.order.guest_access_token,
+    }
+    if (tableNumber.value != null) {
+      nextQuery.table = String(tableNumber.value)
+    }
 
     if (method === "cash_at_table") {
       await router.push({
         path: `/m/${slug.value}/status/${result.order.id}`,
-        query: tableQuery,
+        query: nextQuery,
       })
     } else {
       await router.push({
         path: `/m/${slug.value}/pay/${result.order.id}`,
-        query: tableQuery,
+        query: nextQuery,
       })
     }
   } catch (error: unknown) {

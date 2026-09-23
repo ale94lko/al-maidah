@@ -309,7 +309,7 @@ export async function createGuestOrder(
       total_cost: filsToMoney(totalCostFils),
     })
     .select(
-      "id, restaurant_id, table_id, guest_name, status, payment_status, payment_method, gateway_reference, subtotal, vat, tip, total, created_at, ready_at",
+      "id, restaurant_id, table_id, guest_name, status, payment_status, payment_method, guest_access_token, subtotal, vat, tip, total, created_at, ready_at",
     )
     .single()
 
@@ -357,7 +357,7 @@ export async function createGuestOrder(
     status: orderRow.status,
     payment_status: orderRow.payment_status,
     payment_method: orderRow.payment_method,
-    gateway_reference: orderRow.gateway_reference,
+    guest_access_token: String(orderRow.guest_access_token),
     subtotal: String(orderRow.subtotal),
     vat: String(orderRow.vat),
     tip: String(orderRow.tip),
@@ -365,6 +365,7 @@ export async function createGuestOrder(
     created_at: orderRow.created_at,
     ready_at: orderRow.ready_at,
     table_number: table.table_number,
+    restaurant_slug: restaurant.slug,
   }
 
   const items: PublicOrderItem[] = insertedItems.map((item) => ({
@@ -384,13 +385,21 @@ export async function createGuestOrder(
 export async function getPublicOrderById(
   client: SupabaseClient,
   orderId: string,
+  options: { slug: string; accessToken: string },
 ): Promise<{ order: PublicOrder; items: PublicOrderItem[] } | null> {
+  const slug = options.slug.trim()
+  const accessToken = options.accessToken.trim()
+  if (!slug || !accessToken) {
+    return null
+  }
+
   const { data: orderRow, error } = await client
     .from("orders")
     .select(
-      "id, restaurant_id, table_id, guest_name, status, payment_status, payment_method, gateway_reference, subtotal, vat, tip, total, created_at, ready_at",
+      "id, restaurant_id, table_id, guest_name, status, payment_status, payment_method, guest_access_token, subtotal, vat, tip, total, created_at, ready_at",
     )
     .eq("id", orderId)
+    .eq("guest_access_token", accessToken)
     .maybeSingle()
 
   if (error) {
@@ -400,6 +409,23 @@ export async function getPublicOrderById(
     })
   }
   if (!orderRow) {
+    return null
+  }
+
+  const { data: restaurant, error: restaurantError } = await client
+    .from("restaurants")
+    .select("id, slug")
+    .eq("id", orderRow.restaurant_id)
+    .maybeSingle()
+
+  if (restaurantError) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: `Failed to load restaurant for order: ${restaurantError.message}`,
+    })
+  }
+  if (!restaurant || restaurant.slug !== slug) {
+    // Same opaque 404 whether the order is missing or belongs to another venue.
     return null
   }
 
@@ -432,7 +458,7 @@ export async function getPublicOrderById(
       status: orderRow.status,
       payment_status: orderRow.payment_status,
       payment_method: orderRow.payment_method,
-      gateway_reference: orderRow.gateway_reference,
+      guest_access_token: String(orderRow.guest_access_token),
       subtotal: String(orderRow.subtotal),
       vat: String(orderRow.vat),
       tip: String(orderRow.tip),
@@ -440,6 +466,7 @@ export async function getPublicOrderById(
       created_at: orderRow.created_at,
       ready_at: orderRow.ready_at,
       table_number: table?.table_number ?? null,
+      restaurant_slug: restaurant.slug,
     },
     items: (itemRows ?? []).map((item) => ({
       id: item.id,
