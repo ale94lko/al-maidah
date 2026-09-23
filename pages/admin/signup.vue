@@ -36,52 +36,52 @@ async function onSubmit() {
 
 <template>
   <div class="mx-auto max-w-md px-4 py-12">
-    <h1 class="text-3xl font-semibold text-stone-900">
+    <h1 class="font-display text-3xl font-semibold text-[var(--espresso)]">
       {{ t("admin.signUpTitle") }}
     </h1>
-    <p class="mt-2 text-sm text-stone-600">
+    <p class="mt-2 text-sm text-[var(--muted)]">
       {{ t("admin.signUpHint") }}
     </p>
 
     <form class="mt-8 space-y-4" @submit.prevent="onSubmit">
-      <label class="block text-sm font-medium text-stone-800">
+      <label class="block text-sm font-medium text-[var(--espresso)]">
         {{ t("admin.restaurantName") }}
         <input
           v-model="restaurantName"
           type="text"
           required
-          class="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2"
+          class="mt-1 w-full rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
         >
       </label>
-      <label class="block text-sm font-medium text-stone-800">
+      <label class="block text-sm font-medium text-[var(--espresso)]">
         {{ t("admin.slugOptional") }}
         <input
           v-model="slug"
           type="text"
           pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
           placeholder="my-cafe"
-          class="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2"
+          class="mt-1 w-full rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
         >
       </label>
-      <label class="block text-sm font-medium text-stone-800">
+      <label class="block text-sm font-medium text-[var(--espresso)]">
         {{ t("admin.trnOptional") }}
         <input
           v-model="trn"
           type="text"
-          class="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2"
+          class="mt-1 w-full rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
         >
       </label>
-      <label class="block text-sm font-medium text-stone-800">
+      <label class="block text-sm font-medium text-[var(--espresso)]">
         {{ t("admin.email") }}
         <input
           v-model="email"
           type="email"
           required
           autocomplete="email"
-          class="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2"
+          class="mt-1 w-full rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
         >
       </label>
-      <label class="block text-sm font-medium text-stone-800">
+      <label class="block text-sm font-medium text-[var(--espresso)]">
         {{ t("admin.password") }}
         <input
           v-model="password"
@@ -89,24 +89,24 @@ async function onSubmit() {
           required
           minlength="8"
           autocomplete="new-password"
-          class="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2"
+          class="mt-1 w-full rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
         >
       </label>
-      <p v-if="errorMessage" class="text-sm text-red-700">
+      <p v-if="errorMessage" class="text-sm text-rose-700">
         {{ errorMessage }}
       </p>
       <button
         type="submit"
-        class="w-full rounded-lg bg-teal-800 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+        class="btn-primary w-full disabled:opacity-60"
         :disabled="pending"
       >
         {{ pending ? t("admin.creating") : t("admin.createAccount") }}
       </button>
     </form>
 
-    <p class="mt-6 text-sm text-stone-600">
+    <p class="mt-6 text-sm text-[var(--muted)]">
       {{ t("admin.alreadyRegistered") }}
-      <NuxtLink to="/admin/login" class="font-medium text-teal-800 underline">
+      <NuxtLink to="/admin/login" class="font-medium text-[var(--olive)] underline">
         {{ t("common.signIn") }}
       </NuxtLink>
     </p>

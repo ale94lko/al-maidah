@@ -33,20 +33,20 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="client-shell min-h-dvh bg-[var(--sand)] text-[var(--ink)]">
-    <header
-      class="sticky top-0 z-20 border-b border-teal-900/10 bg-[var(--sand)]/95 backdrop-blur"
-    >
+  <div class="client-shell min-h-dvh text-[var(--ink)]">
+    <header class="shell-header">
       <div
         class="mx-auto flex w-full max-w-lg items-center justify-between gap-3 px-4 py-3 safe-px"
       >
         <div class="min-w-0">
-          <p class="truncate text-base font-semibold tracking-tight text-teal-950">
+          <p
+            class="font-display truncate text-lg font-semibold tracking-tight text-[var(--espresso)]"
+          >
             {{ venueName }}
           </p>
           <p
             v-if="tableLabel"
-            class="truncate text-xs font-medium uppercase tracking-[0.14em] text-teal-800/70"
+            class="truncate text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brass)]"
           >
             {{ tableLabel }}
           </p>

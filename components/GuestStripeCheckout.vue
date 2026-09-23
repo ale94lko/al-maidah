@@ -133,7 +133,7 @@ async function confirmPayment() {
 <template>
   <div class="space-y-4">
     <AppLoadingState v-if="loading" :label="t('common.loading')" />
-    <p v-else-if="errorMessage" class="text-sm font-medium text-rose-800">
+    <p v-else-if="errorMessage" class="text-sm font-medium text-rose-900">
       {{ errorMessage }}
     </p>
     <template v-else>
@@ -144,14 +144,14 @@ async function confirmPayment() {
       />
       <p
         v-if="expressReady"
-        class="text-center text-xs uppercase tracking-[0.14em] text-stone-500"
+        class="text-center text-xs uppercase tracking-[0.14em] text-[var(--muted)]"
       >
         {{ t("guest.orPayWithCard") }}
       </p>
       <div ref="paymentMount" class="rounded-xl bg-white p-1" />
       <button
         type="button"
-        class="w-full rounded-2xl bg-teal-950 px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
+        class="w-full rounded-2xl bg-[var(--espresso)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-50"
         :disabled="!cardReady || confirming"
         @click="confirmPayment"
       >

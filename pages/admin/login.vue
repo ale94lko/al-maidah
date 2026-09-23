@@ -32,25 +32,25 @@ async function onSubmit() {
 
 <template>
   <div class="mx-auto max-w-md px-4 py-12">
-    <h1 class="text-3xl font-semibold text-stone-900">
+    <h1 class="font-display text-3xl font-semibold text-[var(--espresso)]">
       {{ t("admin.signInTitle") }}
     </h1>
-    <p class="mt-2 text-sm text-stone-600">
+    <p class="mt-2 text-sm text-[var(--muted)]">
       {{ t("admin.signInHint") }}
     </p>
 
     <form class="mt-8 space-y-4" @submit.prevent="onSubmit">
-      <label class="block text-sm font-medium text-stone-800">
+      <label class="block text-sm font-medium text-[var(--espresso)]">
         {{ t("admin.email") }}
         <input
           v-model="email"
           type="email"
           required
           autocomplete="email"
-          class="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2"
+          class="mt-1 w-full rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
         >
       </label>
-      <label class="block text-sm font-medium text-stone-800">
+      <label class="block text-sm font-medium text-[var(--espresso)]">
         {{ t("admin.password") }}
         <input
           v-model="password"
@@ -58,24 +58,24 @@ async function onSubmit() {
           required
           minlength="8"
           autocomplete="current-password"
-          class="mt-1 w-full rounded-lg border border-stone-300 px-3 py-2"
+          class="mt-1 w-full rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-[var(--ink)]"
         >
       </label>
-      <p v-if="errorMessage" class="text-sm text-red-700">
+      <p v-if="errorMessage" class="text-sm text-rose-700">
         {{ errorMessage }}
       </p>
       <button
         type="submit"
-        class="w-full rounded-lg bg-teal-800 px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+        class="btn-primary w-full disabled:opacity-60"
         :disabled="pending"
       >
         {{ pending ? t("admin.signingIn") : t("common.signIn") }}
       </button>
     </form>
 
-    <p class="mt-6 text-sm text-stone-600">
+    <p class="mt-6 text-sm text-[var(--muted)]">
       {{ t("admin.newRestaurant") }}
-      <NuxtLink to="/admin/signup" class="font-medium text-teal-800 underline">
+      <NuxtLink to="/admin/signup" class="font-medium text-[var(--olive)] underline">
         {{ t("admin.createOwnerAccount") }}
       </NuxtLink>
     </p>

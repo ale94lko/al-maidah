@@ -138,20 +138,20 @@ onMounted(async () => {
   <div>
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-semibold tracking-tight text-stone-900">
+        <h1 class="font-display text-3xl font-semibold tracking-tight text-[var(--espresso)]">
           {{ t("admin.settingsTitle") }}
         </h1>
-        <p class="mt-2 text-sm text-stone-600">
+        <p class="mt-2 text-sm text-[var(--muted)]">
           {{ t("admin.settingsHint") }}
         </p>
       </div>
       <label
         v-if="restaurants.length > 1"
-        class="flex flex-col gap-1 text-xs text-stone-500"
+        class="flex flex-col gap-1 text-xs text-[var(--muted)]"
       >
         {{ t("admin.restaurant") }}
         <select
-          class="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900"
+          class="rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--espresso)]"
           :value="restaurantId ?? undefined"
           @change="onRestaurantChange"
         >
@@ -172,7 +172,7 @@ onMounted(async () => {
       :label="t('admin.loadingOwner')"
     />
     <template v-else>
-      <p v-if="errorMessage" class="mt-4 text-sm text-red-700">
+      <p v-if="errorMessage" class="mt-4 text-sm text-rose-700">
         {{ errorMessage }}
       </p>
 
@@ -188,31 +188,31 @@ onMounted(async () => {
 
       <form
         v-if="selected"
-        class="mt-6 max-w-md space-y-4 rounded-2xl border border-teal-900/10 bg-white/80 p-4"
+        class="surface-card mt-6 max-w-md space-y-4"
         @submit.prevent="onSave"
       >
-        <p class="font-semibold text-stone-900">
+        <p class="font-semibold text-[var(--espresso)]">
           {{ selected.name }}
         </p>
-        <label class="flex flex-col gap-1 text-sm text-stone-700">
+        <label class="flex flex-col gap-1 text-sm text-[var(--ink)]">
           {{ t("admin.trnField") }}
           <input
             v-model="trnInput"
             type="text"
             autocomplete="off"
-            class="rounded-lg border border-stone-300 bg-white px-3 py-2 font-mono text-sm"
+            class="rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 font-mono text-sm"
             :placeholder="t('admin.trnPlaceholder')"
           >
         </label>
-        <p class="text-xs text-stone-500">
+        <p class="text-xs text-[var(--muted)]">
           {{ t("admin.trnFieldHint") }}
         </p>
-        <p v-if="savedMessage" class="text-sm text-teal-800">
+        <p v-if="savedMessage" class="text-sm text-[var(--olive)]">
           {{ savedMessage }}
         </p>
         <button
           type="submit"
-          class="rounded-xl bg-teal-950 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+          class="btn-primary disabled:opacity-60"
           :disabled="saving"
         >
           {{ saving ? t("admin.saving") : t("admin.save") }}

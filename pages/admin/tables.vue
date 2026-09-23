@@ -112,21 +112,21 @@ function onPrint() {
   <div>
     <div class="no-print flex flex-wrap items-start justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-semibold tracking-tight text-stone-900">
+        <h1 class="font-display text-3xl font-semibold tracking-tight text-[var(--espresso)]">
           {{ t("admin.tablesTitle") }}
         </h1>
-        <p class="mt-2 text-sm text-stone-600">
+        <p class="mt-2 text-sm text-[var(--muted)]">
           {{ t("admin.tablesHint") }}
         </p>
       </div>
       <div class="flex flex-wrap items-center gap-3">
         <label
           v-if="restaurants.length > 1"
-          class="flex flex-col gap-1 text-xs text-stone-500"
+          class="flex flex-col gap-1 text-xs text-[var(--muted)]"
         >
           {{ t("admin.restaurant") }}
           <select
-            class="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900"
+            class="rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--espresso)]"
             :value="restaurantId ?? undefined"
             @change="onRestaurantChange"
           >
@@ -142,7 +142,7 @@ function onPrint() {
         <button
           v-if="tables.length"
           type="button"
-          class="rounded-lg bg-teal-900 px-4 py-2 text-sm font-medium text-white"
+          class="btn-primary"
           @click="onPrint"
         >
           {{ t("admin.printQrCodes") }}
@@ -156,10 +156,10 @@ function onPrint() {
       :label="t('admin.loadingOwner')"
     />
     <template v-else>
-      <p v-if="errorMessage" class="no-print mt-4 text-sm text-red-700">
+      <p v-if="errorMessage" class="no-print mt-4 text-sm text-rose-700">
         {{ errorMessage }}
       </p>
-      <p v-if="formError" class="no-print mt-4 text-sm text-red-700">
+      <p v-if="formError" class="no-print mt-4 text-sm text-rose-700">
         {{ formError }}
       </p>
 
@@ -171,15 +171,15 @@ function onPrint() {
       />
 
       <div v-else class="mt-8 space-y-8">
-        <section class="no-print rounded-2xl border border-stone-200 bg-white/80 p-4">
-          <h2 class="text-sm font-semibold uppercase tracking-wide text-stone-500">
+        <section class="surface-card no-print">
+          <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
             {{ t("admin.addTable") }}
           </h2>
           <form
             class="mt-3 flex flex-wrap items-end gap-3"
             @submit.prevent="onCreate"
           >
-            <label class="flex w-28 flex-col gap-1 text-xs text-stone-500">
+            <label class="flex w-28 flex-col gap-1 text-xs text-[var(--muted)]">
               {{ t("admin.tableNumber") }}
               <input
                 v-model.number="newNumber"
@@ -187,19 +187,19 @@ function onPrint() {
                 type="number"
                 min="1"
                 step="1"
-                class="rounded-lg border border-stone-300 px-3 py-2 text-sm"
+                class="rounded-xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
               >
             </label>
-            <label class="flex min-w-[10rem] flex-1 flex-col gap-1 text-xs text-stone-500">
+            <label class="flex min-w-[10rem] flex-1 flex-col gap-1 text-xs text-[var(--muted)]">
               {{ t("admin.tableLabelOptional") }}
               <input
                 v-model="newLabel"
-                class="rounded-lg border border-stone-300 px-3 py-2 text-sm"
+                class="rounded-xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
               >
             </label>
             <button
               type="submit"
-              class="rounded-lg bg-teal-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-60"
+              class="btn-primary disabled:opacity-60"
               :disabled="saving"
             >
               {{ t("admin.addTable") }}
@@ -207,24 +207,24 @@ function onPrint() {
           </form>
         </section>
 
-        <section class="no-print rounded-2xl border border-stone-200 bg-white/80">
-          <ul v-if="tables.length" class="divide-y divide-stone-100">
+        <section class="surface-card no-print !p-0">
+          <ul v-if="tables.length" class="divide-y divide-[var(--espresso)]/10">
             <li
               v-for="table in tables"
               :key="table.id"
               class="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
             >
               <div class="min-w-0">
-                <p class="font-semibold text-stone-900">
+                <p class="font-semibold text-[var(--espresso)]">
                   {{ t("admin.tableHeading", { n: table.table_number }) }}
                   <span
                     v-if="table.label"
-                    class="ms-2 text-sm font-normal text-stone-500"
+                    class="ms-2 text-sm font-normal text-[var(--muted)]"
                   >
                     {{ table.label }}
                   </span>
                 </p>
-                <p class="truncate font-mono text-xs text-teal-900/80">
+                <p class="truncate font-mono text-xs text-[var(--olive)]/80">
                   {{ menuUrlForTable(table.table_number) }}
                 </p>
               </div>
@@ -234,11 +234,11 @@ function onPrint() {
                     v-model.number="editNumber"
                     type="number"
                     min="1"
-                    class="w-20 rounded-lg border border-stone-300 px-2 py-1 text-sm"
+                    class="w-20 rounded-xl border border-[var(--espresso)]/15 px-2 py-1 text-sm"
                   >
                   <button
                     type="button"
-                    class="rounded-lg bg-teal-900 px-2 py-1 text-xs text-white"
+                    class="btn-primary !px-2 !py-1 !text-xs"
                     :disabled="saving"
                     @click="confirmRenumber"
                   >
@@ -246,7 +246,7 @@ function onPrint() {
                   </button>
                   <button
                     type="button"
-                    class="rounded-lg border border-stone-300 px-2 py-1 text-xs"
+                    class="rounded-xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
                     @click="editingId = null"
                   >
                     {{ t("admin.cancel") }}
@@ -255,7 +255,7 @@ function onPrint() {
                 <template v-else>
                   <button
                     type="button"
-                    class="rounded-lg border border-stone-300 px-2 py-1 text-xs"
+                    class="rounded-xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
                     :disabled="saving"
                     @click="startRenumber(table.id, table.table_number)"
                   >
@@ -263,7 +263,7 @@ function onPrint() {
                   </button>
                   <button
                     type="button"
-                    class="rounded-lg border border-red-300 px-2 py-1 text-xs text-red-700"
+                    class="rounded-xl border border-red-300 px-2 py-1 text-xs text-rose-700"
                     :disabled="saving"
                     @click="onRemove(table.id, table.table_number)"
                   >
@@ -287,21 +287,21 @@ function onPrint() {
           class="space-y-6"
           aria-label="Printable QR codes"
         >
-          <h2 class="no-print text-lg font-semibold text-stone-900">
+          <h2 class="no-print text-lg font-semibold text-[var(--espresso)]">
             {{ t("admin.printPreview") }}
           </h2>
           <div
             v-for="table in tables"
             :key="`print-${table.id}`"
-            class="print-sheet mx-auto flex max-w-sm flex-col items-center gap-4 rounded-2xl border border-stone-300 bg-white p-8 text-center"
+            class="print-sheet mx-auto flex max-w-sm flex-col items-center gap-4 rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] p-8 text-center"
           >
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-teal-800">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--olive)]">
               Al-Maidah
             </p>
-            <h3 class="text-2xl font-semibold tracking-tight text-stone-900">
+            <h3 class="text-2xl font-semibold tracking-tight text-[var(--espresso)]">
               {{ restaurant.name }}
             </h3>
-            <p class="text-4xl font-bold tabular-nums text-teal-950">
+            <p class="text-4xl font-bold tabular-nums text-[var(--olive)]">
               {{ t("admin.tableHeading", { n: table.table_number }) }}
             </p>
             <AdminTableQr
@@ -309,13 +309,13 @@ function onPrint() {
               :size="220"
               class="w-56"
             />
-            <div class="space-y-1 text-sm text-stone-700">
+            <div class="space-y-1 text-sm text-[var(--ink)]">
               <p>{{ t("admin.scanPromptEn") }}</p>
               <p dir="rtl" class="font-medium">
                 {{ t("admin.scanPromptAr") }}
               </p>
             </div>
-            <p class="break-all font-mono text-[10px] text-stone-400">
+            <p class="break-all font-mono text-[10px] text-[var(--muted)]">
               {{ menuUrlForTable(table.table_number) }}
             </p>
           </div>

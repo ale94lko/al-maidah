@@ -185,20 +185,20 @@ onMounted(async () => {
   <div>
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-semibold tracking-tight text-stone-900">
+        <h1 class="font-display text-3xl font-semibold tracking-tight text-[var(--espresso)]">
           {{ t("admin.ordersTitle") }}
         </h1>
-        <p class="mt-2 text-sm text-stone-600">
+        <p class="mt-2 text-sm text-[var(--muted)]">
           {{ t("admin.ordersHint") }}
         </p>
       </div>
       <label
         v-if="restaurants.length > 1"
-        class="flex flex-col gap-1 text-xs text-stone-500"
+        class="flex flex-col gap-1 text-xs text-[var(--muted)]"
       >
         {{ t("admin.restaurant") }}
         <select
-          class="rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900"
+          class="rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--espresso)]"
           :value="restaurantId ?? undefined"
           @change="onRestaurantChange"
         >
@@ -232,12 +232,12 @@ onMounted(async () => {
       class="mt-8"
       :label="t('admin.loadingOwner')"
     />
-    <p v-else-if="errorMessage" class="mt-6 text-sm text-red-700">
+    <p v-else-if="errorMessage" class="mt-6 text-sm text-rose-700">
       {{ errorMessage }}
     </p>
     <div v-else class="mt-6 grid gap-6 lg:grid-cols-2">
       <div class="space-y-2">
-        <h2 class="text-sm font-semibold uppercase tracking-wide text-stone-500">
+        <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
           {{ t("admin.recentOrders") }}
         </h2>
         <AppEmptyState
@@ -252,8 +252,8 @@ onMounted(async () => {
               class="w-full rounded-xl border px-4 py-3 text-start transition"
               :class="
                 selectedOrderId === order.id
-                  ? 'border-teal-900 bg-teal-950 text-white'
-                  : 'border-teal-900/10 bg-white/80 text-stone-900 hover:border-teal-900/30'
+                  ? 'border-[var(--olive)] bg-[var(--olive)] text-[var(--ivory)]'
+                  : 'border-[var(--espresso)]/10 bg-[var(--surface)] text-[var(--espresso)] hover:border-[var(--espresso)]/30'
               "
               @click="openReceipt(order.id)"
             >
@@ -274,8 +274,8 @@ onMounted(async () => {
                 class="mt-1 text-xs"
                 :class="
                   selectedOrderId === order.id
-                    ? 'text-white/70'
-                    : 'text-stone-500'
+                    ? 'text-[var(--ivory)]/70'
+                    : 'text-[var(--muted)]'
                 "
               >
                 {{ formatWhen(order.created_at) }}
@@ -293,19 +293,19 @@ onMounted(async () => {
           :show-trn-prompt="true"
           :settings-path="settingsPath"
         />
-        <p v-else class="text-sm text-stone-500">
+        <p v-else class="text-sm text-[var(--muted)]">
           {{ t("admin.selectOrderForReceipt") }}
         </p>
         <div
           v-if="canMarkCashPaid"
-          class="rounded-xl border border-teal-900/15 bg-white/80 px-4 py-3"
+          class="rounded-xl border border-[var(--espresso)]/15 bg-[var(--surface)] px-4 py-3"
         >
-          <p class="text-sm leading-relaxed text-stone-600">
+          <p class="text-sm leading-relaxed text-[var(--muted)]">
             {{ t("admin.markCashPaidHint") }}
           </p>
           <button
             type="button"
-            class="mt-3 inline-flex rounded-lg bg-teal-950 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+            class="btn-primary mt-3 disabled:opacity-60"
             :disabled="markingPaid"
             @click="markCashPaid"
           >

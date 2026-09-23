@@ -37,41 +37,41 @@ const paymentHint = computed(() => {
 
 <template>
   <article
-    class="flex flex-col gap-3 rounded-xl border border-zinc-700 bg-zinc-900/80 p-3 shadow-sm"
+    class="flex flex-col gap-3 rounded-2xl border border-[var(--brass)]/20 bg-[color-mix(in_srgb,var(--espresso)_88%,#2a241c)] p-4"
   >
     <header class="flex items-start justify-between gap-2">
       <div class="min-w-0">
-        <p class="text-lg font-semibold tracking-tight text-zinc-50">
+        <p class="font-display text-xl font-semibold tracking-tight text-[var(--ivory)]">
           {{ t("kitchen.tableLabel", { n: ticket.table_number ?? "—" }) }}
         </p>
-        <p v-if="ticket.guest_name" class="truncate text-sm text-zinc-400">
+        <p v-if="ticket.guest_name" class="truncate text-sm text-[var(--brass-soft)]/80">
           {{ ticket.guest_name }}
         </p>
       </div>
-      <div class="shrink-0 text-end text-xs text-zinc-400">
+      <div class="shrink-0 text-end text-xs text-[var(--brass-soft)]/70">
         <p>{{ placedAt }}</p>
-        <p class="font-medium text-amber-300/90">
+        <p class="font-medium text-[var(--brass)]">
           {{ t("kitchen.elapsed", { n: elapsedMinutes }) }}
         </p>
-        <p class="mt-0.5 text-[11px] uppercase tracking-wide text-zinc-500">
+        <p class="mt-0.5 text-[11px] uppercase tracking-wide text-[var(--brass-soft)]/50">
           {{ paymentHint }}
         </p>
       </div>
     </header>
 
-    <ul class="space-y-2 border-t border-zinc-800 pt-2">
+    <ul class="space-y-2 border-t border-[var(--brass)]/15 pt-2">
       <li
         v-for="item in ticket.items"
         :key="item.id"
-        class="text-sm text-zinc-200"
+        class="text-sm text-[var(--ivory)]/95"
       >
         <p class="font-medium">
-          <span class="tabular-nums text-emerald-400">{{ item.quantity }}×</span>
+          <span class="tabular-nums text-[var(--brass)]">{{ item.quantity }}×</span>
           {{ localizedName(item, locale) }}
         </p>
         <ul
           v-if="item.selected_options?.length"
-          class="mt-0.5 space-y-0.5 ps-4 text-xs text-zinc-400"
+          class="mt-0.5 space-y-0.5 ps-4 text-xs text-[var(--brass-soft)]/70"
         >
           <li
             v-for="option in item.selected_options"
@@ -82,7 +82,7 @@ const paymentHint = computed(() => {
         </ul>
         <p
           v-if="item.notes"
-          class="mt-0.5 ps-4 text-xs italic text-amber-200/80"
+          class="mt-0.5 ps-4 text-xs italic text-[var(--brass)]/90"
         >
           {{ item.notes }}
         </p>
@@ -92,7 +92,7 @@ const paymentHint = computed(() => {
     <button
       v-if="action"
       type="button"
-      class="mt-auto w-full rounded-lg bg-emerald-600 px-3 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60"
+      class="mt-auto w-full rounded-xl bg-[var(--olive)] px-3 py-2.5 text-sm font-semibold text-[var(--ivory)] hover:bg-[var(--olive-deep)] disabled:cursor-not-allowed disabled:opacity-60"
       :disabled="busy"
       @click="emit('action', action)"
     >

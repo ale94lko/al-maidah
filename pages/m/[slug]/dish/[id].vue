@@ -244,13 +244,13 @@ onMounted(async () => {
     <div v-else class="space-y-5">
       <NuxtLink
         :to="menuPath"
-        class="inline-flex text-sm font-medium text-teal-900"
+        class="inline-flex text-sm font-medium text-[var(--olive)]"
       >
         ← {{ t("guest.backToMenu") }}
       </NuxtLink>
 
-      <div class="overflow-hidden rounded-2xl border border-teal-900/10 bg-white/80">
-        <div class="aspect-[16/10] bg-teal-900/5">
+      <div class="overflow-hidden rounded-2xl border border-[var(--espresso)]/10 bg-[var(--surface)]">
+        <div class="aspect-[16/10] bg-[var(--olive)]/10">
           <img
             v-if="dish.photo_url"
             :src="dish.photo_url"
@@ -260,16 +260,16 @@ onMounted(async () => {
         </div>
         <div class="space-y-2 p-4">
           <div class="flex items-start justify-between gap-3">
-            <h1 class="text-xl font-semibold tracking-tight text-stone-900">
+            <h1 class="font-display text-xl font-semibold tracking-tight text-[var(--espresso)]">
               {{ localizedName(dish, locale) }}
             </h1>
-            <p class="shrink-0 font-mono text-sm text-teal-900">
+            <p class="shrink-0 font-mono text-sm text-[var(--olive)]">
               {{ t("guest.priceAed", { price: dish.price }) }}
             </p>
           </div>
           <p
             v-if="localizedDescription(dish, locale)"
-            class="text-sm leading-relaxed text-stone-600"
+            class="text-sm leading-relaxed text-[var(--muted)]"
           >
             {{ localizedDescription(dish, locale) }}
           </p>
@@ -285,16 +285,16 @@ onMounted(async () => {
       <section
         v-for="group in groups"
         :key="group.id"
-        class="space-y-2 rounded-2xl border border-teal-900/10 bg-white/70 p-4"
+        class="surface-card space-y-2 !p-4"
       >
         <div class="flex items-baseline justify-between gap-2">
-          <h2 class="text-sm font-semibold text-stone-900">
+          <h2 class="font-display text-sm font-semibold text-[var(--espresso)]">
             {{ localizedName(group, locale) }}
             <span v-if="group.is_required || group.min_select > 0" class="text-rose-700">
               *
             </span>
           </h2>
-          <p class="text-xs text-stone-500">
+          <p class="text-xs text-[var(--muted)]">
             <template v-if="group.is_required || group.min_select > 0">
               {{ t("guest.selectRequired", { group: localizedName(group, locale) }) }}
             </template>
@@ -309,8 +309,8 @@ onMounted(async () => {
               class="flex cursor-pointer items-center justify-between gap-3 rounded-xl border px-3 py-2 text-sm transition"
               :class="
                 isSelected(option.id)
-                  ? 'border-teal-900 bg-teal-950 text-white'
-                  : 'border-teal-900/15 bg-white text-stone-900'
+                  ? 'border-[var(--olive)] bg-[var(--olive)] text-[var(--ivory)]'
+                  : 'border-[var(--espresso)]/15 bg-[var(--ivory)] text-[var(--espresso)]'
               "
             >
               <span class="flex min-w-0 items-center gap-2">
@@ -339,12 +339,12 @@ onMounted(async () => {
       </section>
 
       <label class="block space-y-2">
-        <span class="text-sm font-semibold text-stone-900">{{ t("guest.notes") }}</span>
+        <span class="text-sm font-semibold text-[var(--espresso)]">{{ t("guest.notes") }}</span>
         <textarea
           v-model="notes"
           rows="3"
           :placeholder="t('guest.notesPlaceholder')"
-          class="w-full rounded-xl border border-teal-900/15 bg-white px-3 py-2 text-sm text-stone-900 outline-none ring-teal-800/30 placeholder:text-stone-400 focus:ring-2"
+          class="w-full rounded-xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--ink)] outline-none ring-[var(--olive)]/30 placeholder:text-[var(--muted)] focus:ring-2"
         />
       </label>
 
@@ -352,23 +352,23 @@ onMounted(async () => {
         <div class="flex items-center gap-2">
           <button
             type="button"
-            class="h-10 w-10 rounded-xl border border-teal-900/20 bg-white text-lg font-semibold"
+            class="h-10 w-10 rounded-xl border border-[var(--espresso)]/20 bg-[var(--ivory)] text-lg font-semibold text-[var(--espresso)]"
             :aria-label="t('guest.decreaseQty')"
             @click="quantity = Math.max(1, quantity - 1)"
           >
             −
           </button>
-          <span class="min-w-8 text-center font-mono text-sm">{{ quantity }}</span>
+          <span class="min-w-8 text-center font-mono text-sm text-[var(--espresso)]">{{ quantity }}</span>
           <button
             type="button"
-            class="h-10 w-10 rounded-xl border border-teal-900/20 bg-white text-lg font-semibold"
+            class="h-10 w-10 rounded-xl border border-[var(--espresso)]/20 bg-[var(--ivory)] text-lg font-semibold text-[var(--espresso)]"
             :aria-label="t('guest.increaseQty')"
             @click="quantity += 1"
           >
             +
           </button>
         </div>
-        <p class="font-mono text-sm font-semibold text-teal-950">
+        <p class="font-mono text-sm font-semibold text-[var(--olive)]">
           {{ t("guest.priceAed", { price: previewUnitPrice }) }}
         </p>
       </div>
@@ -379,7 +379,7 @@ onMounted(async () => {
 
       <button
         type="button"
-        class="w-full rounded-2xl bg-teal-950 px-4 py-3 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
+        class="btn-primary w-full !rounded-2xl !py-3 disabled:cursor-not-allowed"
         :disabled="!canAdd"
         @click="onAddToCart"
       >

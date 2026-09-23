@@ -130,16 +130,16 @@ onMounted(async () => {
     />
     <div v-else class="space-y-5">
       <div>
-        <p class="text-xs font-medium uppercase tracking-[0.14em] text-teal-800/70">
+        <p class="text-xs font-medium uppercase tracking-[0.14em] text-[var(--brass)]">
           {{ t("guest.orderPending") }}
         </p>
-        <h1 class="mt-1 text-xl font-semibold tracking-tight text-stone-900">
+        <h1 class="font-display mt-1 text-xl font-semibold tracking-tight text-[var(--espresso)]">
           {{ t("guest.payOnline") }}
         </h1>
-        <p class="mt-2 text-sm leading-relaxed text-stone-600">
+        <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
           {{ t("guest.payOnlineHint") }}
         </p>
-        <p class="mt-3 font-mono text-lg font-semibold text-teal-950">
+        <p class="mt-3 font-mono text-lg font-semibold text-[var(--olive)]">
           {{ t("guest.priceAed", { price: order.total }) }}
         </p>
       </div>
@@ -154,7 +154,7 @@ onMounted(async () => {
         {{ paymentNote }}
       </p>
 
-      <NuxtLink :to="statusPath" class="inline-flex text-sm font-medium text-teal-900">
+      <NuxtLink :to="statusPath" class="inline-flex text-sm font-medium text-[var(--olive)]">
         {{ t("guest.onlinePendingHint") }}
       </NuxtLink>
     </div>

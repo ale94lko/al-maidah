@@ -133,10 +133,10 @@ async function onInstall() {
     <div v-else class="space-y-4" :class="{ 'pt-14': visualAlertActive }">
       <div class="flex flex-wrap items-end justify-between gap-3">
         <div class="min-w-0">
-          <h1 class="text-xl font-semibold tracking-tight text-zinc-50 sm:text-2xl">
+          <h1 class="font-display text-xl font-semibold tracking-tight text-[var(--ivory)] sm:text-2xl">
             {{ t("kitchen.ticketBoard") }}
           </h1>
-          <p class="mt-1 text-sm text-zinc-400">
+          <p class="mt-1 text-sm text-[var(--brass-soft)]/70">
             {{ t("kitchen.boardHint") }}
           </p>
           <p
@@ -157,11 +157,11 @@ async function onInstall() {
           </button>
           <label
             v-if="restaurants.length > 1"
-            class="flex flex-col gap-1 text-xs text-zinc-400"
+            class="flex flex-col gap-1 text-xs text-[var(--brass-soft)]/70"
           >
             {{ t("kitchen.restaurant") }}
             <select
-              class="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-zinc-100"
+              class="rounded-xl border border-[var(--brass)]/20 bg-[color-mix(in_srgb,var(--espresso)_88%,#2a241c)] px-3 py-2 text-sm text-[var(--ivory)]"
               :value="restaurantId ?? undefined"
               @change="onRestaurantChange"
             >
@@ -176,7 +176,7 @@ async function onInstall() {
           </label>
           <p
             v-else-if="restaurants[0]"
-            class="text-sm font-medium text-zinc-300"
+            class="text-sm font-medium text-[var(--brass-soft)]"
           >
             {{ restaurants[0].name }}
           </p>
@@ -189,7 +189,7 @@ async function onInstall() {
 
       <AppEmptyState
         v-if="!restaurants.length"
-        class="border-zinc-700 text-zinc-200"
+        class="border-[var(--brass)]/25 text-[var(--ivory)]"
         :title="t('kitchen.noRestaurant')"
         :description="t('kitchen.noRestaurantHint')"
       />

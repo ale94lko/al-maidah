@@ -51,17 +51,17 @@ onMounted(() => {
   >
     <NuxtLink
       :to="cartTo"
-      class="pointer-events-auto mx-auto flex w-full max-w-lg items-center justify-between gap-3 rounded-2xl bg-teal-950 px-4 py-3 text-white shadow-lg shadow-teal-950/25"
+      class="pointer-events-auto mx-auto flex w-full max-w-lg items-center justify-between gap-3 rounded-2xl bg-[var(--espresso)] px-4 py-3 text-[var(--ivory)] shadow-lg shadow-[var(--espresso)]/20"
     >
       <div class="min-w-0">
-        <p class="text-xs font-medium uppercase tracking-[0.14em] text-teal-100/80">
+        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--brass)]">
           {{ t("guest.cartBarItems", { count: itemCount }) }}
         </p>
         <p class="truncate text-sm font-semibold">
           {{ t("guest.viewCart") }}
         </p>
       </div>
-      <p class="shrink-0 font-mono text-sm font-semibold">
+      <p class="shrink-0 font-mono text-sm font-semibold text-[var(--brass-soft)]">
         {{ t("guest.priceAed", { price: subtotal }) }}
       </p>
     </NuxtLink>

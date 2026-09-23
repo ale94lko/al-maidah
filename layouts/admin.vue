@@ -30,19 +30,19 @@ async function onSignOut() {
 </script>
 
 <template>
-  <div class="admin-shell min-h-dvh bg-[var(--sand)] text-[var(--ink)]">
+  <div class="admin-shell min-h-dvh text-[var(--ink)]">
     <div class="mx-auto flex min-h-dvh w-full max-w-6xl">
       <aside
         v-if="!isAuthPage"
-        class="no-print hidden w-56 shrink-0 flex-col border-e border-teal-900/10 bg-white/70 p-4 md:flex lg:w-64"
+        class="no-print hidden w-56 shrink-0 flex-col border-e border-[var(--espresso)]/10 bg-[var(--espresso)] p-4 text-[var(--ivory)] md:flex lg:w-64"
       >
         <NuxtLink
           to="/admin"
-          class="text-lg font-semibold tracking-tight text-teal-950"
+          class="font-display text-xl font-semibold tracking-tight text-[var(--ivory)]"
         >
           Al-Maidah
         </NuxtLink>
-        <p class="mt-1 text-xs uppercase tracking-[0.16em] text-teal-800/60">
+        <p class="mt-1 text-xs uppercase tracking-[0.16em] text-[var(--brass)]">
           {{ t("admin.owner") }}
         </p>
         <nav class="mt-8 flex flex-col gap-1" :aria-label="t('admin.ownerPanel')">
@@ -50,11 +50,11 @@ async function onSignOut() {
             v-for="link in links"
             :key="link.to"
             :to="link.to"
-            class="rounded-lg px-3 py-2 text-sm font-medium transition"
+            class="rounded-xl px-3 py-2 text-sm font-medium transition"
             :class="
               isActive(link.match)
-                ? 'bg-teal-900 text-white'
-                : 'text-teal-950/80 hover:bg-teal-900/5'
+                ? 'bg-[var(--olive)] text-[var(--ivory)]'
+                : 'text-[var(--ivory)]/75 hover:bg-white/5'
             "
           >
             {{ link.label }}
@@ -64,14 +64,14 @@ async function onSignOut() {
           <LanguageSwitcher />
           <p
             v-if="user?.email"
-            class="truncate text-xs text-stone-500"
+            class="truncate text-xs text-[var(--brass-soft)]/80"
             :title="user.email"
           >
             {{ user.email }}
           </p>
           <button
             type="button"
-            class="w-full rounded-lg border border-stone-300 px-3 py-2 text-start text-sm"
+            class="w-full rounded-xl border border-[var(--brass)]/30 px-3 py-2 text-start text-sm text-[var(--ivory)]"
             @click="onSignOut"
           >
             {{ t("common.signOut") }}
@@ -81,15 +81,15 @@ async function onSignOut() {
 
       <div class="flex min-w-0 flex-1 flex-col pb-20 md:pb-0">
         <header
-          class="no-print sticky top-0 z-20 border-b border-teal-900/10 bg-[var(--sand)]/95 px-4 py-3 backdrop-blur md:px-6"
+          class="shell-header no-print px-4 py-3 md:px-6"
         >
           <div class="flex items-center justify-between gap-3">
             <div class="min-w-0 md:hidden">
-              <p class="text-base font-semibold text-teal-950">
+              <p class="font-display text-base font-semibold text-[var(--espresso)]">
                 {{ isAuthPage ? "Al-Maidah" : t("admin.ownerPanel") }}
               </p>
             </div>
-            <p class="hidden text-sm text-stone-600 md:block">
+            <p class="hidden text-sm text-[var(--muted)] md:block">
               {{ t("admin.desktopReady") }}
             </p>
             <div class="flex items-center gap-3">
@@ -97,7 +97,7 @@ async function onSignOut() {
               <NuxtLink
                 v-if="isAuthPage"
                 to="/"
-                class="text-sm font-medium text-teal-800"
+                class="text-sm font-medium text-[var(--olive)]"
               >
                 {{ t("common.home") }}
               </NuxtLink>
@@ -113,7 +113,7 @@ async function onSignOut() {
 
     <nav
       v-if="!isAuthPage"
-      class="no-print fixed inset-x-0 bottom-0 z-30 border-t border-teal-900/10 bg-white/95 backdrop-blur md:hidden"
+      class="no-print fixed inset-x-0 bottom-0 z-30 border-t border-[var(--espresso)]/10 bg-[var(--ivory)]/95 backdrop-blur md:hidden"
       style="padding-bottom: env(safe-area-inset-bottom)"
       :aria-label="t('admin.ownerPanel')"
     >
@@ -121,11 +121,11 @@ async function onSignOut() {
         <li v-for="link in links" :key="link.to" class="min-w-0 flex-1">
           <NuxtLink
             :to="link.to"
-            class="flex flex-col items-center rounded-lg px-2 py-2 text-center text-xs font-semibold"
+            class="flex flex-col items-center rounded-xl px-2 py-2 text-center text-xs font-semibold"
             :class="
               isActive(link.match)
-                ? 'bg-teal-900 text-white'
-                : 'text-teal-950/80'
+                ? 'bg-[var(--olive)] text-[var(--ivory)]'
+                : 'text-[var(--espresso)]/80'
             "
           >
             <span class="truncate">{{ link.label }}</span>
