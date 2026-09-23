@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Nothing yet.
+- Nuxt 3 application scaffold with TypeScript, Tailwind CSS, runtimeConfig, and a standalone PWA manifest (MVP-01).
 
 ## [0.1.0] - 2026-09-23
 

@@ -47,11 +47,17 @@ Thermal printing, offline mode, and buy-now-pay-later gateways are out of the MV
 
 See [docs/INSTALL.md](docs/INSTALL.md).
 
-Copy [`.env.example`](.env.example) to `.env` once the app exists. Do not commit secrets.
+```bash
+cp .env.example .env
+npm ci
+npm run dev
+```
+
+Do not commit secrets.
 
 ## How to build it
 
-This repository starts empty on purpose. Each piece that can be implemented up to the MVP is an issue, in the order it should be built. Start with **MVP-01**.
+Each MVP piece is tracked as an issue, in implementation order. This scaffold closes **MVP-01**.
 
 ## Contributing
 

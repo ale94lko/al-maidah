@@ -4,11 +4,27 @@
   "private": true,
   "description": "QR digital menu, kitchen ticket board, and owner panel for restaurants in the UAE.",
   "license": "MIT",
+  "type": "module",
   "engines": {
     "node": ">=22"
   },
   "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
     "test": "node --test test/*.test.mjs",
-    "lint": "node --check src/placeholder.mjs"
+    "lint": "nuxt typecheck"
+  },
+  "dependencies": {
+    "nuxt": "^3.19.1",
+    "vue": "^3.5.21",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "@types/node": "^26.6.2",
+    "typescript": "^5.9.2",
+    "vue-tsc": "^3.0.7"
   }
 }

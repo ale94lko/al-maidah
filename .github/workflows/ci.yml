@@ -23,6 +23,10 @@ jobs:
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Verify required community files
         shell: bash
@@ -37,6 +41,7 @@ jobs:
             SUPPORT.md
             CHANGELOG.md
             package.json
+            nuxt.config.ts
             .gitignore
             .env.example
             .editorconfig
@@ -60,14 +65,16 @@ jobs:
       - name: Run unit tests
         run: npm test
 
-      - name: Lint JavaScript sources
+      - name: Typecheck
         run: npm run lint
+
+      - name: Production build
+        run: npm run build
 
       - name: Validate Markdown links to local files
         shell: bash
         run: |
           set -euo pipefail
-          # Fail if README references a missing relative markdown/doc path.
           mapfile -t links < <(grep -oE '\[[^\]]+\]\(([^)]+)\)' README.md | sed -E 's/.*\(([^)]+)\).*/\1/' | grep -E '^\.?\.?/' || true)
           for link in "${links[@]:-}"; do
             target="${link%%#*}"

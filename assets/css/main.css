@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --brand: #0f766e;
+  --brand-ink: #134e4a;
+  --sand: #f8f5f0;
+  --ink: #1c1917;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(15, 118, 110, 0.12), transparent 40%),
+    linear-gradient(180deg, var(--sand), #efe8df 70%, #e7ddd1);
+  color: var(--ink);
+  font-family:
+    "Segoe UI",
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+}
