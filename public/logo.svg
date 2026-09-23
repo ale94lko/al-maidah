@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Al-Maidah">
   <!--
     Al-Maidah: shared table (المائدة) + QR scan-to-order.
-    Diamond table top inside a brass-rimmed navy seal.
+    Table content shares the diamond rotation so place settings sit on the sides, not the corners.
   -->
   <defs>
     <linearGradient id="brass" x1="18" y1="14" x2="110" y2="114" gradientUnits="userSpaceOnUse">
@@ -15,42 +15,52 @@
   <circle cx="64" cy="64" r="48" fill="none" stroke="url(#brass)" stroke-width="6"/>
   <circle cx="64" cy="64" r="42" fill="#1b2740"/>
 
-  <!-- Shared square table, diamond orientation -->
-  <rect
-    x="38"
-    y="38"
-    width="52"
-    height="52"
-    rx="11"
-    transform="rotate(45 64 64)"
-    fill="#f4f1e6"
-  />
-  <rect
-    x="43"
-    y="43"
-    width="42"
-    height="42"
-    rx="9"
-    transform="rotate(45 64 64)"
-    fill="none"
-    stroke="#c6a15b"
-    stroke-width="2.25"
-  />
+  <!-- Table + contents drawn axis-aligned, then rotated together -->
+  <g transform="rotate(45 64 64)">
+    <!-- Table surface -->
+    <rect x="38" y="38" width="52" height="52" rx="11" fill="#f4f1e6"/>
+    <rect
+      x="43"
+      y="43"
+      width="42"
+      height="42"
+      rx="9"
+      fill="none"
+      stroke="#c6a15b"
+      stroke-width="2.25"
+    />
 
-  <!-- Place setting: plate -->
-  <circle cx="58" cy="58" r="7" fill="none" stroke="#1b2740" stroke-width="2.2"/>
-  <circle cx="58" cy="58" r="2.4" fill="#2f9e44"/>
+    <!-- Four place settings on the flat sides (mid-edge), not corners -->
+    <g fill="none" stroke="#1b2740" stroke-width="2.1">
+      <circle cx="64" cy="48" r="5.2"/>
+      <circle cx="80" cy="64" r="5.2"/>
+      <circle cx="64" cy="80" r="5.2"/>
+      <circle cx="48" cy="64" r="5.2"/>
+    </g>
+    <g fill="#2f9e44">
+      <circle cx="64" cy="48" r="1.8"/>
+      <circle cx="80" cy="64" r="1.8"/>
+      <circle cx="64" cy="80" r="1.8"/>
+      <circle cx="48" cy="64" r="1.8"/>
+    </g>
 
-  <!-- Utensils -->
-  <path d="M69 51v14" fill="none" stroke="#1b2740" stroke-width="2.2" stroke-linecap="round"/>
-  <path d="M74 51v14" fill="none" stroke="#1b2740" stroke-width="2.2" stroke-linecap="round"/>
-
-  <!-- Mini QR finder — digital table ordering -->
-  <g transform="translate(52 70)">
-    <rect width="12" height="12" rx="1.5" fill="none" stroke="#1b2740" stroke-width="2"/>
-    <rect x="3.2" y="3.2" width="5.6" height="5.6" rx="0.8" fill="#1b2740"/>
+    <!-- Center QR finder — digital ordering -->
+    <rect
+      x="56"
+      y="56"
+      width="16"
+      height="16"
+      rx="2.5"
+      fill="#1b2740"
+    />
+    <rect
+      x="59"
+      y="59"
+      width="10"
+      height="10"
+      rx="1.5"
+      fill="#f4f1e6"
+    />
+    <rect x="61.5" y="61.5" width="5" height="5" rx="0.8" fill="#1b2740"/>
   </g>
-  <rect x="68" y="72" width="3" height="3" rx="0.5" fill="#1b2740"/>
-  <rect x="73" y="72" width="3" height="3" rx="0.5" fill="#e03131"/>
-  <rect x="68" y="77" width="3" height="3" rx="0.5" fill="#1b2740"/>
 </svg>
