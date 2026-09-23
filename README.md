@@ -57,7 +57,7 @@ Do not commit secrets.
 
 ## How to build it
 
-Each MVP piece is tracked as an issue, in implementation order. Public QR menu with pinned table closes **MVP-07**.
+Each MVP piece is tracked as an issue, in implementation order. Guest cart with modifiers and notes closes **MVP-08**.
 
 ## Contributing
 

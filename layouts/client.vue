@@ -1,12 +1,25 @@
 <script setup lang="ts">
 const { venueName, tableNumber } = useClientShell()
 const { t } = useAppI18n()
+const { itemCount, syncFromStorage } = useCart()
+const { loadFromStorage } = useGuestSession()
 
 const tableLabel = computed(() => {
   if (tableNumber.value == null) {
     return null
   }
   return t("guest.table", { n: tableNumber.value })
+})
+
+const mainPadClass = computed(() =>
+  itemCount.value > 0
+    ? "pb-[max(6.5rem,calc(env(safe-area-inset-bottom)+5.5rem))]"
+    : "pb-[max(1.5rem,env(safe-area-inset-bottom))]",
+)
+
+onMounted(() => {
+  loadFromStorage()
+  syncFromStorage()
 })
 </script>
 
@@ -36,8 +49,13 @@ const tableLabel = computed(() => {
       </div>
     </header>
 
-    <main class="mx-auto w-full max-w-lg px-4 py-4 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
+    <main
+      class="mx-auto w-full max-w-lg px-4 py-4"
+      :class="mainPadClass"
+    >
       <slot />
     </main>
+
+    <GuestCartBar />
   </div>
 </template>

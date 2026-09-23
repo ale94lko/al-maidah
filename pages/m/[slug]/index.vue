@@ -15,6 +15,7 @@ const {
   clearSession,
   resolveTableNumber,
 } = useGuestSession()
+const { syncFromStorage } = useCart()
 const { t, locale } = useAppI18n()
 
 const slug = computed(() => String(route.params.slug || ""))
@@ -131,6 +132,17 @@ function formatPrice(price: string) {
   return t("guest.priceAed", { price })
 }
 
+function dishPath(dishId: string) {
+  return {
+    path: `/m/${slug.value}/dish/${dishId}`,
+    query: tableFromQuery.value
+      ? { table: String(tableFromQuery.value) }
+      : pinnedTable.value
+        ? { table: String(pinnedTable.value.table_number) }
+        : undefined,
+  }
+}
+
 async function ensureTableInUrl(tableNumber: number) {
   if (tableFromQuery.value === tableNumber) {
     return
@@ -181,6 +193,7 @@ onMounted(async () => {
       venueName: menu.restaurant.name,
       tableNumber: menu.table.table_number,
     })
+    syncFromStorage()
     await ensureTableInUrl(menu.table.table_number)
   } catch (error: unknown) {
     clearSession()
@@ -317,7 +330,10 @@ onMounted(async () => {
             class="overflow-hidden rounded-2xl border border-teal-900/10 bg-white/80"
             :class="{ 'opacity-70': !dish.is_available }"
           >
-            <div class="flex gap-0 sm:gap-0">
+            <NuxtLink
+              :to="dishPath(dish.id)"
+              class="flex gap-0 sm:gap-0"
+            >
               <div
                 class="relative h-28 w-28 shrink-0 overflow-hidden bg-teal-900/5 sm:h-32 sm:w-32"
               >
@@ -381,7 +397,7 @@ onMounted(async () => {
                   </span>
                 </div>
               </div>
-            </div>
+            </NuxtLink>
           </li>
         </ul>
       </section>
