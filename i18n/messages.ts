@@ -151,6 +151,8 @@ export const messages = {
         "Allow sound for this site, or keep watching this visual alert.",
       alertDismiss: "Dismiss",
       installApp: "Install kitchen app",
+      boardLoadError: "Could not open the kitchen board. Try again.",
+      ticketUpdateError: "Could not update that ticket. Try again.",
     },
     admin: {
       owner: "Owner",
@@ -449,6 +451,8 @@ export const messages = {
         "اسمح بالصوت لهذا الموقع، أو راقب هذا التنبيه المرئي.",
       alertDismiss: "إغلاق",
       installApp: "تثبيت تطبيق المطبخ",
+      boardLoadError: "تعذر فتح لوحة المطبخ. حاول مرة أخرى.",
+      ticketUpdateError: "تعذر تحديث هذه التذكرة. حاول مرة أخرى.",
     },
     admin: {
       owner: "المالك",

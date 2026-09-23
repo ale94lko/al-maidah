@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { extractApiErrorMessage } from "~/utils/errors"
+
 definePageMeta({
   layout: "kitchen",
 })
@@ -34,7 +36,6 @@ const {
   preparing,
   ready,
   loading,
-  errorMessage,
   busyId,
   bootstrap,
   selectRestaurant,
@@ -47,9 +48,24 @@ const {
     void alertNewOrder(fresh.length)
   },
 })
+const {
+  errorOpen,
+  errorTitle,
+  errorMessage: dialogMessage,
+  showError,
+  dismissError,
+} = useErrorDialog()
 
 const readyGate = ref(false)
 const startingShift = ref(false)
+
+function kitchenError(error: unknown, fallback: string) {
+  const raw = (extractApiErrorMessage(error) || "").toLowerCase()
+  if (raw.includes("postgres_changes") || raw.includes("realtime") || raw.includes("subscribe")) {
+    return t("kitchen.boardLoadError")
+  }
+  return extractApiErrorMessage(error) || fallback
+}
 
 onMounted(async () => {
   listenForInstall()
@@ -66,8 +82,8 @@ onMounted(async () => {
   readyGate.value = true
   try {
     await bootstrap()
-  } catch {
-    /* errorMessage already set */
+  } catch (error) {
+    showError(kitchenError(error, t("kitchen.boardLoadError")))
   }
 })
 
@@ -89,9 +105,13 @@ async function onStartShift() {
 
 async function onRestaurantChange(event: Event) {
   const value = (event.target as HTMLSelectElement).value
-  await selectRestaurant(value)
-  if (shiftStarted.value) {
-    enableAlerts()
+  try {
+    await selectRestaurant(value)
+    if (shiftStarted.value) {
+      enableAlerts()
+    }
+  } catch (error) {
+    showError(kitchenError(error, t("kitchen.boardLoadError")))
   }
 }
 
@@ -101,8 +121,8 @@ async function onTicketAction(
 ) {
   try {
     await transition(ticketId, action)
-  } catch {
-    /* surfaced via errorMessage */
+  } catch (error) {
+    showError(kitchenError(error, t("kitchen.ticketUpdateError")))
   }
 }
 
@@ -113,6 +133,13 @@ async function onInstall() {
 
 <template>
   <div>
+    <AppErrorDialog
+      :open="errorOpen"
+      :title="errorTitle"
+      :message="dialogMessage"
+      @dismiss="dismissError"
+    />
+
     <KitchenNewOrderAlert
       :active="visualAlertActive"
       :message-key="visualAlertMessage"
@@ -182,10 +209,6 @@ async function onInstall() {
           </p>
         </div>
       </div>
-
-      <p v-if="errorMessage" class="text-sm font-semibold text-[var(--danger)]">
-        {{ errorMessage }}
-      </p>
 
       <AppEmptyState
         v-if="!restaurants.length"

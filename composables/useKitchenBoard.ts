@@ -1,4 +1,5 @@
 import type { KitchenTicket, KitchenTicketAction, OrderStatus } from "~/types"
+import { extractApiErrorMessage } from "~/utils/errors"
 
 type MeResponse = {
   user: { id: string; email?: string }
@@ -40,6 +41,7 @@ export function useKitchenBoard(options: KitchenBoardOptions = {}) {
   let pollTimer: ReturnType<typeof setInterval> | null = null
   let clockTimer: ReturnType<typeof setInterval> | null = null
   let knownIds = new Set<string>()
+  let subscribeGeneration = 0
 
   function browserSupabase() {
     return useSupabaseClient()
@@ -83,24 +85,43 @@ export function useKitchenBoard(options: KitchenBoardOptions = {}) {
     tickets.value = next
   }
 
-  function subscribeRealtime() {
+  async function clearRealtime() {
+    if (!channel) {
+      return
+    }
+    const current = channel
+    channel = null
+    if (import.meta.client) {
+      try {
+        await browserSupabase().removeChannel(current)
+      } catch {
+        /* channel already gone */
+      }
+    }
+  }
+
+  async function subscribeRealtime() {
     if (!restaurantId.value || import.meta.server) {
       return
     }
-    const supabase = browserSupabase()
-    if (channel) {
-      void supabase.removeChannel(channel)
-      channel = null
+    const generation = ++subscribeGeneration
+    const targetRestaurantId = restaurantId.value
+    await clearRealtime()
+    if (generation !== subscribeGeneration || restaurantId.value !== targetRestaurantId) {
+      return
     }
-    channel = supabase
-      .channel(`kitchen-orders-${restaurantId.value}`)
-      .on(
+
+    try {
+      const next = browserSupabase().channel(
+        `kitchen-orders-${targetRestaurantId}-${generation}`,
+      )
+      next.on(
         "postgres_changes",
         {
           event: "*",
           schema: "public",
           table: "orders",
-          filter: `restaurant_id=eq.${restaurantId.value}`,
+          filter: `restaurant_id=eq.${targetRestaurantId}`,
         },
         () => {
           void loadTickets({ announceNew: true }).catch(() => {
@@ -108,7 +129,15 @@ export function useKitchenBoard(options: KitchenBoardOptions = {}) {
           })
         },
       )
-      .subscribe()
+      if (generation !== subscribeGeneration) {
+        await browserSupabase().removeChannel(next)
+        return
+      }
+      channel = next
+      next.subscribe()
+    } catch {
+      /* Poll fallback keeps the board fresh if realtime is unavailable. */
+    }
   }
 
   async function bootstrap() {
@@ -136,7 +165,7 @@ export function useKitchenBoard(options: KitchenBoardOptions = {}) {
         return
       }
       await loadTickets()
-      subscribeRealtime()
+      await subscribeRealtime()
       if (pollTimer) {
         clearInterval(pollTimer)
       }
@@ -152,8 +181,7 @@ export function useKitchenBoard(options: KitchenBoardOptions = {}) {
         nowMs.value = Date.now()
       }, 30_000)
     } catch (error) {
-      errorMessage.value =
-        error instanceof Error ? error.message : "Could not open kitchen board"
+      errorMessage.value = extractApiErrorMessage(error) || "Could not open kitchen board"
       throw error
     } finally {
       loading.value = false
@@ -164,7 +192,7 @@ export function useKitchenBoard(options: KitchenBoardOptions = {}) {
     restaurantId.value = id
     knownIds = new Set()
     await loadTickets()
-    subscribeRealtime()
+    await subscribeRealtime()
   }
 
   /**
@@ -190,8 +218,7 @@ export function useKitchenBoard(options: KitchenBoardOptions = {}) {
       })
       await loadTickets()
     } catch (error) {
-      errorMessage.value =
-        error instanceof Error ? error.message : "Could not update ticket"
+      errorMessage.value = extractApiErrorMessage(error) || "Could not update ticket"
       throw error
     } finally {
       busyId.value = null
@@ -220,10 +247,8 @@ export function useKitchenBoard(options: KitchenBoardOptions = {}) {
   }
 
   function dispose() {
-    if (channel && import.meta.client) {
-      void browserSupabase().removeChannel(channel)
-      channel = null
-    }
+    subscribeGeneration += 1
+    void clearRealtime()
     if (pollTimer) {
       clearInterval(pollTimer)
       pollTimer = null
