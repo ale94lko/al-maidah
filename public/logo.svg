@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Al-Maidah">
+  <!-- Soft cream disc so the mark reads on paper backgrounds -->
+  <circle cx="64" cy="64" r="62" fill="#f4f1e6"/>
+  <!-- Gold crescent rim -->
+  <path
+    d="M64 14c27.6 0 50 22.4 50 50s-22.4 50-50 50"
+    fill="none"
+    stroke="#c6a15b"
+    stroke-width="7"
+    stroke-linecap="round"
+  />
+  <path
+    d="M64 18c25.4 0 46 20.6 46 46s-20.6 46-46 46"
+    fill="none"
+    stroke="#e0c48a"
+    stroke-width="2.5"
+    stroke-linecap="round"
+    opacity="0.85"
+  />
+  <!-- Navy plate -->
+  <circle cx="64" cy="64" r="42" fill="#1b2740"/>
+  <!-- Herb leaf -->
+  <path
+    d="M78 42c-14 6-24 18-26 34 12-4 24-14 30-28-2-2-3-4-4-6z"
+    fill="#2f9e44"
+  />
+  <path
+    d="M54 72c8-10 16-18 24-24"
+    fill="none"
+    stroke="#1b2740"
+    stroke-width="2.2"
+    stroke-linecap="round"
+  />
+  <path
+    d="M52 74c-2 4-2 8 1 10 2-4 4-7 6-9-2-1-4-1-7-1z"
+    fill="#1e7a32"
+  />
+</svg>

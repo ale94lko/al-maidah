@@ -46,8 +46,15 @@ async function onSubmit() {
 
       <div class="flex flex-1 items-center justify-center px-5 py-10 sm:px-8">
         <div class="w-full max-w-md">
-          <div class="mb-8">
-            <h1 class="font-display text-3xl font-extrabold text-[var(--ink)]">
+          <div class="mb-8 text-center">
+            <img
+              src="/logo.svg"
+              alt="Al-Maidah"
+              class="mx-auto h-20 w-20 sm:h-24 sm:w-24"
+              width="96"
+              height="96"
+            >
+            <h1 class="font-display mt-5 text-3xl font-extrabold text-[var(--ink)]">
               {{ t("common.signIn") }}
             </h1>
             <p class="mt-2 text-sm text-[var(--muted)]">
