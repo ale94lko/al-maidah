@@ -1,11 +1,12 @@
 <script setup lang="ts">
 const { venueName, tableNumber } = useClientShell()
+const { t } = useAppI18n()
 
 const tableLabel = computed(() => {
   if (tableNumber.value == null) {
     return null
   }
-  return `Table ${tableNumber.value}`
+  return t("guest.table", { n: tableNumber.value })
 })
 </script>
 
@@ -28,7 +29,10 @@ const tableLabel = computed(() => {
             {{ tableLabel }}
           </p>
         </div>
-        <slot name="header-actions" />
+        <div class="flex shrink-0 items-center gap-2">
+          <LanguageSwitcher />
+          <slot name="header-actions" />
+        </div>
       </div>
     </header>
 

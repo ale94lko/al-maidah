@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import type { Category, Dish } from "~/types"
+import { localizedDescription, localizedName } from "~/utils/localize"
+
 definePageMeta({
   layout: "client",
 })
 
 const route = useRoute()
 const { setShell } = useClientShell()
+const { t, locale } = useAppI18n()
 
 const slug = computed(() => String(route.params.slug || ""))
 const tableFromQuery = computed(() => {
@@ -16,7 +20,21 @@ const tableFromQuery = computed(() => {
 const loading = ref(true)
 const errorMessage = ref("")
 const restaurantName = ref("")
-const dishCount = ref(0)
+const categories = ref<Category[]>([])
+const dishes = ref<Dish[]>([])
+
+const dishesByCategory = computed(() => {
+  const map = new Map<string, Dish[]>()
+  for (const dish of dishes.value) {
+    const list = map.get(dish.category_id) ?? []
+    list.push(dish)
+    map.set(dish.category_id, list)
+  }
+  return categories.value.map((category) => ({
+    category,
+    dishes: map.get(category.id) ?? [],
+  }))
+})
 
 onMounted(async () => {
   loading.value = true
@@ -24,19 +42,21 @@ onMounted(async () => {
   try {
     const menu = await $fetch<{
       restaurant: { name: string; slug: string }
-      dishes: unknown[]
+      categories: Category[]
+      dishes: Dish[]
     }>(`/api/menu/${encodeURIComponent(slug.value)}`, {
       query: tableFromQuery.value ? { table: tableFromQuery.value } : undefined,
     })
     restaurantName.value = menu.restaurant.name
-    dishCount.value = menu.dishes.length
+    categories.value = menu.categories
+    dishes.value = menu.dishes
     setShell({
       venueName: menu.restaurant.name,
       tableNumber: tableFromQuery.value,
     })
   } catch (error) {
     errorMessage.value =
-      error instanceof Error ? error.message : "Could not load menu"
+      error instanceof Error ? error.message : t("guest.menuUnavailable")
     setShell({
       venueName: slug.value || "Menu",
       tableNumber: tableFromQuery.value,
@@ -49,29 +69,57 @@ onMounted(async () => {
 
 <template>
   <div>
-    <AppLoadingState v-if="loading" label="Loading menu…" />
+    <AppLoadingState v-if="loading" :label="t('guest.loadingMenu')" />
     <AppEmptyState
       v-else-if="errorMessage"
-      title="Menu unavailable"
+      :title="t('guest.menuUnavailable')"
       :description="errorMessage"
     />
-    <div v-else class="space-y-4">
+    <div v-else class="space-y-6">
       <p class="text-sm leading-relaxed text-stone-600">
-        Guest menu shell for
-        <span class="font-medium text-stone-900">{{ restaurantName }}</span>.
-        Category browsing arrives in the next MVP issues.
+        {{ t("guest.shellIntro", { name: restaurantName }) }}
       </p>
+
       <AppEmptyState
-        v-if="dishCount === 0"
-        title="No dishes listed yet"
-        description="This layout is ready for the QR menu screens."
+        v-if="dishes.length === 0"
+        :title="t('guest.noDishes')"
+        :description="t('guest.noDishesHint')"
       />
-      <p
+
+      <section
+        v-for="group in dishesByCategory"
         v-else
-        class="rounded-2xl border border-teal-900/10 bg-white/70 px-4 py-3 text-sm text-stone-700"
+        :key="group.category.id"
+        class="space-y-3"
       >
-        {{ dishCount }} available dishes loaded for this venue.
-      </p>
+        <h2 class="text-lg font-semibold tracking-tight text-stone-900">
+          {{ localizedName(group.category, locale) }}
+        </h2>
+        <ul class="space-y-2">
+          <li
+            v-for="dish in group.dishes"
+            :key="dish.id"
+            class="rounded-2xl border border-teal-900/10 bg-white/80 p-4"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="font-semibold text-stone-900">
+                  {{ localizedName(dish, locale) }}
+                </p>
+                <p
+                  v-if="localizedDescription(dish, locale)"
+                  class="mt-1 text-sm text-stone-600"
+                >
+                  {{ localizedDescription(dish, locale) }}
+                </p>
+              </div>
+              <p class="shrink-0 font-mono text-sm text-teal-900">
+                {{ dish.price }} AED
+              </p>
+            </div>
+          </li>
+        </ul>
+      </section>
     </div>
   </div>
 </template>

@@ -4,6 +4,7 @@ definePageMeta({
 })
 
 const { user, refreshSession } = useAuth()
+const { t } = useAppI18n()
 const ready = ref(false)
 
 onMounted(async () => {
@@ -21,16 +22,16 @@ onMounted(async () => {
 
 <template>
   <div>
-    <AppLoadingState v-if="!ready" label="Opening kitchen…" />
+    <AppLoadingState v-if="!ready" :label="t('kitchen.opening')" />
     <div v-else class="space-y-4">
       <p class="text-sm text-zinc-400">
-        Signed in as
+        {{ t("kitchen.signedInAs") }}
         <span class="font-medium text-zinc-200">{{ user?.email }}</span>
       </p>
       <AppEmptyState
         class="border-zinc-700 text-zinc-200"
-        title="Waiting for tickets"
-        description="Live pending / preparing / ready columns arrive in a later MVP issue."
+        :title="t('kitchen.waitingTickets')"
+        :description="t('kitchen.waitingHint')"
       />
     </div>
   </div>

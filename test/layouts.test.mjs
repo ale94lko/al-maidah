@@ -38,7 +38,7 @@ test("admin layout navigates to statistics, menu, and tables", () => {
   assert.match(layout, /\/admin\/?['"]/)
   assert.match(layout, /\/admin\/menu/)
   assert.match(layout, /\/admin\/tables/)
-  assert.match(layout, /Statistics|Menu|Tables/)
+  assert.match(layout, /admin\.statistics|admin\.menu|admin\.tables/)
   // Mobile bottom nav + desktop sidebar so nav is not clipped.
   assert.match(layout, /md:hidden|md:flex/)
   assert.match(layout, /fixed inset-x-0 bottom-0|bottom-0/)
