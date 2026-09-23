@@ -169,6 +169,23 @@ export interface PublicOrderItem {
   selected_options: SelectedModifierOption[]
 }
 
+/** Kitchen board ticket: never includes total_cost or unit_cost. */
+export interface KitchenTicket {
+  id: string
+  restaurant_id: string
+  table_id: string
+  table_number: number | null
+  guest_name: string | null
+  status: OrderStatus
+  payment_status: PaymentStatus
+  payment_method: PaymentMethod | null
+  created_at: string
+  ready_at: string | null
+  items: PublicOrderItem[]
+}
+
+export type KitchenTicketAction = "start" | "ready" | "deliver"
+
 export interface OrderItem {
   id: string
   restaurant_id: string

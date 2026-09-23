@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - AED payments via Stripe PaymentIntent (Google Pay / card Express Checkout) and cash at the table (MVP-10).
 - Stripe webhook verifies signatures and marks online orders paid exactly once (MVP-11).
 - Live guest order tracking with secured status polling, kitchen status copy, and device-persisted order id (MVP-12).
+- Realtime kitchen ticket board with pending / preparing / ready columns, status transitions, and ready_at timing (MVP-13).
 
 ## [0.1.0] - 2026-09-23
 
