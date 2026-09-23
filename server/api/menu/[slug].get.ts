@@ -1,9 +1,8 @@
-import { parseTableToken } from "~/utils/table-token"
+import { parseSessionToken } from "~/utils/session-token"
 
 /**
  * Public guest menu for a restaurant slug.
- * Requires a valid ?table= so ordering is always pinned to a dining table.
- * Uses the anon key so reads respect RLS; response never includes cost_price.
+ * Requires an open visit ?session= token from the staff-issued QR.
  */
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, "slug")
@@ -12,19 +11,19 @@ export default defineEventHandler(async (event) => {
   }
 
   const query = getQuery(event)
-  const tableToken = parseTableToken(
-    typeof query.table === "string" ? query.table : null,
+  const sessionToken = parseSessionToken(
+    typeof query.session === "string" ? query.session : null,
   )
 
-  if (!tableToken) {
+  if (!sessionToken) {
     throw createError({
       statusCode: 400,
-      statusMessage: "Table is required. Scan the QR code again.",
+      statusMessage: "Table session is required. Ask staff for the QR code.",
     })
   }
 
-  const client = createAnonServerClient()
-  const menu = await getPublicMenuBySlug(client, slug)
+  const anon = createAnonServerClient()
+  const menu = await getPublicMenuBySlug(anon, slug)
 
   if (!menu) {
     throw createError({
@@ -44,16 +43,27 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const table = await getTableByToken(client, menu.restaurant.id, tableToken)
-  if (!table) {
+  const service = createServiceRoleClient()
+  const seated = await getOpenSessionByToken(
+    service,
+    menu.restaurant.id,
+    sessionToken,
+  )
+  if (!seated) {
     throw createError({
       statusCode: 404,
-      statusMessage: "Table not found. Scan the QR code again.",
+      statusMessage:
+        "This table visit is closed or invalid. Ask staff to open the table again.",
     })
   }
 
   return {
     ...menu,
-    table,
+    table: seated.table,
+    session: {
+      id: seated.session.id,
+      token: seated.session.token,
+      status: seated.session.status,
+    },
   }
 })

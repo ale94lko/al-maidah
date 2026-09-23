@@ -159,6 +159,8 @@ export async function deactivateRestaurantTable(
     })
   }
 
+  await closeTableSession(client, restaurantId, tableId, "manual")
+
   return data as DiningTable
 }
 

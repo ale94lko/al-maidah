@@ -1,5 +1,7 @@
 type OrderBody = {
   slug?: string
+  sessionToken?: string
+  /** @deprecated Use sessionToken from the staff visit QR. */
   tableId?: string
   guestName?: string
   paymentMethod?: string
@@ -18,7 +20,7 @@ type OrderBody = {
 
 /**
  * Guest checkout: create a pending order with server-side UAE 5% VAT.
- * Cash orders skip Stripe; online methods stay payment_status=pending until MVP-11 webhook.
+ * Requires an open table visit session from the staff QR.
  * Uses the service role because anon/authenticated cannot INSERT orders (RLS).
  */
 export default defineEventHandler(async (event) => {
@@ -38,7 +40,7 @@ export default defineEventHandler(async (event) => {
   const client = createServiceRoleClient()
   return createGuestOrder(client, {
     slug: String(body.slug || ""),
-    tableId: String(body.tableId || ""),
+    sessionToken: String(body.sessionToken || ""),
     guestName: body.guestName,
     paymentMethod: paymentMethod as
       | "cash_at_table"

@@ -10,7 +10,7 @@ import {
   toSelectedOptions,
   validateModifierSelection,
 } from "~/utils/cart"
-import { parseTableToken } from "~/utils/table-token"
+import { parseSessionToken } from "~/utils/session-token"
 
 definePageMeta({
   layout: "client",
@@ -23,7 +23,7 @@ const {
   loadFromStorage,
   saveSession,
   clearSession,
-  resolveTableToken,
+  resolveSessionToken,
   session,
 } = useGuestSession()
 const { addItem, syncFromStorage } = useCart()
@@ -31,10 +31,10 @@ const { t, locale } = useAppI18n()
 
 const slug = computed(() => String(route.params.slug || ""))
 const dishId = computed(() => String(route.params.id || ""))
-const tableFromQuery = computed(() => parseTableToken(route.query.table))
+const sessionFromQuery = computed(() => parseSessionToken(route.query.session))
 
 const loading = ref(true)
-const errorKind = ref<"none" | "missing-table" | "not-found" | "dish" | "generic">(
+const errorKind = ref<"none" | "missing-table" | "session-closed" | "not-found" | "dish" | "generic">(
   "none",
 )
 const errorMessage = ref("")
@@ -45,14 +45,13 @@ const notes = ref("")
 const quantity = ref(1)
 const submitError = ref("")
 
-const menuPath = computed(() => ({
-  path: `/m/${slug.value}`,
-  query: tableFromQuery.value
-    ? { table: tableFromQuery.value }
-    : session.value?.tableToken
-      ? { table: session.value.tableToken }
-      : undefined,
-}))
+const menuPath = computed(() => {
+  const token = sessionFromQuery.value ?? session.value?.sessionToken
+  return {
+    path: `/m/${slug.value}`,
+    query: token ? { session: token } : undefined,
+  }
+})
 
 const previewUnitPrice = computed(() => {
   if (!dish.value) {
@@ -147,8 +146,8 @@ onMounted(async () => {
   loadFromStorage()
   syncFromStorage()
 
-  const tableToken = resolveTableToken(slug.value, tableFromQuery.value)
-  if (tableToken == null) {
+  const token = resolveSessionToken(slug.value, sessionFromQuery.value)
+  if (token == null) {
     clearSession()
     setShell({ venueName: slug.value || "Menu", tableNumber: null })
     errorKind.value = "missing-table"
@@ -162,15 +161,16 @@ onMounted(async () => {
       dishes: Dish[]
       modifiers: ModifierGroupWithOptions[]
       table: DiningTable
+      session: { id: string; token: string; status: string }
     }>(`/api/menu/${encodeURIComponent(slug.value)}`, {
-      query: { table: tableToken },
+      query: { session: token },
     })
 
     saveSession({
       slug: menu.restaurant.slug,
       tableNumber: menu.table.table_number,
       tableId: menu.table.id,
-      tableToken,
+      sessionToken: menu.session.token,
       restaurantName: menu.restaurant.name,
     })
     setShell({
@@ -202,9 +202,11 @@ onMounted(async () => {
         : NaN
     const message =
       error instanceof Error ? error.message : t("guest.menuUnavailable")
-    if (status === 404 && /restaurant/i.test(message)) {
+    if (/closed|ask staff to open/i.test(message)) {
+      errorKind.value = "session-closed"
+    } else if (status === 404 && /restaurant/i.test(message)) {
       errorKind.value = "not-found"
-    } else if (status === 400 || status === 404 || /table|qr/i.test(message)) {
+    } else if (status === 400 || status === 404 || /session|table|qr|staff/i.test(message)) {
       errorKind.value = "missing-table"
     } else {
       errorKind.value = "generic"
@@ -220,9 +222,13 @@ onMounted(async () => {
   <div>
     <AppLoadingState v-if="loading" :label="t('guest.loadingMenu')" />
     <AppEmptyState
-      v-else-if="errorKind === 'missing-table'"
+      v-else-if="errorKind === 'missing-table' || errorKind === 'session-closed'"
       :title="t('guest.scanQrAgain')"
-      :description="t('guest.scanQrAgainHint')"
+      :description="
+        errorKind === 'session-closed'
+          ? t('guest.sessionClosedHint')
+          : t('guest.scanQrAgainHint')
+      "
     />
     <AppEmptyState
       v-else-if="errorKind === 'not-found'"
@@ -342,7 +348,7 @@ onMounted(async () => {
           v-model="notes"
           rows="3"
           :placeholder="t('guest.notesPlaceholder')"
-          class="w-full rounded-2xl border border-[var(--espresso)]/15 bg-[var(--ivory)] px-3 py-2 text-sm text-[var(--ink)] outline-none ring-[var(--herb)]/30 placeholder:text-[var(--muted)] focus:ring-2"
+          class="w-full rounded-2xl border border-[var(--espresso)]/15 bg-white px-3 py-2 text-sm text-[var(--ink)] outline-none ring-[var(--herb)]/30 placeholder:text-[var(--muted)] focus:ring-2"
         />
       </label>
 

@@ -42,6 +42,22 @@ export interface DiningTable {
   created_at: string
 }
 
+export interface TableSession {
+  id: string
+  restaurant_id: string
+  table_id: string
+  token: string
+  status: "open" | "closed"
+  opened_at: string
+  closed_at: string | null
+  closed_reason: "paid" | "manual" | null
+}
+
+/** Dining table with optional open visit session (admin tables UI). */
+export interface DiningTableWithSession extends DiningTable {
+  open_session: Pick<TableSession, "id" | "token" | "opened_at"> | null
+}
+
 export interface Category {
   id: string
   restaurant_id: string
@@ -149,6 +165,7 @@ export interface Order {
   id: string
   restaurant_id: string
   table_id: string
+  table_session_id: string | null
   guest_name: string | null
   status: OrderStatus
   payment_status: PaymentStatus

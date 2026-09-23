@@ -25,9 +25,25 @@ export default defineEventHandler(async (event) => {
   const tables = await listRestaurantTables(client, restaurantId, {
     includeInactive,
   })
+  const openSessions = await listOpenSessionsForRestaurant(client, restaurantId)
+  const sessionByTable = new Map(
+    openSessions.map((session) => [session.table_id, session]),
+  )
 
   return {
     restaurant,
-    tables,
+    tables: tables.map((table) => {
+      const open = sessionByTable.get(table.id)
+      return {
+        ...table,
+        open_session: open
+          ? {
+              id: open.id,
+              token: open.token,
+              opened_at: open.opened_at,
+            }
+          : null,
+      }
+    }),
   }
 })

@@ -116,6 +116,7 @@ export async function markOrderPaidFromPaymentIntent(
         })
       }
     }
+    await closeSessionForOrder(client, order.id)
     return { ok: true, alreadyPaid: true, orderId: order.id }
   }
 
@@ -151,6 +152,7 @@ export async function markOrderPaidFromPaymentIntent(
       })
     }
     if (again?.payment_status === "paid") {
+      await closeSessionForOrder(client, order.id)
       return { ok: true, alreadyPaid: true, orderId: order.id }
     }
     throw createError({
@@ -159,6 +161,7 @@ export async function markOrderPaidFromPaymentIntent(
     })
   }
 
+  await closeSessionForOrder(client, order.id)
   return { ok: true, alreadyPaid: false, orderId: order.id }
 }
 

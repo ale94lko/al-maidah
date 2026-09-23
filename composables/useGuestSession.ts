@@ -1,6 +1,5 @@
 /**
- * Persists the guest venue slug + table for cart/checkout across reloads.
- * Keys are scoped per restaurant slug in sessionStorage.
+ * Persists the guest venue slug + open table visit for cart/checkout across reloads.
  */
 
 export const GUEST_SESSION_STORAGE_KEY = "al-maidah-guest-session"
@@ -9,7 +8,8 @@ export interface GuestSession {
   slug: string
   tableNumber: number
   tableId: string
-  tableToken: string
+  /** Open visit token from ?session= (staff QR). */
+  sessionToken: string
   restaurantName: string
 }
 
@@ -25,8 +25,8 @@ function isGuestSession(value: unknown): value is GuestSession {
     Number.isInteger(row.tableNumber) &&
     row.tableNumber > 0 &&
     typeof row.tableId === "string" &&
-    typeof row.tableToken === "string" &&
-    /^[a-f0-9]{64}$/.test(row.tableToken) &&
+    typeof row.sessionToken === "string" &&
+    /^[a-f0-9]{64}$/.test(row.sessionToken) &&
     typeof row.restaurantName === "string"
   )
 }
@@ -77,8 +77,8 @@ export function useGuestSession() {
     writeStorage(null)
   }
 
-  /** Prefer ?table=<sha> for this slug; otherwise reuse a stored session for the same slug. */
-  function resolveTableToken(
+  /** Prefer ?session=<token> for this slug; otherwise reuse a stored open visit. */
+  function resolveSessionToken(
     slug: string,
     queryToken: string | null,
   ): string | null {
@@ -87,7 +87,7 @@ export function useGuestSession() {
     }
     const stored = session.value ?? readStorage()
     if (stored && stored.slug === slug) {
-      return stored.tableToken
+      return stored.sessionToken
     }
     return null
   }
@@ -97,6 +97,6 @@ export function useGuestSession() {
     loadFromStorage,
     saveSession,
     clearSession,
-    resolveTableToken,
+    resolveSessionToken,
   }
 }

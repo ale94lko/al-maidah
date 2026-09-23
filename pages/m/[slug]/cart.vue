@@ -7,7 +7,7 @@ import {
   computeCheckoutTotals,
   lineTotal,
 } from "~/utils/cart"
-import { parseTableToken } from "~/utils/table-token"
+import { parseSessionToken } from "~/utils/session-token"
 
 definePageMeta({
   layout: "client",
@@ -18,7 +18,7 @@ const router = useRouter()
 const { setShell } = useClientShell()
 const {
   loadFromStorage,
-  resolveTableToken,
+  resolveSessionToken,
   session,
 } = useGuestSession()
 const {
@@ -34,7 +34,7 @@ const { saveActiveOrder } = useActiveOrder()
 const { t, locale } = useAppI18n()
 
 const slug = computed(() => String(route.params.slug || ""))
-const tableFromQuery = computed(() => parseTableToken(route.query.table))
+const sessionFromQuery = computed(() => parseSessionToken(route.query.session))
 
 const ready = ref(false)
 const missingTable = ref(false)
@@ -50,10 +50,10 @@ const previewTotals = computed(() =>
 )
 
 const menuPath = computed(() => {
-  const table = session.value?.tableToken ?? tableFromQuery.value
+  const token = session.value?.sessionToken ?? sessionFromQuery.value
   return {
     path: `/m/${slug.value}`,
-    query: table ? { table } : undefined,
+    query: token ? { session: token } : undefined,
   }
 })
 
@@ -63,7 +63,7 @@ async function placeOrder() {
     return
   }
   const active = session.value
-  if (!active?.tableId) {
+  if (!active?.sessionToken) {
     submitError.value = t("guest.scanQrAgainHint")
     return
   }
@@ -78,7 +78,7 @@ async function placeOrder() {
       method: "POST",
       body: {
         slug: slug.value,
-        tableId: active.tableId,
+        sessionToken: active.sessionToken,
         guestName: guestName.value.trim() || undefined,
         paymentMethod: method,
         // Deliberately send a fake unit_price — server must ignore it.
@@ -103,8 +103,8 @@ async function placeOrder() {
     const nextQuery: Record<string, string> = {
       token: result.order.guest_access_token,
     }
-    if (session.value?.tableToken) {
-      nextQuery.table = session.value.tableToken
+    if (session.value?.sessionToken) {
+      nextQuery.session = session.value.sessionToken
     }
 
     if (method === "cash_at_table") {
@@ -130,7 +130,11 @@ async function placeOrder() {
         : error instanceof Error
           ? error.message
           : ""
-    submitError.value = message || t("guest.checkoutError")
+    submitError.value =
+      message ||
+      (/closed|ask staff/i.test(message)
+        ? t("guest.sessionClosedHint")
+        : t("guest.checkoutError"))
   } finally {
     submitting.value = false
   }
@@ -138,8 +142,8 @@ async function placeOrder() {
 
 onMounted(() => {
   loadFromStorage()
-  const resolved = resolveTableToken(slug.value, tableFromQuery.value)
-  if (resolved == null && !session.value?.tableToken) {
+  const resolved = resolveSessionToken(slug.value, sessionFromQuery.value)
+  if (resolved == null && !session.value?.sessionToken) {
     missingTable.value = true
     setShell({ venueName: slug.value || "Menu", tableNumber: null })
     ready.value = true
@@ -348,7 +352,7 @@ onMounted(() => {
         <button
           type="button"
           class="btn-primary w-full !rounded-2xl !py-3 disabled:cursor-not-allowed"
-          :disabled="submitting || !session?.tableId"
+          :disabled="submitting || !session?.sessionToken"
           @click="placeOrder"
         >
           {{ submitting ? t("guest.placingOrder") : t("guest.placeOrder") }}
