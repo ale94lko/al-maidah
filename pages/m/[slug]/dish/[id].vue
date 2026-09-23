@@ -10,6 +10,7 @@ import {
   toSelectedOptions,
   validateModifierSelection,
 } from "~/utils/cart"
+import { parseTableToken } from "~/utils/table-token"
 
 definePageMeta({
   layout: "client",
@@ -22,7 +23,7 @@ const {
   loadFromStorage,
   saveSession,
   clearSession,
-  resolveTableNumber,
+  resolveTableToken,
   session,
 } = useGuestSession()
 const { addItem, syncFromStorage } = useCart()
@@ -30,11 +31,7 @@ const { t, locale } = useAppI18n()
 
 const slug = computed(() => String(route.params.slug || ""))
 const dishId = computed(() => String(route.params.id || ""))
-const tableFromQuery = computed(() => {
-  const raw = route.query.table
-  const value = typeof raw === "string" || typeof raw === "number" ? Number(raw) : NaN
-  return Number.isInteger(value) && value > 0 ? value : null
-})
+const tableFromQuery = computed(() => parseTableToken(route.query.table))
 
 const loading = ref(true)
 const errorKind = ref<"none" | "missing-table" | "not-found" | "dish" | "generic">(
@@ -51,9 +48,9 @@ const submitError = ref("")
 const menuPath = computed(() => ({
   path: `/m/${slug.value}`,
   query: tableFromQuery.value
-    ? { table: String(tableFromQuery.value) }
-    : session.value?.tableNumber
-      ? { table: String(session.value.tableNumber) }
+    ? { table: tableFromQuery.value }
+    : session.value?.tableToken
+      ? { table: session.value.tableToken }
       : undefined,
 }))
 
@@ -150,8 +147,8 @@ onMounted(async () => {
   loadFromStorage()
   syncFromStorage()
 
-  const tableNumber = resolveTableNumber(slug.value, tableFromQuery.value)
-  if (tableNumber == null) {
+  const tableToken = resolveTableToken(slug.value, tableFromQuery.value)
+  if (tableToken == null) {
     clearSession()
     setShell({ venueName: slug.value || "Menu", tableNumber: null })
     errorKind.value = "missing-table"
@@ -166,13 +163,14 @@ onMounted(async () => {
       modifiers: ModifierGroupWithOptions[]
       table: DiningTable
     }>(`/api/menu/${encodeURIComponent(slug.value)}`, {
-      query: { table: tableNumber },
+      query: { table: tableToken },
     })
 
     saveSession({
       slug: menu.restaurant.slug,
       tableNumber: menu.table.table_number,
       tableId: menu.table.id,
+      tableToken,
       restaurantName: menu.restaurant.name,
     })
     setShell({

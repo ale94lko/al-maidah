@@ -7,6 +7,7 @@ import {
   computeCheckoutTotals,
   lineTotal,
 } from "~/utils/cart"
+import { parseTableToken } from "~/utils/table-token"
 
 definePageMeta({
   layout: "client",
@@ -17,7 +18,7 @@ const router = useRouter()
 const { setShell } = useClientShell()
 const {
   loadFromStorage,
-  resolveTableNumber,
+  resolveTableToken,
   session,
 } = useGuestSession()
 const {
@@ -33,11 +34,7 @@ const { saveActiveOrder } = useActiveOrder()
 const { t, locale } = useAppI18n()
 
 const slug = computed(() => String(route.params.slug || ""))
-const tableFromQuery = computed(() => {
-  const raw = route.query.table
-  const value = typeof raw === "string" || typeof raw === "number" ? Number(raw) : NaN
-  return Number.isInteger(value) && value > 0 ? value : null
-})
+const tableFromQuery = computed(() => parseTableToken(route.query.table))
 
 const ready = ref(false)
 const missingTable = ref(false)
@@ -46,22 +43,17 @@ const submitting = ref(false)
 const submitError = ref("")
 const paymentMethod = ref<"cash_at_table" | "card">("cash_at_table")
 
-const tableNumber = computed(
-  () =>
-    session.value?.tableNumber ??
-    tableFromQuery.value ??
-    null,
-)
+const tableNumber = computed(() => session.value?.tableNumber ?? null)
 
 const previewTotals = computed(() =>
   computeCheckoutTotals(cartSubtotalFils(items.value)),
 )
 
 const menuPath = computed(() => {
-  const table = tableNumber.value
+  const table = session.value?.tableToken ?? tableFromQuery.value
   return {
     path: `/m/${slug.value}`,
-    query: table != null ? { table: String(table) } : undefined,
+    query: table ? { table } : undefined,
   }
 })
 
@@ -111,8 +103,8 @@ async function placeOrder() {
     const nextQuery: Record<string, string> = {
       token: result.order.guest_access_token,
     }
-    if (tableNumber.value != null) {
-      nextQuery.table = String(tableNumber.value)
+    if (session.value?.tableToken) {
+      nextQuery.table = session.value.tableToken
     }
 
     if (method === "cash_at_table") {
@@ -146,8 +138,8 @@ async function placeOrder() {
 
 onMounted(() => {
   loadFromStorage()
-  const resolved = resolveTableNumber(slug.value, tableFromQuery.value)
-  if (resolved == null && !session.value) {
+  const resolved = resolveTableToken(slug.value, tableFromQuery.value)
+  if (resolved == null && !session.value?.tableToken) {
     missingTable.value = true
     setShell({ venueName: slug.value || "Menu", tableNumber: null })
     ready.value = true

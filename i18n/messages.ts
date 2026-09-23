@@ -265,6 +265,8 @@ export const messages = {
       tableNumber: "Table number",
       tableLabelOptional: "Label (optional)",
       tableHeading: "Table {n}",
+      copyUrl: "Copy menu link",
+      copiedUrl: "Copied",
       renumber: "Renumber",
       removeTable: "Remove",
       confirmRemoveTable:
@@ -554,6 +556,8 @@ export const messages = {
       tableNumber: "رقم الطاولة",
       tableLabelOptional: "التسمية (اختياري)",
       tableHeading: "طاولة {n}",
+      copyUrl: "نسخ رابط القائمة",
+      copiedUrl: "تم النسخ",
       renumber: "إعادة الترقيم",
       removeTable: "إزالة",
       confirmRemoveTable:

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Category, DiningTable, Dish } from "~/types"
 import { localizedDescription, localizedName } from "~/utils/localize"
+import { parseTableToken } from "~/utils/table-token"
 
 definePageMeta({
   layout: "client",
@@ -13,17 +14,13 @@ const {
   loadFromStorage,
   saveSession,
   clearSession,
-  resolveTableNumber,
+  resolveTableToken,
 } = useGuestSession()
 const { syncFromStorage } = useCart()
 const { t, locale } = useAppI18n()
 
 const slug = computed(() => String(route.params.slug || ""))
-const tableFromQuery = computed(() => {
-  const raw = route.query.table
-  const value = typeof raw === "string" || typeof raw === "number" ? Number(raw) : NaN
-  return Number.isInteger(value) && value > 0 ? value : null
-})
+const tableFromQuery = computed(() => parseTableToken(route.query.table))
 
 const loading = ref(true)
 const errorKind = ref<"none" | "missing-table" | "not-found" | "generic">("none")
@@ -136,20 +133,22 @@ function dishPath(dishId: string) {
   return {
     path: `/m/${slug.value}/dish/${dishId}`,
     query: tableFromQuery.value
-      ? { table: String(tableFromQuery.value) }
-      : pinnedTable.value
-        ? { table: String(pinnedTable.value.table_number) }
+      ? { table: tableFromQuery.value }
+      : sessionToken.value
+        ? { table: sessionToken.value }
         : undefined,
   }
 }
 
-async function ensureTableInUrl(tableNumber: number) {
-  if (tableFromQuery.value === tableNumber) {
+const sessionToken = ref<string | null>(null)
+
+async function ensureTableInUrl(tableToken: string) {
+  if (tableFromQuery.value === tableToken) {
     return
   }
   await router.replace({
     path: route.path,
-    query: { ...route.query, table: String(tableNumber) },
+    query: { ...route.query, table: tableToken },
   })
 }
 
@@ -159,8 +158,8 @@ onMounted(async () => {
   errorMessage.value = ""
   loadFromStorage()
 
-  const tableNumber = resolveTableNumber(slug.value, tableFromQuery.value)
-  if (tableNumber == null) {
+  const tableToken = resolveTableToken(slug.value, tableFromQuery.value)
+  if (tableToken == null) {
     clearSession()
     setShell({ venueName: slug.value || "Menu", tableNumber: null })
     errorKind.value = "missing-table"
@@ -175,7 +174,7 @@ onMounted(async () => {
       dishes: Dish[]
       table: DiningTable
     }>(`/api/menu/${encodeURIComponent(slug.value)}`, {
-      query: { table: tableNumber },
+      query: { table: tableToken },
     })
 
     restaurantName.value = menu.restaurant.name
@@ -183,10 +182,12 @@ onMounted(async () => {
     dishes.value = menu.dishes
     pinnedTable.value = menu.table
 
+    sessionToken.value = tableToken
     saveSession({
       slug: menu.restaurant.slug,
       tableNumber: menu.table.table_number,
       tableId: menu.table.id,
+      tableToken,
       restaurantName: menu.restaurant.name,
     })
     setShell({
@@ -194,7 +195,7 @@ onMounted(async () => {
       tableNumber: menu.table.table_number,
     })
     syncFromStorage()
-    await ensureTableInUrl(menu.table.table_number)
+    await ensureTableInUrl(tableToken)
   } catch (error: unknown) {
     clearSession()
     setShell({

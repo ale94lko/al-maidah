@@ -1,4 +1,5 @@
 import type { DiningTable } from "~/types"
+import { sha256Hex } from "~/utils/table-token"
 
 type MeResponse = {
   user: { id: string; email?: string }
@@ -21,6 +22,7 @@ export function useAdminTables() {
   const restaurantId = ref<string | null>(null)
   const restaurant = ref<TablesResponse["restaurant"] | null>(null)
   const tables = ref<DiningTable[]>([])
+  const tableTokens = ref<Record<string, string>>({})
   const loading = ref(true)
   const saving = ref(false)
   const errorMessage = ref("")
@@ -33,13 +35,14 @@ export function useAdminTables() {
     return { Authorization: `Bearer ${token}` }
   }
 
-  function menuUrlForTable(tableNumber: number): string {
+  function menuUrlForTable(tableId: string): string {
     const slug = restaurant.value?.slug
-    if (!slug) {
+    const token = tableTokens.value[tableId]
+    if (!slug || !token) {
       return ""
     }
     const base = String(appUrl.value || "").replace(/\/$/, "")
-    return `${base}/m/${slug}?table=${tableNumber}`
+    return `${base}/m/${slug}?table=${token}`
   }
 
   async function loadTables() {
@@ -54,7 +57,15 @@ export function useAdminTables() {
       { headers },
     )
     restaurant.value = response.restaurant
-    tables.value = (response.tables ?? []).filter((table) => table.is_active)
+    const active = (response.tables ?? []).filter((table) => table.is_active)
+    const tokens: Record<string, string> = {}
+    await Promise.all(
+      active.map(async (table) => {
+        tokens[table.id] = await sha256Hex(table.id)
+      }),
+    )
+    tableTokens.value = tokens
+    tables.value = active
   }
 
   async function bootstrap() {

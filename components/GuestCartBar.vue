@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { parseTableToken } from "~/utils/table-token"
+
 const route = useRoute()
 const { itemCount, subtotal, syncFromStorage } = useCart()
 const { session, loadFromStorage } = useGuestSession()
@@ -7,12 +9,12 @@ const { t } = useAppI18n()
 const slug = computed(() => String(route.params.slug || session.value?.slug || ""))
 
 const tableQuery = computed(() => {
-  const fromRoute = route.query.table
-  if (typeof fromRoute === "string" && fromRoute) {
+  const fromRoute = parseTableToken(route.query.table)
+  if (fromRoute) {
     return fromRoute
   }
   const stored = session.value ?? loadFromStorage()
-  return stored?.tableNumber != null ? String(stored.tableNumber) : undefined
+  return stored?.tableToken || undefined
 })
 
 const cartTo = computed(() => {

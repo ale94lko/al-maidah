@@ -48,6 +48,6 @@ test("landing page reflects the shipped product, not scaffold copy", () => {
   assert.doesNotMatch(page, /application shell/)
   assert.match(page, /font-display/)
   assert.match(page, /Al-Maidah/)
-  assert.match(page, /\/m\/demo\?table=1/)
+  assert.match(page, /\/m\/demo\?table=[a-f0-9]{64}/)
   assert.match(page, /\/admin\/login/)
 })

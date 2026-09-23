@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { PublicOrder } from "~/types"
+import { parseTableToken } from "~/utils/table-token"
 
 definePageMeta({
   layout: "client",
@@ -34,11 +35,9 @@ const statusPath = computed(() => {
   if (accessToken.value) {
     query.token = accessToken.value
   }
-  const table =
-    order.value?.table_number ??
-    (typeof route.query.table === "string" ? Number(route.query.table) : null)
-  if (table != null && Number.isFinite(table)) {
-    query.table = String(table)
+  const table = parseTableToken(route.query.table) ?? session.value?.tableToken
+  if (table) {
+    query.table = table
   }
   return {
     path: `/m/${slug.value}/status/${orderId.value}`,

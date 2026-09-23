@@ -7,6 +7,7 @@ import type {
 } from "~/types"
 import { localizedName } from "~/utils/localize"
 import { filsToMoney, moneyToFils } from "~/utils/cart"
+import { parseTableToken } from "~/utils/table-token"
 
 definePageMeta({
   layout: "client",
@@ -40,12 +41,10 @@ const accessToken = computed(() => {
 
 const menuPath = computed(() => {
   const table =
-    order.value?.table_number ??
-    session.value?.tableNumber ??
-    (typeof route.query.table === "string" ? Number(route.query.table) : null)
+    parseTableToken(route.query.table) ?? session.value?.tableToken ?? null
   const query: Record<string, string> = {}
-  if (table != null && Number.isFinite(table)) {
-    query.table = String(table)
+  if (table) {
+    query.table = table
   }
   return {
     path: `/m/${slug.value}`,

@@ -27,6 +27,7 @@ const newLabel = ref("")
 const formError = ref("")
 const editingId = ref<string | null>(null)
 const editNumber = ref<number | null>(null)
+const copiedId = ref<string | null>(null)
 
 onMounted(async () => {
   const session = await refreshSession()
@@ -105,6 +106,20 @@ async function onRemove(tableId: string, tableNumber: number) {
 
 function onPrint() {
   window.print()
+}
+
+async function copyMenuUrl(tableId: string) {
+  const url = menuUrlForTable(tableId)
+  if (!url) {
+    return
+  }
+  await navigator.clipboard.writeText(url)
+  copiedId.value = tableId
+  window.setTimeout(() => {
+    if (copiedId.value === tableId) {
+      copiedId.value = null
+    }
+  }, 1600)
 }
 </script>
 
@@ -225,9 +240,41 @@ function onPrint() {
                     {{ table.label }}
                   </span>
                 </p>
-                <p class="truncate font-mono text-xs text-[var(--herb)]/80">
-                  {{ menuUrlForTable(table.table_number) }}
-                </p>
+                <div class="mt-1 flex min-w-0 items-center gap-2">
+                  <p class="truncate font-mono text-xs text-[var(--muted)]">
+                    {{ menuUrlForTable(table.id) }}
+                  </p>
+                  <button
+                    type="button"
+                    class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[var(--navy)]/10 bg-white text-[var(--navy)]"
+                    :aria-label="copiedId === table.id ? t('admin.copiedUrl') : t('admin.copyUrl')"
+                    @click="copyMenuUrl(table.id)"
+                  >
+                    <svg
+                      v-if="copiedId === table.id"
+                      viewBox="0 0 24 24"
+                      class="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      aria-hidden="true"
+                    >
+                      <path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    <svg
+                      v-else
+                      viewBox="0 0 24 24"
+                      class="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      aria-hidden="true"
+                    >
+                      <rect x="9" y="9" width="11" height="11" rx="2" />
+                      <path d="M5 15V5a2 2 0 0 1 2-2h10" stroke-linecap="round" />
+                    </svg>
+                  </button>
+                </div>
               </div>
               <div class="flex flex-wrap items-center gap-2">
                 <template v-if="editingId === table.id">
@@ -306,7 +353,7 @@ function onPrint() {
               {{ t("admin.tableHeading", { n: table.table_number }) }}
             </p>
             <AdminTableQr
-              :value="menuUrlForTable(table.table_number)"
+              :value="menuUrlForTable(table.id)"
               :size="220"
               class="w-56"
             />
@@ -317,7 +364,7 @@ function onPrint() {
               </p>
             </div>
             <p class="break-all font-mono text-[10px] text-[var(--muted)]">
-              {{ menuUrlForTable(table.table_number) }}
+              {{ menuUrlForTable(table.id) }}
             </p>
           </div>
         </section>

@@ -44,7 +44,7 @@
             Guests scan, kitchen cooks, owners grow — one fresh digital table.
           </p>
           <div class="mt-8 flex flex-wrap gap-3">
-            <NuxtLink to="/m/demo?table=1" class="btn-primary">
+            <NuxtLink to="/m/demo?table=621d0a8a93454e9d8e07bbcad5915f42eb189a3ba80a7f82d1de1d66d3e39dae" class="btn-primary">
               Try the demo menu
             </NuxtLink>
             <NuxtLink
