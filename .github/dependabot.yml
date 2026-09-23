@@ -9,11 +9,3 @@ updates:
       - dependencies
       - security
 
-  - package-ecosystem: npm
-    directory: /
-    schedule:
-      interval: weekly
-    open-pull-requests-limit: 10
-    labels:
-      - dependencies
-    # Enabled once package.json exists; Dependabot ignores missing manifests.
