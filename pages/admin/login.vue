@@ -62,12 +62,9 @@ async function onSubmit() {
 
     <div class="flex flex-col bg-[var(--paper)]">
       <header class="flex items-center justify-between px-5 py-4 sm:px-8">
-        <NuxtLink to="/" class="font-display text-xl font-extrabold text-[var(--ink)]">
+        <p class="font-display text-xl font-extrabold text-[var(--ink)]">
           Al-Maidah
-        </NuxtLink>
-        <NuxtLink to="/" class="text-sm font-bold text-[var(--herb-deep)]">
-          {{ t("common.home") }}
-        </NuxtLink>
+        </p>
       </header>
 
       <div class="flex flex-1 items-center justify-center px-5 py-10 sm:px-8">

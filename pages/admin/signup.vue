@@ -66,7 +66,7 @@ async function onSubmit() {
 
     <div class="flex flex-col bg-[var(--paper)]">
       <header class="flex items-center justify-between px-5 py-4 sm:px-8">
-        <NuxtLink to="/" class="font-display text-xl font-extrabold text-[var(--ink)]">
+        <NuxtLink to="/admin/login" class="font-display text-xl font-extrabold text-[var(--ink)]">
           Al-Maidah
         </NuxtLink>
         <NuxtLink to="/admin/login" class="text-sm font-bold text-[var(--herb-deep)]">

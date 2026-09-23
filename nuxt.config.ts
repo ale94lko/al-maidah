@@ -7,6 +7,9 @@ export default defineNuxtConfig({
   },
   modules: ["@nuxtjs/tailwindcss"],
   css: ["~/assets/css/main.css"],
+  routeRules: {
+    "/": { redirect: "/admin/login" },
+  },
   app: {
     head: {
       title: "Al-Maidah",

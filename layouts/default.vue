@@ -3,7 +3,7 @@
     <header class="shell-header">
       <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
         <NuxtLink
-          to="/"
+          to="/admin/login"
           class="font-display text-xl font-bold tracking-tight text-[var(--ink)]"
         >
           Al-Maidah

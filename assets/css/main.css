@@ -50,7 +50,6 @@ body {
   font-family: "Manrope", "Segoe UI", sans-serif;
 }
 
-body:has(.landing-shell),
 body:has(.auth-shell) {
   background: var(--ink);
 }
@@ -86,7 +85,6 @@ body:has(.kitchen-shell) {
 .client-shell,
 .kitchen-shell,
 .admin-shell,
-.landing-shell,
 .auth-shell {
   unicode-bidi: isolate;
 }
