@@ -2,6 +2,7 @@ type OrderBody = {
   slug?: string
   tableId?: string
   guestName?: string
+  paymentMethod?: string
   items?: Array<{
     menuItemId?: string
     quantity?: number
@@ -17,6 +18,7 @@ type OrderBody = {
 
 /**
  * Guest checkout: create a pending order with server-side UAE 5% VAT.
+ * Cash orders skip Stripe; online methods stay payment_status=pending until MVP-11 webhook.
  * Uses the service role because anon/authenticated cannot INSERT orders (RLS).
  */
 export default defineEventHandler(async (event) => {
@@ -31,11 +33,18 @@ export default defineEventHandler(async (event) => {
       : [],
   }))
 
+  const paymentMethod = String(body.paymentMethod || "").trim()
+
   const client = createServiceRoleClient()
   return createGuestOrder(client, {
     slug: String(body.slug || ""),
     tableId: String(body.tableId || ""),
     guestName: body.guestName,
+    paymentMethod: paymentMethod as
+      | "cash_at_table"
+      | "card"
+      | "google_pay"
+      | "apple_pay",
     items,
   })
 })

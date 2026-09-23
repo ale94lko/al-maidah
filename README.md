@@ -57,7 +57,7 @@ Do not commit secrets.
 
 ## How to build it
 
-Each MVP piece is tracked as an issue, in implementation order. Checkout with 5% VAT and order creation closes **MVP-09**.
+Each MVP piece is tracked as an issue, in implementation order. AED Google Pay / card / cash checkout closes **MVP-10**.
 
 ## Contributing
 

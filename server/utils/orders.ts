@@ -2,6 +2,7 @@ import type { SupabaseClient } from "@supabase/supabase-js"
 import type {
   ModifierGroupWithOptions,
   ModifierOption,
+  PaymentMethod,
   PublicOrder,
   PublicOrderItem,
   SelectedModifierOption,
@@ -27,6 +28,8 @@ export type CreateOrderInput = {
   slug: string
   tableId: string
   guestName?: string | null
+  /** How the guest intends to pay. Always stored with payment_status=pending. */
+  paymentMethod: PaymentMethod
   items: CreateOrderLineInput[]
 }
 
@@ -64,6 +67,7 @@ export async function createGuestOrder(
   const slug = input.slug?.trim()
   const tableId = input.tableId?.trim()
   const guestName = input.guestName?.trim() || null
+  const paymentMethod = input.paymentMethod
   const lines = Array.isArray(input.items) ? input.items : []
 
   if (!slug) {
@@ -73,6 +77,17 @@ export async function createGuestOrder(
     throw createError({
       statusCode: 400,
       statusMessage: "A valid table is required to place an order",
+    })
+  }
+  if (
+    paymentMethod !== "cash_at_table" &&
+    paymentMethod !== "card" &&
+    paymentMethod !== "google_pay" &&
+    paymentMethod !== "apple_pay"
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "paymentMethod must be cash_at_table, card, google_pay, or apple_pay",
     })
   }
   if (lines.length === 0) {
@@ -286,7 +301,7 @@ export async function createGuestOrder(
       guest_name: guestName,
       status: "pending",
       payment_status: "pending",
-      payment_method: null,
+      payment_method: paymentMethod,
       subtotal: totals.subtotal,
       vat: totals.vat,
       tip: totals.tip,
@@ -294,7 +309,7 @@ export async function createGuestOrder(
       total_cost: filsToMoney(totalCostFils),
     })
     .select(
-      "id, restaurant_id, table_id, guest_name, status, payment_status, subtotal, vat, tip, total, created_at, ready_at",
+      "id, restaurant_id, table_id, guest_name, status, payment_status, payment_method, gateway_reference, subtotal, vat, tip, total, created_at, ready_at",
     )
     .single()
 
@@ -341,6 +356,8 @@ export async function createGuestOrder(
     guest_name: orderRow.guest_name,
     status: orderRow.status,
     payment_status: orderRow.payment_status,
+    payment_method: orderRow.payment_method,
+    gateway_reference: orderRow.gateway_reference,
     subtotal: String(orderRow.subtotal),
     vat: String(orderRow.vat),
     tip: String(orderRow.tip),
@@ -371,7 +388,7 @@ export async function getPublicOrderById(
   const { data: orderRow, error } = await client
     .from("orders")
     .select(
-      "id, restaurant_id, table_id, guest_name, status, payment_status, subtotal, vat, tip, total, created_at, ready_at",
+      "id, restaurant_id, table_id, guest_name, status, payment_status, payment_method, gateway_reference, subtotal, vat, tip, total, created_at, ready_at",
     )
     .eq("id", orderId)
     .maybeSingle()
@@ -414,6 +431,8 @@ export async function getPublicOrderById(
       guest_name: orderRow.guest_name,
       status: orderRow.status,
       payment_status: orderRow.payment_status,
+      payment_method: orderRow.payment_method,
+      gateway_reference: orderRow.gateway_reference,
       subtotal: String(orderRow.subtotal),
       vat: String(orderRow.vat),
       tip: String(orderRow.tip),

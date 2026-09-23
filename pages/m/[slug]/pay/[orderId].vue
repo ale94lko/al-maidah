@@ -1,0 +1,121 @@
+<script setup lang="ts">
+import type { PublicOrder } from "~/types"
+
+definePageMeta({
+  layout: "client",
+})
+
+const route = useRoute()
+const router = useRouter()
+const { setShell } = useClientShell()
+const { loadFromStorage, session } = useGuestSession()
+const { appUrl } = usePublicRuntime()
+const { t } = useAppI18n()
+
+const slug = computed(() => String(route.params.slug || ""))
+const orderId = computed(() => String(route.params.orderId || ""))
+
+const loading = ref(true)
+const errorMessage = ref("")
+const order = ref<PublicOrder | null>(null)
+const paymentNote = ref("")
+
+const statusPath = computed(() => ({
+  path: `/m/${slug.value}/status/${orderId.value}`,
+  query:
+    order.value?.table_number != null
+      ? { table: String(order.value.table_number) }
+      : typeof route.query.table === "string"
+        ? { table: route.query.table }
+        : undefined,
+}))
+
+const returnUrl = computed(() => {
+  const base = (appUrl.value || "").replace(/\/$/, "")
+  const table =
+    order.value?.table_number != null
+      ? `?table=${order.value.table_number}`
+      : ""
+  return `${base}/m/${slug.value}/status/${orderId.value}${table}`
+})
+
+onMounted(async () => {
+  loadFromStorage()
+  const active = session.value
+  if (active) {
+    setShell({
+      venueName: active.restaurantName,
+      tableNumber: active.tableNumber,
+    })
+  }
+
+  try {
+    const result = await $fetch<{ order: PublicOrder }>(
+      `/api/orders/${encodeURIComponent(orderId.value)}`,
+    )
+    order.value = result.order
+
+    if (result.order.payment_method === "cash_at_table") {
+      await router.replace(statusPath.value)
+      return
+    }
+    if (result.order.payment_status === "paid") {
+      await router.replace(statusPath.value)
+      return
+    }
+    if (result.order.table_number != null) {
+      setShell({
+        venueName: active?.restaurantName || slug.value,
+        tableNumber: result.order.table_number,
+      })
+    }
+  } catch (error: unknown) {
+    errorMessage.value =
+      error instanceof Error ? error.message : t("guest.menuUnavailable")
+  } finally {
+    loading.value = false
+  }
+})
+</script>
+
+<template>
+  <div>
+    <AppLoadingState v-if="loading" :label="t('common.loading')" />
+    <AppEmptyState
+      v-else-if="errorMessage || !order"
+      :title="t('guest.menuUnavailable')"
+      :description="errorMessage"
+    />
+    <div v-else class="space-y-5">
+      <div>
+        <p class="text-xs font-medium uppercase tracking-[0.14em] text-teal-800/70">
+          {{ t("guest.orderPending") }}
+        </p>
+        <h1 class="mt-1 text-xl font-semibold tracking-tight text-stone-900">
+          {{ t("guest.payOnline") }}
+        </h1>
+        <p class="mt-2 text-sm leading-relaxed text-stone-600">
+          {{ t("guest.payOnlineHint") }}
+        </p>
+        <p class="mt-3 font-mono text-lg font-semibold text-teal-950">
+          {{ t("guest.priceAed", { price: order.total }) }}
+        </p>
+      </div>
+
+      <GuestStripeCheckout
+        :order-id="order.id"
+        :return-url="returnUrl"
+        @cancelled="paymentNote = t('guest.paymentCancelled')"
+        @error="(message) => (paymentNote = message)"
+      />
+
+      <p v-if="paymentNote" class="text-sm font-medium text-amber-900">
+        {{ paymentNote }}
+      </p>
+
+      <NuxtLink :to="statusPath" class="inline-flex text-sm font-medium text-teal-900">
+        {{ t("guest.onlinePendingHint") }}
+      </NuxtLink>
+    </div>
+  </div>
+</template>

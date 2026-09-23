@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PublicOrder, PublicOrderItem } from "~/types"
+import type { PaymentMethod, PublicOrder, PublicOrderItem } from "~/types"
 import { localizedName } from "~/utils/localize"
 import {
   cartLineKey,
@@ -43,6 +43,7 @@ const missingTable = ref(false)
 const guestName = ref("")
 const submitting = ref(false)
 const submitError = ref("")
+const paymentMethod = ref<"cash_at_table" | "card">("cash_at_table")
 
 const tableNumber = computed(
   () =>
@@ -76,6 +77,7 @@ async function placeOrder() {
 
   submitting.value = true
   try {
+    const method: PaymentMethod = paymentMethod.value
     const result = await $fetch<{
       order: PublicOrder
       items: PublicOrderItem[]
@@ -85,6 +87,7 @@ async function placeOrder() {
         slug: slug.value,
         tableId: active.tableId,
         guestName: guestName.value.trim() || undefined,
+        paymentMethod: method,
         // Deliberately send a fake unit_price — server must ignore it.
         items: items.value.map((item) => ({
           menuItemId: item.menu_item_id,
@@ -98,10 +101,20 @@ async function placeOrder() {
     })
 
     clearCart()
-    await router.push({
-      path: `/m/${slug.value}/status/${result.order.id}`,
-      query: tableNumber.value != null ? { table: String(tableNumber.value) } : undefined,
-    })
+    const tableQuery =
+      tableNumber.value != null ? { table: String(tableNumber.value) } : undefined
+
+    if (method === "cash_at_table") {
+      await router.push({
+        path: `/m/${slug.value}/status/${result.order.id}`,
+        query: tableQuery,
+      })
+    } else {
+      await router.push({
+        path: `/m/${slug.value}/pay/${result.order.id}`,
+        query: tableQuery,
+      })
+    }
   } catch (error: unknown) {
     const message =
       error && typeof error === "object" && "data" in error
@@ -259,6 +272,50 @@ onMounted(() => {
             autocomplete="name"
           />
         </label>
+
+        <fieldset class="space-y-2">
+          <legend class="text-sm font-semibold text-stone-900">
+            {{ t("guest.paymentMethod") }}
+          </legend>
+          <label
+            class="flex cursor-pointer gap-3 rounded-2xl border px-3 py-3"
+            :class="
+              paymentMethod === 'cash_at_table'
+                ? 'border-teal-900 bg-teal-950 text-white'
+                : 'border-teal-900/15 bg-white text-stone-900'
+            "
+          >
+            <input
+              v-model="paymentMethod"
+              class="mt-1"
+              type="radio"
+              value="cash_at_table"
+            />
+            <span>
+              <span class="block text-sm font-semibold">{{ t("guest.payCash") }}</span>
+              <span class="mt-0.5 block text-xs opacity-80">{{ t("guest.payCashHint") }}</span>
+            </span>
+          </label>
+          <label
+            class="flex cursor-pointer gap-3 rounded-2xl border px-3 py-3"
+            :class="
+              paymentMethod === 'card'
+                ? 'border-teal-900 bg-teal-950 text-white'
+                : 'border-teal-900/15 bg-white text-stone-900'
+            "
+          >
+            <input
+              v-model="paymentMethod"
+              class="mt-1"
+              type="radio"
+              value="card"
+            />
+            <span>
+              <span class="block text-sm font-semibold">{{ t("guest.payOnline") }}</span>
+              <span class="mt-0.5 block text-xs opacity-80">{{ t("guest.payOnlineHint") }}</span>
+            </span>
+          </label>
+        </fieldset>
 
         <div class="space-y-2 rounded-2xl border border-teal-900/10 bg-white/80 p-4 text-sm">
           <div class="flex items-center justify-between gap-3 text-stone-700">
