@@ -8,7 +8,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   ready: []
-  error: [message: string]
   cancelled: []
 }>()
 
@@ -30,8 +29,8 @@ let elements: StripeElements | null = null
 onMounted(async () => {
   const publishableKey = stripePublishableKey.value
   if (!publishableKey) {
+    // Shown once here; do not also emit to the parent (avoids duplicate copy).
     errorMessage.value = t("guest.stripeUnavailable")
-    emit("error", errorMessage.value)
     loading.value = false
     return
   }
@@ -97,10 +96,8 @@ onMounted(async () => {
 
     emit("ready")
   } catch (error: unknown) {
-    const message =
+    errorMessage.value =
       error instanceof Error ? error.message : t("guest.stripeUnavailable")
-    errorMessage.value = message
-    emit("error", message)
   } finally {
     loading.value = false
   }

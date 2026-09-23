@@ -69,6 +69,16 @@ test("guest Stripe checkout uses publishable key and Express Checkout", () => {
   assert.doesNotMatch(component, /STRIPE_SECRET|stripeSecretKey/)
 })
 
+test("pay page shows Stripe unavailable errors only once", () => {
+  const component = read("components/GuestStripeCheckout.vue")
+  const page = read("pages/m/[slug]/pay/[orderId].vue")
+  assert.match(component, /errorMessage/)
+  assert.match(component, /guest\.stripeUnavailable/)
+  assert.doesNotMatch(component, /emit\(["']error["']/)
+  assert.doesNotMatch(page, /@error/)
+  assert.match(page, /@cancelled/)
+})
+
 test("Arabic price copy uses د.إ", () => {
   const messages = read("i18n/messages.ts")
   assert.match(messages, /priceAed:\s*"\{price\} AED"/)
