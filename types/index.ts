@@ -146,6 +146,8 @@ export interface PublicOrder {
   guest_name: string | null
   status: OrderStatus
   payment_status: PaymentStatus
+  payment_method: PaymentMethod | null
+  gateway_reference: string | null
   subtotal: string
   vat: string
   tip: string

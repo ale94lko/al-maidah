@@ -34,6 +34,29 @@ const menuPath = computed(() => {
   }
 })
 
+const payPath = computed(() => ({
+  path: `/m/${slug.value}/pay/${orderId.value}`,
+  query: menuPath.value.query,
+}))
+
+const isCash = computed(() => order.value?.payment_method === "cash_at_table")
+const needsOnlinePayment = computed(
+  () =>
+    Boolean(order.value) &&
+    order.value!.payment_status !== "paid" &&
+    order.value!.payment_method !== "cash_at_table",
+)
+
+const statusHint = computed(() => {
+  if (isCash.value) {
+    return t("guest.cashKitchenHint")
+  }
+  if (needsOnlinePayment.value) {
+    return t("guest.onlinePendingHint")
+  }
+  return t("guest.orderStatusHint")
+})
+
 function lineAmount(item: PublicOrderItem) {
   return filsToMoney(moneyToFils(item.unit_price) * item.quantity)
 }
@@ -87,7 +110,7 @@ onMounted(async () => {
           {{ t("guest.orderPlaced") }}
         </h1>
         <p class="mt-2 text-sm leading-relaxed text-stone-600">
-          {{ t("guest.orderStatusHint") }}
+          {{ statusHint }}
         </p>
         <p
           v-if="order.table_number != null"
@@ -98,6 +121,13 @@ onMounted(async () => {
         <p v-if="order.guest_name" class="text-sm text-stone-600">
           {{ order.guest_name }}
         </p>
+        <NuxtLink
+          v-if="needsOnlinePayment"
+          :to="payPath"
+          class="mt-3 inline-flex rounded-xl bg-teal-950 px-4 py-2 text-sm font-semibold text-white"
+        >
+          {{ t("guest.payNow") }}
+        </NuxtLink>
       </div>
 
       <ul class="space-y-3">
