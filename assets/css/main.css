@@ -181,29 +181,6 @@ body:has(.kitchen-shell) {
     color: var(--muted);
   }
 
-  .accent-bar {
-    display: flex;
-    height: 0.4rem;
-    width: 100%;
-    overflow: hidden;
-    border-radius: 0.35rem;
-  }
-
-  .accent-bar > span:nth-child(1) {
-    flex: 1.15;
-    background: var(--chili);
-  }
-
-  .accent-bar > span:nth-child(2) {
-    flex: 1;
-    background: var(--herb);
-  }
-
-  .accent-bar > span:nth-child(3) {
-    flex: 0.85;
-    background: var(--citrus);
-  }
-
   .dish-row {
     @apply overflow-hidden rounded-3xl border bg-white transition;
     border-color: color-mix(in srgb, var(--ink) 7%, transparent);

@@ -203,10 +203,7 @@ onMounted(async () => {
           <div
             class="relative overflow-hidden bg-[var(--ink)] px-5 py-6 text-white"
           >
-            <div class="accent-bar max-w-[6rem]" aria-hidden="true">
-              <span /><span /><span />
-            </div>
-            <p class="mt-4 text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--citrus)]">
+            <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--citrus)]">
               {{ t("admin.restaurant") }}
             </p>
             <h2 class="font-display mt-2 text-3xl font-bold tracking-tight">

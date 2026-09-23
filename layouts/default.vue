@@ -23,9 +23,6 @@
           </NuxtLink>
         </nav>
       </div>
-      <div class="accent-bar" aria-hidden="true">
-        <span /><span /><span />
-      </div>
     </header>
     <main>
       <slot />
