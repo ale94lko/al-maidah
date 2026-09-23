@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/ale94lko/al-maidah/security/advisories/new
+    about: Report security issues privately. Do not file a public issue.
+  - name: MVP roadmap
+    url: https://github.com/ale94lko/al-maidah/issues/1
+    about: Track implementation work under the MVP parent issue.

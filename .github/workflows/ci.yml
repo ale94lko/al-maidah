@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  repository-health:
+    name: Repository health checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Verify required community files
+        shell: bash
+        run: |
+          set -euo pipefail
+          required=(
+            README.md
+            LICENSE
+            SECURITY.md
+            CONTRIBUTING.md
+            CODE_OF_CONDUCT.md
+            SUPPORT.md
+            CHANGELOG.md
+            .gitignore
+            .env.example
+            .editorconfig
+            docs/INSTALL.md
+            .github/CODEOWNERS
+            .github/dependabot.yml
+            .github/PULL_REQUEST_TEMPLATE.md
+            .github/workflows/ci.yml
+            .github/workflows/scorecard.yml
+            .github/workflows/codeql.yml
+          )
+          for path in "${required[@]}"; do
+            if [[ ! -f "$path" ]]; then
+              echo "Missing required file: $path"
+              exit 1
+            fi
+            echo "ok $path"
+          done
+
+      - name: Validate Markdown links to local files
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Fail if README references a missing relative markdown/doc path.
+          mapfile -t links < <(grep -oE '\[[^\]]+\]\(([^)]+)\)' README.md | sed -E 's/.*\(([^)]+)\).*/\1/' | grep -E '^\.?\.?/' || true)
+          for link in "${links[@]:-}"; do
+            target="${link%%#*}"
+            [[ -z "$target" ]] && continue
+            if [[ ! -e "$target" ]]; then
+              echo "Broken local link in README.md: $target"
+              exit 1
+            fi
+          done
+          echo "README local links ok"
+
+      - name: Check for committed secrets patterns
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git grep -nE '(sk_live_|sk_test_|SUPABASE_SERVICE_ROLE_KEY=ey|STRIPE_SECRET_KEY=sk_)' -- ':!.github/workflows/ci.yml'; then
+            echo "Possible secret material found in the tree"
+            exit 1
+          fi
+          echo "No obvious committed secrets"
