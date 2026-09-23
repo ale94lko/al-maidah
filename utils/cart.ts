@@ -49,6 +49,38 @@ export function cartItemCount(items: CartItem[]): number {
   return items.reduce((sum, item) => sum + item.quantity, 0)
 }
 
+/** UAE VAT rate (5%). Server and client previews must use the same rounding. */
+export const UAE_VAT_RATE_BPS = 5 // percent
+
+export function computeVatFils(subtotalFils: number): number {
+  return Math.round((subtotalFils * UAE_VAT_RATE_BPS) / 100)
+}
+
+export function computeCheckoutTotals(subtotalFils: number): {
+  subtotal: string
+  vat: string
+  tip: string
+  total: string
+  subtotalFils: number
+  vatFils: number
+  tipFils: number
+  totalFils: number
+} {
+  const vatFils = computeVatFils(subtotalFils)
+  const tipFils = 0
+  const totalFils = subtotalFils + vatFils + tipFils
+  return {
+    subtotal: filsToMoney(subtotalFils),
+    vat: filsToMoney(vatFils),
+    tip: filsToMoney(tipFils),
+    total: filsToMoney(totalFils),
+    subtotalFils,
+    vatFils,
+    tipFils,
+    totalFils,
+  }
+}
+
 /**
  * Stable identity for a cart line: same dish + same options + same notes merge;
  * different modifier combo or notes → separate lines.
