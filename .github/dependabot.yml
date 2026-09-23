@@ -16,4 +16,10 @@ updates:
     open-pull-requests-limit: 10
     labels:
       - dependencies
+    # TypeScript 7+ is Go-native and no longer exports typescript/lib/tsc.
+    # vue-tsc (nuxt typecheck) still needs that JS entry; stay on 5.x/6.x until
+    # vuejs/language-tools supports TS 7's programmatic API.
+    ignore:
+      - dependency-name: typescript
+        versions: [">=7.0.0"]
 
