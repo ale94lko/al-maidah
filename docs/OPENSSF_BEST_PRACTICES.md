@@ -1,10 +1,23 @@
 # OpenSSF Best Practices — Passing checklist
 
 This project targets the
-[OpenSSF Best Practices Passing badge](https://www.bestpractices.dev/).
+[OpenSSF Best Practices Passing badge](https://www.bestpractices.dev/)
+(100% on the Passing tier).
 
-Register or update the entry at:
-https://www.bestpractices.dev/en/projects/new?url=https%3A%2F%2Fgithub.com%2Fale94lko%2Fal-maidah
+## You must register the project (one-time, interactive)
+
+There is no unauthenticated API to create a Best Practices entry. A maintainer must:
+
+1. Open https://www.bestpractices.dev/en/projects/new?url=https%3A%2F%2Fgithub.com%2Fale94lko%2Fal-maidah
+2. Log in with GitHub.
+3. Submit the project (Metal series → Passing).
+4. Click **Save (and continue)** so automation can read `.bestpractices.json`.
+5. Confirm any yellow autofilled answers.
+6. Replace `PROJECT_ID` in the README badge:
+
+```markdown
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/PROJECT_ID/badge)](https://www.bestpractices.dev/projects/PROJECT_ID)
+```
 
 ## Evidence already in the repository
 
@@ -17,21 +30,20 @@ https://www.bestpractices.dev/en/projects/new?url=https%3A%2F%2Fgithub.com%2Fale
 | How to report bugs | [SUPPORT.md](../SUPPORT.md), GitHub Issues |
 | Vulnerability reporting | [SECURITY.md](../SECURITY.md) |
 | FLOSS license | [LICENSE](../LICENSE) (MIT) |
-| Changelog / releases | [CHANGELOG.md](../CHANGELOG.md) |
+| Changelog / releases | [CHANGELOG.md](../CHANGELOG.md), GitHub Releases |
 | Discussion | GitHub Issues and Pull Requests |
 | English docs | All project docs are in English |
 | Maintained | Active commits and open MVP issues |
-| CI | [.github/workflows/ci.yml](../.github/workflows/ci.yml) |
-| SAST | [.github/workflows/codeql.yml](../.github/workflows/codeql.yml) |
-| Dependency updates | [.github/dependabot.yml](../.github/dependabot.yml) |
-| Scorecard | [.github/workflows/scorecard.yml](../.github/workflows/scorecard.yml) |
+| Automated tests | `npm test` + [CI](../.github/workflows/ci.yml) |
+| SAST | [CodeQL](../.github/workflows/codeql.yml) |
+| Dependency updates | [Dependabot](../.github/dependabot.yml) |
+| Scorecard | [Scorecard workflow](../.github/workflows/scorecard.yml) |
+| Proposed answers file | [`.bestpractices.json`](../.bestpractices.json) |
 
-## After registration
+## OpenSSF Scorecard note
 
-1. Answer the Passing criteria using the URLs above.
-2. Publish the project entry.
-3. Replace `PROJECT_ID` in the README badge once Best Practices assigns an ID:
-
-```markdown
-[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/PROJECT_ID/badge)](https://www.bestpractices.dev/projects/PROJECT_ID)
-```
+A perfect Scorecard aggregate (10/10) is not reachable on day one for a solo
+repository: `Maintained` needs 90 days of age, `Contributors` needs multiple
+organizations, and `Code-Review` needs approved pull requests from another
+reviewer. The controls that *are* under our control (license, security policy,
+SAST, CI, pinned Actions, Dependabot, token permissions) already score 10/10.
