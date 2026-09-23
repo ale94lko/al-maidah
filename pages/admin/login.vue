@@ -47,11 +47,8 @@ async function onSubmit() {
       <div class="flex flex-1 items-center justify-center px-5 py-10 sm:px-8">
         <div class="w-full max-w-md">
           <div class="mb-8">
-            <div class="accent-bar max-w-[6rem]" aria-hidden="true">
-              <span /><span /><span />
-            </div>
-            <h1 class="font-display mt-4 text-3xl font-extrabold text-[var(--ink)]">
-              {{ t("admin.signInTitle") }}
+            <h1 class="font-display text-3xl font-extrabold text-[var(--ink)]">
+              {{ t("common.signIn") }}
             </h1>
             <p class="mt-2 text-sm text-[var(--muted)]">
               {{ t("admin.signInHint") }}
