@@ -195,6 +195,32 @@ export interface PublicOrderItem {
   selected_options: SelectedModifierOption[]
 }
 
+/**
+ * Digital receipt (guest or owner). Includes TRN and gateway reference when present.
+ * Never includes total_cost, unit_cost, or data from other orders.
+ */
+export interface PublicReceipt {
+  order_id: string
+  restaurant_id: string
+  restaurant_name: string
+  restaurant_slug: string
+  /** UAE Tax Registration Number — null when the owner has not set one. */
+  trn: string | null
+  table_number: number | null
+  guest_name: string | null
+  created_at: string
+  payment_status: PaymentStatus
+  payment_method: PaymentMethod | null
+  /** Stripe PaymentIntent id when online payment succeeded; otherwise null. */
+  gateway_reference: string | null
+  subtotal: string
+  vat: string
+  tip: string
+  total: string
+  currency: "AED"
+  items: PublicOrderItem[]
+}
+
 /** Kitchen board ticket: never includes total_cost or unit_cost. */
 export interface KitchenTicket {
   id: string
@@ -236,6 +262,50 @@ export interface RestaurantStatistics {
   gross_profit: string
   average_ticket: string
   average_ready_seconds: number | null
+}
+
+export type StatsRange = "today" | "week" | "month" | "last_30_days"
+
+export interface OwnerStatsSeriesPoint {
+  key: string
+  label: string
+  revenue: string
+  cost: string
+  profit: string
+  order_count: number
+}
+
+export interface OwnerStatsBestSeller {
+  menu_item_id: string | null
+  name_en: string
+  name_ar: string
+  quantity_sold: number
+}
+
+export interface OwnerStatsPeakHour {
+  hour: number
+  order_count: number
+}
+
+/** Owner dashboard payload for a selected stats range. */
+export interface OwnerStatsResponse {
+  restaurant_id: string
+  range: StatsRange
+  window: { start: string; end: string }
+  order_count: number
+  revenue: string
+  total_cost: string
+  gross_profit: string
+  /** Basis points: profit / revenue * 10000; null when revenue is 0. */
+  margin_bps: number | null
+  average_ticket: string
+  average_ready_seconds: number | null
+  /** Series for the selected range (hours for today, days otherwise). */
+  series: OwnerStatsSeriesPoint[]
+  series_by_week: OwnerStatsSeriesPoint[]
+  series_by_month: OwnerStatsSeriesPoint[]
+  best_sellers: OwnerStatsBestSeller[]
+  peak_hours: OwnerStatsPeakHour[]
 }
 
 export interface PublicMenu {

@@ -5,8 +5,14 @@ const { t } = useAppI18n()
 
 const links = computed(() => [
   { to: "/admin", label: t("admin.statistics"), match: /^\/admin\/?$/ },
+  { to: "/admin/orders", label: t("admin.orders"), match: /^\/admin\/orders/ },
   { to: "/admin/menu", label: t("admin.menu"), match: /^\/admin\/menu/ },
   { to: "/admin/tables", label: t("admin.tables"), match: /^\/admin\/tables/ },
+  {
+    to: "/admin/settings",
+    label: t("admin.settings"),
+    match: /^\/admin\/settings/,
+  },
 ])
 
 const isAuthPage = computed(
