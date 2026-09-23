@@ -34,7 +34,7 @@ async function onSignOut() {
   <div class="admin-shell min-h-dvh text-[var(--navy)]">
     <template v-if="!isAuthPage">
       <header class="no-print border-b border-[var(--navy)]/8 bg-white/70 px-4 py-3 backdrop-blur sm:px-6">
-        <div class="mx-auto flex max-w-[90rem] items-center justify-between gap-4">
+        <div class="mx-auto flex max-w-[90rem] flex-wrap items-center justify-between gap-3">
           <div class="flex min-w-0 items-center gap-4">
             <NuxtLink
               to="/admin"
@@ -51,12 +51,29 @@ async function onSignOut() {
               </p>
             </div>
           </div>
-          <NuxtLink
-            to="/kitchen"
-            class="shrink-0 rounded-full border border-[var(--navy)]/10 bg-white px-3 py-1.5 text-xs font-bold text-[var(--navy)]"
-          >
-            {{ t("kitchen.title") }}
-          </NuxtLink>
+          <div class="flex shrink-0 items-center gap-2">
+            <NuxtLink
+              to="/kitchen"
+              class="rounded-full border border-[var(--navy)]/10 bg-white px-3 py-1.5 text-xs font-bold text-[var(--navy)]"
+            >
+              {{ t("kitchen.title") }}
+            </NuxtLink>
+            <LanguageSwitcher />
+            <p
+              v-if="user?.email"
+              class="hidden max-w-[12rem] truncate text-xs text-[var(--muted)] md:block"
+              :title="user.email"
+            >
+              {{ user.email }}
+            </p>
+            <button
+              type="button"
+              class="rounded-full border border-[var(--navy)]/10 bg-white px-3 py-1.5 text-xs font-bold text-[var(--navy)]"
+              @click="onSignOut"
+            >
+              {{ t("common.signOut") }}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -96,29 +113,6 @@ async function onSignOut() {
         </header>
         <slot />
       </div>
-
-      <aside
-        v-if="!isAuthPage"
-        class="no-print sticky top-6 mt-6 hidden h-fit w-52 shrink-0 flex-col gap-3 pe-4 xl:flex"
-      >
-        <NuxtLink
-          to="/kitchen"
-          class="rounded-full border border-[var(--navy)]/10 bg-white px-3 py-2 text-center text-sm font-bold text-[var(--navy)]"
-        >
-          {{ t("kitchen.title") }}
-        </NuxtLink>
-        <LanguageSwitcher />
-        <p v-if="user?.email" class="truncate px-1 text-xs text-[var(--muted)]" :title="user.email">
-          {{ user.email }}
-        </p>
-        <button
-          type="button"
-          class="rounded-2xl border border-[var(--navy)]/10 bg-white px-3 py-2 text-start text-sm font-bold"
-          @click="onSignOut"
-        >
-          {{ t("common.signOut") }}
-        </button>
-      </aside>
     </div>
 
     <nav
