@@ -57,7 +57,7 @@ Do not commit secrets.
 
 ## How to build it
 
-Each MVP piece is tracked as an issue, in implementation order. English/Arabic and RTL support close **MVP-06**.
+Each MVP piece is tracked as an issue, in implementation order. Public QR menu with pinned table closes **MVP-07**.
 
 ## Contributing
 
