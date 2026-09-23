@@ -3,7 +3,7 @@
 [![CI](https://github.com/ale94lko/al-maidah/actions/workflows/ci.yml/badge.svg)](https://github.com/ale94lko/al-maidah/actions/workflows/ci.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/ale94lko/al-maidah/badge)](https://scorecard.dev/viewer/?uri=github.com/ale94lko/al-maidah)
 [![OpenSSF Best Practices](https://img.shields.io/badge/OpenSSF_Best_Practices-register_to_earn_passing-yellow?logo=openssf)](docs/OPENSSF_BEST_PRACTICES.md)
-[![Repo Health](https://api.gitscope.dev/api/badges/ale94lko/al-maidah/health.svg)](https://gitscope.dev)
+[![Repo Health](https://api.gitscope.dev/api/badges/ale94lko/al-maidah/health.svg)](https://gitscope.dev/badges)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 QR digital menu for restaurants and cafés in the United Arab Emirates. A guest scans the table, builds an order, and the kitchen receives it live. The owner manages the menu and sees revenue, costs, and timing.
