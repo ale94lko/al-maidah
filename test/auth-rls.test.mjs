@@ -91,6 +91,8 @@ test("admin and kitchen pages exist; public signup redirects to login", () => {
   assert.match(usersList, /changePassword/)
   assert.match(usersList, /deleteUser/)
   assert.match(usersList, /deleteTarget/)
+  assert.match(usersList, /aria-label/)
+  assert.match(usersList, /btn-danger/)
   assert.doesNotMatch(usersList, /window\.confirm/)
 })
 

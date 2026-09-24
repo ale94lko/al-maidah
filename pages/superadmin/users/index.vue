@@ -250,7 +250,7 @@ onMounted(async () => {
     />
     <section v-else class="admin-panel">
       <div class="admin-panel-body overflow-x-auto p-0">
-        <table class="w-full min-w-[44rem] text-start text-sm">
+        <table class="w-full min-w-[40rem] text-start text-sm">
           <thead class="border-b border-[var(--navy)]/8 bg-[var(--paper)]/80 text-xs uppercase tracking-wide text-[var(--muted)]">
             <tr>
               <th class="px-4 py-3 font-bold">{{ t("admin.email") }}</th>
@@ -279,26 +279,72 @@ onMounted(async () => {
                 }}
               </td>
               <td class="px-4 py-3">
-                <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <div class="flex flex-wrap items-center gap-2">
                   <NuxtLink
                     :to="`/superadmin/users/${account.id}`"
-                    class="font-extrabold text-[var(--herb-deep)] underline"
+                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--espresso)]/15 bg-white text-[var(--navy)] transition hover:bg-[var(--paper)]"
+                    :aria-label="t('superadmin.edit')"
+                    :title="t('superadmin.edit')"
                   >
-                    {{ t("superadmin.edit") }}
+                    <svg
+                      viewBox="0 0 24 24"
+                      class="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
                   </NuxtLink>
                   <button
                     type="button"
-                    class="font-extrabold text-[var(--navy)] underline"
+                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--espresso)]/15 bg-white text-[var(--navy)] transition hover:bg-[var(--paper)]"
+                    :aria-label="t('superadmin.changePassword')"
+                    :title="t('superadmin.changePassword')"
                     @click="openPassword(account)"
                   >
-                    {{ t("superadmin.changePassword") }}
+                    <svg
+                      viewBox="0 0 24 24"
+                      class="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
                   </button>
                   <button
                     type="button"
-                    class="font-extrabold text-[var(--chili)] underline"
+                    class="btn-danger inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !p-0"
+                    :aria-label="t('superadmin.deleteUser')"
+                    :title="t('superadmin.deleteUser')"
                     @click="openDelete(account)"
                   >
-                    {{ t("superadmin.deleteUser") }}
+                    <svg
+                      viewBox="0 0 24 24"
+                      class="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path d="M10 11v6M14 11v6" stroke-linecap="round" />
+                    </svg>
                   </button>
                 </div>
               </td>
