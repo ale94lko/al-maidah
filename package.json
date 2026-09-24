@@ -14,7 +14,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "test": "node --test test/*.test.mjs",
-    "lint": "nuxt typecheck"
+    "lint": "nuxt typecheck",
+    "seed:superadmin": "node --env-file=.env scripts/seed-superadmin.mjs"
   },
   "dependencies": {
     "@stripe/stripe-js": "^9.17.0",

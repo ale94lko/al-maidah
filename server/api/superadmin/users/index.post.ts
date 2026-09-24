@@ -1,4 +1,4 @@
-type SignupBody = {
+type CreateBody = {
   email?: string
   password?: string
   restaurantName?: string
@@ -7,12 +7,11 @@ type SignupBody = {
 }
 
 /**
- * Create an owner account + restaurant. Superadmin only — public self-signup is disabled.
+ * Create a restaurant owner account (superadmin).
  */
 export default defineEventHandler(async (event) => {
   await requireSuperAdmin(event)
-
-  const body = await readBody<SignupBody>(event)
+  const body = await readBody<CreateBody>(event)
   const admin = createServiceRoleClient()
 
   const result = await createOwnerAccount(admin, {
@@ -23,10 +22,5 @@ export default defineEventHandler(async (event) => {
     trn: body.trn,
   })
 
-  return {
-    user: result.user,
-    restaurant: result.restaurant,
-    session: null,
-    message: "Owner account created",
-  }
+  return result
 })
