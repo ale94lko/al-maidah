@@ -32,6 +32,12 @@ const loading = ref(true)
 const saving = ref(false)
 const savedMessage = ref("")
 
+const currentPassword = ref("")
+const newPassword = ref("")
+const confirmPassword = ref("")
+const savingPassword = ref(false)
+const passwordMessage = ref("")
+
 const selected = computed(
   () => restaurants.value.find((r) => r.id === restaurantId.value) ?? null,
 )
@@ -126,6 +132,33 @@ async function onSave() {
     )
   } finally {
     saving.value = false
+  }
+}
+
+async function onPassword() {
+  passwordMessage.value = ""
+  if (newPassword.value !== confirmPassword.value) {
+    showError(t("admin.passwordMismatch"))
+    return
+  }
+  savingPassword.value = true
+  try {
+    await $fetch("/api/auth/password", {
+      method: "POST",
+      headers: await authHeaders(),
+      body: {
+        currentPassword: currentPassword.value,
+        newPassword: newPassword.value,
+      },
+    })
+    currentPassword.value = ""
+    newPassword.value = ""
+    confirmPassword.value = ""
+    passwordMessage.value = t("admin.passwordUpdated")
+  } catch (error) {
+    showError(extractApiErrorMessage(error) || t("admin.passwordError"))
+  } finally {
+    savingPassword.value = false
   }
 }
 
@@ -288,6 +321,75 @@ onMounted(async () => {
         :title="t('admin.noRestaurants')"
         :description="t('admin.noRestaurantsHint')"
       />
+
+      <section class="admin-panel mt-5">
+        <div class="admin-panel-head">
+          <div>
+            <h2 class="font-display text-lg font-bold text-[var(--ink)]">
+              {{ t("admin.changePassword") }}
+            </h2>
+            <p class="mt-0.5 text-xs text-[var(--muted)]">
+              {{ t("admin.changePasswordHint") }}
+            </p>
+          </div>
+        </div>
+        <div class="admin-panel-body">
+          <form class="grid max-w-xl gap-3" @submit.prevent="onPassword">
+            <label class="block">
+              <span class="field-label">{{ t("admin.currentPassword") }}</span>
+              <input
+                v-model="currentPassword"
+                type="password"
+                required
+                minlength="8"
+                autocomplete="current-password"
+                class="field-input"
+              >
+            </label>
+            <label class="block">
+              <span class="field-label">{{ t("admin.newPassword") }}</span>
+              <input
+                v-model="newPassword"
+                type="password"
+                required
+                minlength="8"
+                autocomplete="new-password"
+                class="field-input"
+              >
+            </label>
+            <label class="block">
+              <span class="field-label">{{ t("admin.confirmPassword") }}</span>
+              <input
+                v-model="confirmPassword"
+                type="password"
+                required
+                minlength="8"
+                autocomplete="new-password"
+                class="field-input"
+              >
+            </label>
+            <p
+              v-if="passwordMessage"
+              class="text-sm font-semibold text-[var(--herb)]"
+            >
+              {{ passwordMessage }}
+            </p>
+            <div class="flex justify-end pt-1">
+              <button
+                type="submit"
+                class="btn-primary min-w-[10rem] disabled:opacity-60"
+                :disabled="savingPassword"
+              >
+                {{
+                  savingPassword
+                    ? t("admin.saving")
+                    : t("admin.updatePassword")
+                }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
     </template>
   </div>
 </template>
