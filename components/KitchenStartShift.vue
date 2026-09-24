@@ -40,9 +40,6 @@ const emit = defineEmits<{
       >
         {{ busy ? t("kitchen.startingShift") : t("kitchen.startShift") }}
       </button>
-      <p class="text-xs text-[var(--muted)]">
-        {{ t("kitchen.startShiftSoundNote") }}
-      </p>
     </div>
   </div>
 </template>
