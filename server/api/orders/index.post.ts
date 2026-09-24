@@ -36,17 +36,20 @@ export default defineEventHandler(async (event) => {
   }))
 
   const paymentMethod = String(body.paymentMethod || "").trim()
+  // Guest checkout is counter-only; ignore client attempts to select online pay.
+  if (paymentMethod && paymentMethod !== "cash_at_table") {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Only pay-at-counter checkout is available",
+    })
+  }
 
   const client = createServiceRoleClient()
   return createGuestOrder(client, {
     slug: String(body.slug || ""),
     sessionToken: String(body.sessionToken || ""),
     guestName: body.guestName,
-    paymentMethod: paymentMethod as
-      | "cash_at_table"
-      | "card"
-      | "google_pay"
-      | "apple_pay",
+    paymentMethod: "cash_at_table",
     items,
   })
 })

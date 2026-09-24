@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PaymentMethod, PublicOrder, PublicOrderItem } from "~/types"
+import type { PublicOrder, PublicOrderItem } from "~/types"
 import { localizedName } from "~/utils/localize"
 import {
   cartLineKey,
@@ -41,7 +41,6 @@ const missingTable = ref(false)
 const guestName = ref("")
 const submitting = ref(false)
 const submitError = ref("")
-const paymentMethod = ref<"cash_at_table" | "card">("cash_at_table")
 
 const tableNumber = computed(() => session.value?.tableNumber ?? null)
 
@@ -70,7 +69,6 @@ async function placeOrder() {
 
   submitting.value = true
   try {
-    const method: PaymentMethod = paymentMethod.value
     const result = await $fetch<{
       order: PublicOrder
       items: PublicOrderItem[]
@@ -80,7 +78,7 @@ async function placeOrder() {
         slug: slug.value,
         sessionToken: active.sessionToken,
         guestName: guestName.value.trim() || undefined,
-        paymentMethod: method,
+        paymentMethod: "cash_at_table",
         // Deliberately send a fake unit_price — server must ignore it.
         items: items.value.map((item) => ({
           menuItemId: item.menu_item_id,
@@ -107,17 +105,10 @@ async function placeOrder() {
       nextQuery.session = session.value.sessionToken
     }
 
-    if (method === "cash_at_table") {
-      await router.push({
-        path: `/m/${slug.value}/status/${result.order.id}`,
-        query: nextQuery,
-      })
-    } else {
-      await router.push({
-        path: `/m/${slug.value}/pay/${result.order.id}`,
-        query: nextQuery,
-      })
-    }
+    await router.push({
+      path: `/m/${slug.value}/status/${result.order.id}`,
+      query: nextQuery,
+    })
   } catch (error: unknown) {
     const message =
       error && typeof error === "object" && "data" in error
@@ -280,49 +271,14 @@ onMounted(() => {
           />
         </label>
 
-        <fieldset class="space-y-2">
-          <legend class="text-sm font-semibold text-[var(--espresso)]">
-            {{ t("guest.paymentMethod") }}
-          </legend>
-          <label
-            class="flex cursor-pointer gap-3 rounded-2xl border px-3 py-3"
-            :class="
-              paymentMethod === 'cash_at_table'
-                ? 'border-[var(--herb)] bg-[var(--herb)] text-[var(--ivory)]'
-                : 'border-[var(--espresso)]/15 bg-[var(--ivory)] text-[var(--espresso)]'
-            "
-          >
-            <input
-              v-model="paymentMethod"
-              class="mt-1"
-              type="radio"
-              value="cash_at_table"
-            />
-            <span>
-              <span class="block text-sm font-semibold">{{ t("guest.payCash") }}</span>
-              <span class="mt-0.5 block text-xs opacity-80">{{ t("guest.payCashHint") }}</span>
-            </span>
-          </label>
-          <label
-            class="flex cursor-pointer gap-3 rounded-2xl border px-3 py-3"
-            :class="
-              paymentMethod === 'card'
-                ? 'border-[var(--herb)] bg-[var(--herb)] text-[var(--ivory)]'
-                : 'border-[var(--espresso)]/15 bg-[var(--ivory)] text-[var(--espresso)]'
-            "
-          >
-            <input
-              v-model="paymentMethod"
-              class="mt-1"
-              type="radio"
-              value="card"
-            />
-            <span>
-              <span class="block text-sm font-semibold">{{ t("guest.payOnline") }}</span>
-              <span class="mt-0.5 block text-xs opacity-80">{{ t("guest.payOnlineHint") }}</span>
-            </span>
-          </label>
-        </fieldset>
+        <p class="rounded-2xl border border-[var(--espresso)]/10 bg-[var(--ivory)] px-3 py-3 text-sm text-[var(--muted)]">
+          <span class="block font-semibold text-[var(--espresso)]">
+            {{ t("guest.payCash") }}
+          </span>
+          <span class="mt-0.5 block text-xs leading-relaxed">
+            {{ t("guest.payCashHint") }}
+          </span>
+        </p>
 
         <div class="surface-card space-y-2 !p-4 text-sm">
           <div class="flex items-center justify-between gap-3 text-[var(--ink)]">

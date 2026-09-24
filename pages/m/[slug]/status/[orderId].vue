@@ -52,20 +52,6 @@ const menuPath = computed(() => {
   }
 })
 
-const payPath = computed(() => {
-  const query: Record<string, string> = {}
-  if (accessToken.value) {
-    query.token = accessToken.value
-  }
-  if (menuPath.value.query.session) {
-    query.session = menuPath.value.query.session
-  }
-  return {
-    path: `/m/${slug.value}/pay/${orderId.value}`,
-    query,
-  }
-})
-
 const kitchenSteps: Array<{
   status: OrderStatus
   labelKey: "guest.statusReceived" | "guest.statusPreparing" | "guest.statusReady"
@@ -105,13 +91,7 @@ const kitchenHeadline = computed(() => {
 
 const isCash = computed(() => order.value?.payment_method === "cash_at_table")
 const isPaid = computed(() => order.value?.payment_status === "paid")
-const needsOnlinePayment = computed(
-  () =>
-    Boolean(order.value) &&
-    order.value!.payment_status !== "paid" &&
-    order.value!.payment_method !== "cash_at_table",
-)
-/** Paid online or cash-at-table bills get a digital receipt. */
+/** Counter and paid bills get a digital receipt. */
 const showReceipt = computed(() => isPaid.value || isCash.value)
 
 const statusEyebrow = computed(() => {
@@ -139,9 +119,6 @@ const statusHint = computed(() => {
   }
   if (isCash.value) {
     return t("guest.cashKitchenHint")
-  }
-  if (needsOnlinePayment.value) {
-    return t("guest.onlinePendingHint")
   }
   return t("guest.statusReceivedHint")
 })
@@ -308,13 +285,6 @@ onBeforeUnmount(() => {
         <p v-if="order.guest_name" class="text-sm text-[var(--muted)]">
           {{ order.guest_name }}
         </p>
-        <NuxtLink
-          v-if="needsOnlinePayment"
-          :to="payPath"
-          class="btn-primary mt-3"
-        >
-          {{ t("guest.payNow") }}
-        </NuxtLink>
       </div>
 
       <ol class="surface-card space-y-3 !p-4">

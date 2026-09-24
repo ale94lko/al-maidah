@@ -51,11 +51,16 @@ test("cash checkout skips Stripe and keeps payment pending", () => {
   assert.match(orders, /cash_at_table/)
   assert.match(orders, /payment_status:\s*"pending"/)
 
+  const api = read("server/api/orders/index.post.ts")
+  assert.match(api, /cash_at_table/)
+  assert.match(api, /Only pay-at-counter checkout is available/)
+
   const cart = read("pages/m/[slug]/cart.vue")
   assert.match(cart, /cash_at_table/)
-  assert.match(cart, /paymentMethod/)
-  assert.match(cart, /\/pay\//)
   assert.match(cart, /\/status\//)
+  assert.doesNotMatch(cart, /type="radio"/)
+  assert.doesNotMatch(cart, /payOnline/)
+  assert.doesNotMatch(cart, /\/pay\//)
 })
 
 test("guest Stripe checkout uses publishable key and Express Checkout", () => {
@@ -69,14 +74,11 @@ test("guest Stripe checkout uses publishable key and Express Checkout", () => {
   assert.doesNotMatch(component, /STRIPE_SECRET|stripeSecretKey/)
 })
 
-test("pay page shows Stripe unavailable errors only once", () => {
-  const component = read("components/GuestStripeCheckout.vue")
+test("pay page redirects to status because online checkout is disabled", () => {
   const page = read("pages/m/[slug]/pay/[orderId].vue")
-  assert.match(component, /errorMessage/)
-  assert.match(component, /guest\.stripeUnavailable/)
-  assert.doesNotMatch(component, /emit\(["']error["']/)
-  assert.doesNotMatch(page, /@error/)
-  assert.match(page, /@cancelled/)
+  assert.match(page, /router\.replace/)
+  assert.match(page, /\/status\//)
+  assert.doesNotMatch(page, /GuestStripeCheckout/)
 })
 
 test("Arabic price copy uses د.إ", () => {

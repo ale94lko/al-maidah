@@ -81,7 +81,8 @@ export const messages = {
       orderPlaced: "Order placed",
       orderPending: "Payment pending",
       orderPaid: "Paid",
-      orderStatusHint: "Your order was sent to the kitchen. Pay at the counter or continue to online payment later.",
+      orderStatusHint:
+        "Your order was sent to the kitchen. Pay at the counter when ready.",
       orderPaidHint: "Payment confirmed. The kitchen can prepare your order.",
       cashKitchenHint:
         "Pay at the counter — the kitchen has your order. Pay there in cash or by card terminal.",
@@ -128,7 +129,7 @@ export const messages = {
       signedInAs: "Signed in as",
       waitingTickets: "Waiting for tickets",
       waitingHint: "New tickets appear here as soon as they are paid or placed for counter payment.",
-      boardHint: "Counter and paid online orders. Unpaid card checkouts stay hidden.",
+      boardHint: "Counter orders appear here. Online card checkouts are not used.",
       restaurant: "Restaurant",
       noRestaurant: "No restaurant linked",
       noRestaurantHint: "Sign up as an owner to attach a venue to this account.",
@@ -468,7 +469,7 @@ export const messages = {
       orderPending: "الدفع معلّق",
       orderPaid: "مدفوع",
       orderStatusHint:
-        "أُرسل طلبك إلى المطبخ. ادفع في الصندوق أو تابع الدفع الإلكتروني لاحقًا.",
+        "أُرسل طلبك إلى المطبخ. ادفع في الصندوق عند الاستلام.",
       orderPaidHint: "تم تأكيد الدفع. يمكن للمطبخ تحضير طلبك.",
       cashKitchenHint:
         "الدفع في الصندوق — المطبخ لديه طلبك. ادفع هناك نقدًا أو بجهاز البطاقة.",
@@ -515,7 +516,7 @@ export const messages = {
       signedInAs: "مسجل الدخول باسم",
       waitingTickets: "بانتظار الطلبات",
       waitingHint: "تظهر الطلبات هنا فور الدفع أو عند اختيار الدفع في الصندوق.",
-      boardHint: "طلبات الصندوق والمدفوعة إلكترونيًا. الدفع بالبطاقة غير المكتمل يبقى مخفيًا.",
+      boardHint: "تظهر طلبات الصندوق هنا. لا يُستخدم الدفع بالبطاقة عبر الإنترنت.",
       restaurant: "المطعم",
       noRestaurant: "لا يوجد مطعم مرتبط",
       noRestaurantHint: "سجّل كمالك لربط مطعم بهذا الحساب.",

@@ -76,6 +76,6 @@ test("status and pay pages prefer restaurant_name for the guest header", () => {
   const status = read("pages/m/[slug]/status/[orderId].vue")
   const pay = read("pages/m/[slug]/pay/[orderId].vue")
   assert.match(status, /restaurant_name/)
-  assert.match(pay, /restaurant_name/)
+  assert.match(pay, /\/status\//)
   assert.match(read("server/utils/orders.ts"), /restaurant_name: restaurant\.name/)
 })
