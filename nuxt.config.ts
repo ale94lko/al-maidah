@@ -3,7 +3,9 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-07-15",
   typescript: {
     strict: true,
-    typeCheck: true,
+    // Avoid vite-plugin-checker during production builds (dominates Vercel build time).
+    // Static checking stays available via `npm run lint` / CI.
+    typeCheck: process.env.NODE_ENV !== "production",
   },
   modules: ["@nuxtjs/tailwindcss"],
   css: ["~/assets/css/main.css"],

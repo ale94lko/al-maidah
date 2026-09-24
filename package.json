@@ -6,7 +6,7 @@
   "license": "MIT",
   "type": "module",
   "engines": {
-    "node": ">=22"
+    "node": "22.x"
   },
   "scripts": {
     "dev": "nuxt dev",
@@ -16,6 +16,10 @@
     "test": "node --test test/*.test.mjs",
     "lint": "nuxt typecheck",
     "seed:superadmin": "node --env-file=.env scripts/seed-superadmin.mjs"
+  },
+  "allowScripts": {
+    "esbuild": true,
+    "fsevents": true
   },
   "dependencies": {
     "@stripe/stripe-js": "^9.17.0",
