@@ -3,7 +3,7 @@
   "short_name": "Kitchen",
   "description": "Live kitchen ticket board for Al-Maidah restaurants.",
   "start_url": "/kitchen",
-  "scope": "/",
+  "scope": "/kitchen",
   "display": "standalone",
   "orientation": "any",
   "background_color": "#09090b",

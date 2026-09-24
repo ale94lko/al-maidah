@@ -37,7 +37,17 @@ export function useKitchenPwa() {
       return
     }
     try {
-      await navigator.serviceWorker.register("/sw.js", { scope: "/" })
+      // Drop any previous root-scoped worker that could cache admin UI.
+      const existing = await navigator.serviceWorker.getRegistrations()
+      await Promise.all(
+        existing.map(async (registration) => {
+          const scopePath = new URL(registration.scope).pathname
+          if (scopePath === "/" || scopePath === "") {
+            await registration.unregister()
+          }
+        }),
+      )
+      await navigator.serviceWorker.register("/sw.js", { scope: "/kitchen/" })
     } catch {
       // Installability may still work without SW on some builds; ignore.
     }

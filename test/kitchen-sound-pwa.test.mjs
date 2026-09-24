@@ -36,6 +36,7 @@ test("kitchen PWA manifest starts at /kitchen standalone", () => {
   assert.ok(existsSync(resolve(root, "public/kitchen.webmanifest")))
   const manifest = JSON.parse(read("public/kitchen.webmanifest"))
   assert.equal(manifest.start_url, "/kitchen")
+  assert.equal(manifest.scope, "/kitchen")
   assert.equal(manifest.display, "standalone")
   assert.ok(
     Array.isArray(manifest.icons) && manifest.icons.length >= 2,
@@ -45,12 +46,19 @@ test("kitchen PWA manifest starts at /kitchen standalone", () => {
   assert.ok(existsSync(resolve(root, "public/icons/kitchen-512.png")))
   assert.ok(existsSync(resolve(root, "public/sw.js")))
   assert.match(read("public/sw.js"), /addEventListener\(["']fetch["']/)
+  assert.match(read("public/sw.js"), /\/admin/)
 
   const pwa = read("composables/useKitchenPwa.ts")
   assert.match(pwa, /kitchen\.webmanifest/)
   assert.match(pwa, /serviceWorker\.register/)
   assert.match(pwa, /\/sw\.js/)
+  assert.match(pwa, /scope:\s*["']\/kitchen\//)
 
+  assert.ok(existsSync(resolve(root, "plugins/clear-stale-sw.client.ts")))
+  assert.match(
+    read("plugins/clear-stale-sw.client.ts"),
+    /serviceWorker\.getRegistrations/,
+  )
   const page = read("pages/kitchen/index.vue")
   assert.match(page, /applyKitchenHead|useKitchenPwa/)
   assert.match(page, /registerServiceWorker/)
