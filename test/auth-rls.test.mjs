@@ -49,31 +49,58 @@ test("anon cannot select cost_price on menu_items", () => {
   }
 })
 
-test("auth signup API creates restaurant and ownership", () => {
+test("auth signup API is superadmin-only and creates restaurant ownership", () => {
   assert.ok(existsSync(resolve(root, "server/api/auth/signup.post.ts")))
   const signup = read("server/api/auth/signup.post.ts")
-  assert.match(signup, /auth\.admin\.createUser/)
-  assert.match(signup, /from\("restaurants"\)[\s\S]*\.insert/)
-  assert.match(signup, /from\("restaurant_owners"\)\.insert/)
+  assert.match(signup, /requireSuperAdmin/)
+  assert.match(signup, /createOwnerAccount/)
+  const helper = read("server/utils/owner-accounts.ts")
+  assert.match(helper, /auth\.admin\.createUser/)
+  assert.match(helper, /from\("restaurants"\)[\s\S]*\.insert/)
+  assert.match(helper, /from\("restaurant_owners"\)\.insert/)
 })
 
-test("auth middleware guards admin and kitchen routes", () => {
+test("auth middleware guards admin, kitchen, and superadmin routes", () => {
   assert.ok(existsSync(resolve(root, "middleware/auth.global.ts")))
   const middleware = read("middleware/auth.global.ts")
   assert.match(middleware, /\/admin/)
   assert.match(middleware, /\/kitchen/)
+  assert.match(middleware, /\/superadmin/)
   assert.match(middleware, /\/admin\/login/)
   assert.match(middleware, /navigateTo/)
+  assert.match(middleware, /isSuperAdminUser/)
 })
 
-test("admin and kitchen pages exist with login and signup", () => {
+test("admin and kitchen pages exist; public signup redirects to login", () => {
   for (const path of [
     "pages/admin/login.vue",
     "pages/admin/signup.vue",
     "pages/admin/index.vue",
     "pages/kitchen/index.vue",
+    "pages/superadmin/index.vue",
+    "pages/superadmin/users/index.vue",
+    "pages/superadmin/users/[id].vue",
   ]) {
     assert.ok(existsSync(resolve(root, path)), `missing ${path}`)
+  }
+  const login = read("pages/admin/login.vue")
+  assert.doesNotMatch(login, /\/admin\/signup/)
+  const signup = read("pages/admin/signup.vue")
+  assert.match(signup, /navigateTo\("\/admin\/login"/)
+})
+
+test("superadmin APIs require elevated access", () => {
+  for (const path of [
+    "server/api/superadmin/stats.get.ts",
+    "server/api/superadmin/users/index.get.ts",
+    "server/api/superadmin/users/index.post.ts",
+    "server/api/superadmin/users/[userId].get.ts",
+    "server/api/superadmin/users/[userId].patch.ts",
+    "server/api/superadmin/users/[userId].delete.ts",
+    "server/api/superadmin/users/[userId]/password.post.ts",
+  ]) {
+    assert.ok(existsSync(resolve(root, path)), `missing ${path}`)
+    assert.match(read(path), /requireSuperAdmin/)
   }
 })
 

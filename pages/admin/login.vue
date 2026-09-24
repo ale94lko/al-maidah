@@ -15,12 +15,27 @@ async function onSubmit() {
   errorMessage.value = ""
   pending.value = true
   try {
-    await signIn(email.value.trim(), password.value)
-    const redirect =
-      typeof route.query.redirect === "string"
-        ? route.query.redirect
-        : "/admin"
-    await navigateTo(redirect)
+    const data = await signIn(email.value.trim(), password.value)
+    const defaultPath = postLoginPath(data.user)
+    const requested =
+      typeof route.query.redirect === "string" ? route.query.redirect : null
+
+    // Superadmins always go to the platform panel; owners may honor ?redirect=
+    // only when it targets their own surface (not /superadmin).
+    let target = defaultPath
+    if (requested && isSuperAdminUser(data.user)) {
+      target =
+        requested === "/superadmin" || requested.startsWith("/superadmin/")
+          ? requested
+          : "/superadmin"
+    } else if (requested && !isSuperAdminUser(data.user)) {
+      target =
+        requested.startsWith("/superadmin")
+          ? "/admin"
+          : requested
+    }
+
+    await navigateTo(target)
   } catch (error) {
     errorMessage.value =
       error instanceof Error ? error.message : t("common.signIn")
@@ -93,12 +108,6 @@ async function onSubmit() {
             </button>
           </form>
 
-          <p class="mt-6 text-sm text-[var(--muted)]">
-            {{ t("admin.newRestaurant") }}
-            <NuxtLink to="/admin/signup" class="font-extrabold text-[var(--herb-deep)] underline">
-              {{ t("admin.createOwnerAccount") }}
-            </NuxtLink>
-          </p>
         </div>
       </div>
     </div>

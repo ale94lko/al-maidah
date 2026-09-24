@@ -1,6 +1,16 @@
 import type { H3Event } from "h3"
 import type { SupabaseClient, User } from "@supabase/supabase-js"
 
+export const SUPERADMIN_ROLE = "superadmin"
+
+export function isSuperAdmin(user: User | null | undefined): boolean {
+  if (!user) {
+    return false
+  }
+  const role = user.app_metadata?.role
+  return role === SUPERADMIN_ROLE
+}
+
 export async function requireUser(event: H3Event): Promise<User> {
   const authHeader = getHeader(event, "authorization")
   const token = authHeader?.replace(/^Bearer\s+/i, "").trim()
@@ -17,6 +27,17 @@ export async function requireUser(event: H3Event): Promise<User> {
   }
 
   return data.user
+}
+
+export async function requireSuperAdmin(event: H3Event): Promise<User> {
+  const user = await requireUser(event)
+  if (!isSuperAdmin(user)) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: "Superadmin access required",
+    })
+  }
+  return user
 }
 
 export async function assertRestaurantOwner(
