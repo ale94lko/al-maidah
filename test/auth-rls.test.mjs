@@ -104,6 +104,25 @@ test("superadmin APIs require elevated access", () => {
   }
 })
 
+test("platform analytics tracks visits/errors and shows admin charts", () => {
+  assert.ok(
+    existsSync(resolve(root, "supabase/migrations/20260924220000_platform_events.sql")),
+  )
+  assert.ok(existsSync(resolve(root, "server/api/platform/events.post.ts")))
+  assert.ok(existsSync(resolve(root, "plugins/platform-telemetry.client.ts")))
+  const stats = read("server/utils/superadmin-stats.ts")
+  assert.match(stats, /page_views_30d/)
+  assert.match(stats, /series_errors/)
+  assert.doesNotMatch(stats, /paid_order_count|revenue_last_30_days/)
+  const page = read("pages/superadmin/index.vue")
+  assert.match(page, /StatsChart/)
+  assert.match(page, /series_page_views/)
+  assert.doesNotMatch(page, /statRevenue|statPaidOrders/)
+  const eventsApi = read("server/api/platform/events.post.ts")
+  assert.match(eventsApi, /insertPlatformEvent/)
+  assert.doesNotMatch(eventsApi, /requireSuperAdmin/)
+})
+
 test("admin menu API requires ownership before returning cost_price", () => {
   const api = read("server/api/admin/menu/[restaurantId].get.ts")
   assert.match(api, /assertRestaurantOwner/)
