@@ -15,6 +15,9 @@ const isAuthPage = computed(
   () => route.path === "/admin/login" || route.path === "/admin/signup",
 )
 
+/** Hide owner chrome until we know this session is not a platform superadmin. */
+const ownerShellReady = ref(isAuthPage.value)
+
 const pageTitle = computed(() => {
   const hit = links.value.find((link) => link.match.test(route.path))
   return hit?.label ?? t("admin.ownerPanel")
@@ -28,11 +31,27 @@ async function onSignOut() {
   await signOut()
   await navigateTo("/admin/login")
 }
+
+onMounted(async () => {
+  if (isAuthPage.value) {
+    ownerShellReady.value = true
+    return
+  }
+  if (await redirectSuperadminAwayFromOwner()) {
+    return
+  }
+  ownerShellReady.value = true
+})
 </script>
 
 <template>
   <div class="admin-shell min-h-dvh text-[var(--navy)]">
-    <template v-if="!isAuthPage">
+    <template v-if="!isAuthPage && !ownerShellReady">
+      <div class="flex min-h-dvh items-center justify-center px-4">
+        <AppLoadingState :label="t('common.loading')" />
+      </div>
+    </template>
+    <template v-else-if="!isAuthPage">
       <header class="no-print border-b border-[var(--navy)]/8 bg-white/70 px-4 py-3 backdrop-blur sm:px-6">
         <div class="mx-auto flex max-w-[90rem] flex-wrap items-center justify-between gap-3">
           <div class="flex min-w-0 items-center gap-4">
@@ -101,12 +120,12 @@ async function onSignOut() {
             Al-Maidah
           </NuxtLink>
         </header>
-        <slot />
+        <slot v-if="isAuthPage || ownerShellReady" />
       </div>
     </div>
 
     <nav
-      v-if="!isAuthPage"
+      v-if="!isAuthPage && ownerShellReady"
       class="no-print fixed inset-x-0 bottom-0 z-30 border-t border-[var(--navy)]/8 bg-white/95 backdrop-blur-xl md:hidden"
       style="padding-bottom: env(safe-area-inset-bottom)"
       :aria-label="t('admin.ownerPanel')"
