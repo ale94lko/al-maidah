@@ -276,6 +276,56 @@ body:has(.kitchen-shell) {
     @apply p-5 sm:p-6;
   }
 
+  .tables-card {
+    @apply rounded-2xl border bg-white p-5 sm:p-6;
+    border-color: color-mix(in srgb, var(--navy) 7%, transparent);
+    box-shadow: 0 10px 28px -18px rgba(28, 52, 64, 0.28);
+  }
+
+  .table-icon-btn {
+    @apply inline-flex h-10 w-10 items-center justify-center rounded-xl border transition disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .table-icon-btn--seat {
+    border-color: color-mix(in srgb, #2f9e44 18%, transparent);
+    background: color-mix(in srgb, #2f9e44 12%, white);
+    color: #2f9e44;
+  }
+
+  .table-icon-btn--seat:hover:not(:disabled) {
+    background: color-mix(in srgb, #2f9e44 20%, white);
+  }
+
+  .table-icon-btn--info {
+    border-color: color-mix(in srgb, var(--info) 16%, transparent);
+    background: color-mix(in srgb, var(--info) 10%, white);
+    color: var(--info-deep);
+  }
+
+  .table-icon-btn--info:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--info) 18%, white);
+  }
+
+  .table-icon-btn--neutral {
+    border-color: color-mix(in srgb, var(--navy) 10%, transparent);
+    background: #fff;
+    color: var(--navy);
+  }
+
+  .table-icon-btn--neutral:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--paper) 70%, white);
+  }
+
+  .table-icon-btn--danger {
+    border-color: color-mix(in srgb, var(--chili) 16%, transparent);
+    background: color-mix(in srgb, var(--chili) 10%, white);
+    color: var(--chili-deep);
+  }
+
+  .table-icon-btn--danger:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--chili) 18%, white);
+  }
+
   .admin-split {
     @apply grid gap-5 lg:grid-cols-[minmax(16rem,0.9fr)_minmax(0,1.4fr)];
   }

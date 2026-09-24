@@ -258,69 +258,67 @@ async function copyMenuUrl(tableId: string) {
         :description="t('admin.noRestaurantsHint')"
       />
 
-      <div v-else class="mt-2 space-y-5">
-        <section class="admin-panel no-print">
-          <div class="admin-panel-head">
-            <h2 class="font-display text-base font-bold text-[var(--ink)]">
-              {{ t("admin.addTable") }}
-            </h2>
-          </div>
-          <div class="admin-panel-body">
-            <form
-              class="flex flex-wrap items-end gap-3"
-              @submit.prevent="onCreate"
-            >
-              <label class="flex w-28 flex-col gap-1 text-xs font-bold text-[var(--muted)]">
-                {{ t("admin.tableNumber") }}
-                <input
-                  v-model.number="newNumber"
-                  required
-                  type="number"
-                  min="1"
-                  step="1"
-                  class="field-input"
-                >
-              </label>
-              <label class="flex min-w-[10rem] flex-1 flex-col gap-1 text-xs font-bold text-[var(--muted)]">
-                {{ t("admin.tableLabelOptional") }}
-                <input
-                  v-model="newLabel"
-                  class="field-input"
-                >
-              </label>
-              <button
-                type="submit"
-                class="btn-primary disabled:opacity-60"
-                :disabled="saving"
+      <div v-else class="mt-2 space-y-4">
+        <section class="tables-card no-print">
+          <h2 class="mb-4 text-base font-bold text-[var(--navy)]">
+            {{ t("admin.addTable") }}
+          </h2>
+          <form
+            class="flex flex-wrap items-end gap-3"
+            @submit.prevent="onCreate"
+          >
+            <label class="flex w-[7.5rem] flex-col gap-1.5 text-xs font-semibold text-[var(--muted)]">
+              {{ t("admin.tableNumber") }}
+              <input
+                v-model.number="newNumber"
+                required
+                type="number"
+                min="1"
+                step="1"
+                class="field-input !rounded-xl"
               >
-                {{ t("admin.addTable") }}
-              </button>
-            </form>
-          </div>
+            </label>
+            <label class="flex min-w-[12rem] flex-1 flex-col gap-1.5 text-xs font-semibold text-[var(--muted)]">
+              {{ t("admin.tableLabelOptional") }}
+              <input
+                v-model="newLabel"
+                class="field-input !rounded-xl"
+              >
+            </label>
+            <button
+              type="submit"
+              class="btn-primary !rounded-xl disabled:opacity-60"
+              :disabled="saving"
+            >
+              {{ t("admin.addTable") }}
+            </button>
+          </form>
         </section>
 
-        <section class="admin-panel no-print !p-0">
-          <ul v-if="tables.length" class="divide-y divide-[var(--espresso)]/10">
+        <section class="no-print space-y-3">
+          <ul v-if="tables.length" class="space-y-3">
             <li
               v-for="table in tables"
               :key="table.id"
-              class="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
+              class="tables-card flex flex-wrap items-center justify-between gap-4"
             >
-              <div class="min-w-0">
-                <p class="font-semibold text-[var(--espresso)]">
-                  {{ t("admin.tableHeading", { n: table.table_number }) }}
+              <div class="min-w-0 flex-1 space-y-2">
+                <div class="flex flex-wrap items-center gap-2.5">
+                  <p class="text-base font-bold text-[var(--navy)]">
+                    {{ t("admin.tableHeading", { n: table.table_number }) }}
+                    <span
+                      v-if="table.label"
+                      class="ms-1.5 text-sm font-normal text-[var(--muted)]"
+                    >
+                      · {{ table.label }}
+                    </span>
+                  </p>
                   <span
-                    v-if="table.label"
-                    class="ms-2 text-sm font-normal text-[var(--muted)]"
-                  >
-                    {{ table.label }}
-                  </span>
-                  <span
-                    class="ms-2 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide"
+                    class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-[0.12em] text-white"
                     :class="
                       table.open_session
-                        ? 'bg-[color-mix(in_srgb,var(--herb)_18%,white)] text-[var(--herb-deep)]'
-                        : 'bg-[var(--paper-deep)] text-[var(--muted)]'
+                        ? 'bg-[#2f9e44]'
+                        : 'bg-[#6b7280]'
                     "
                   >
                     {{
@@ -329,18 +327,20 @@ async function copyMenuUrl(tableId: string) {
                         : t("admin.tableSessionClosed")
                     }}
                   </span>
-                </p>
+                </div>
+
                 <div
                   v-if="table.open_session"
-                  class="mt-1 flex min-w-0 items-center gap-2"
+                  class="flex min-w-0 max-w-xl items-center gap-2"
                 >
                   <p class="truncate font-mono text-xs text-[var(--muted)]">
                     {{ menuUrlForTable(table.id) }}
                   </p>
                   <button
                     type="button"
-                    class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[var(--navy)]/10 bg-white text-[var(--navy)]"
+                    class="table-icon-btn table-icon-btn--neutral"
                     :aria-label="copiedId === table.id ? t('admin.copiedUrl') : t('admin.copyUrl')"
+                    :title="copiedId === table.id ? t('admin.copiedUrl') : t('admin.copyUrl')"
                     @click="copyMenuUrl(table.id)"
                   >
                     <svg
@@ -370,22 +370,23 @@ async function copyMenuUrl(tableId: string) {
                 </div>
                 <p
                   v-else
-                  class="mt-1 text-xs text-[var(--muted)]"
+                  class="text-sm text-[var(--muted)]"
                 >
                   {{ t("admin.tableSessionClosedHint") }}
                 </p>
               </div>
-              <div class="flex flex-wrap items-center gap-2">
+
+              <div class="flex shrink-0 flex-wrap items-center gap-2">
                 <template v-if="editingId === table.id">
                   <input
                     v-model.number="editNumber"
                     type="number"
                     min="1"
-                    class="w-20 rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-sm"
+                    class="field-input !w-20 !rounded-xl !px-2 !py-1.5 text-sm"
                   >
                   <button
                     type="button"
-                    class="btn-primary !px-2 !py-1 !text-xs"
+                    class="btn-primary !rounded-xl !px-3 !py-1.5 !text-xs"
                     :disabled="saving"
                     @click="confirmRenumber"
                   >
@@ -393,7 +394,7 @@ async function copyMenuUrl(tableId: string) {
                   </button>
                   <button
                     type="button"
-                    class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
+                    class="rounded-xl border border-[var(--navy)]/10 bg-white px-3 py-1.5 text-xs font-bold text-[var(--navy)]"
                     @click="editingId = null"
                   >
                     {{ t("admin.cancel") }}
@@ -401,8 +402,32 @@ async function copyMenuUrl(tableId: string) {
                 </template>
                 <template v-else>
                   <button
+                    v-if="!table.open_session"
                     type="button"
-                    class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--espresso)]/15 bg-white text-[var(--navy)] transition hover:bg-[var(--paper)] disabled:opacity-50"
+                    class="table-icon-btn table-icon-btn--seat"
+                    :disabled="saving"
+                    :aria-label="t('admin.seatTable')"
+                    :title="t('admin.seatTable')"
+                    @click="onSeat(table)"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      class="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M5 11v8M19 11v8M5 15h14M7 11V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v4"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    type="button"
+                    class="table-icon-btn table-icon-btn--neutral"
                     :disabled="saving"
                     :aria-label="t('admin.renumber')"
                     :title="t('admin.renumber')"
@@ -424,13 +449,36 @@ async function copyMenuUrl(tableId: string) {
                     </svg>
                   </button>
                   <button
-                    v-if="!table.open_session"
                     type="button"
-                    class="btn-primary inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !p-0 disabled:opacity-50"
+                    class="table-icon-btn table-icon-btn--info"
+                    :class="{ 'opacity-40': !table.open_session }"
+                    :disabled="!table.open_session"
+                    :aria-label="t('admin.viewQr')"
+                    :title="t('admin.viewQr')"
+                    @click="openQr(table)"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      class="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      aria-hidden="true"
+                    >
+                      <rect x="3" y="3" width="7" height="7" rx="1" />
+                      <rect x="14" y="3" width="7" height="7" rx="1" />
+                      <rect x="3" y="14" width="7" height="7" rx="1" />
+                      <path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20h.01" stroke-linecap="round" />
+                    </svg>
+                  </button>
+                  <button
+                    v-if="table.open_session"
+                    type="button"
+                    class="table-icon-btn table-icon-btn--info"
                     :disabled="saving"
-                    :aria-label="t('admin.seatTable')"
-                    :title="t('admin.seatTable')"
-                    @click="onSeat(table)"
+                    :aria-label="t('admin.closeTableSession')"
+                    :title="t('admin.closeTableSession')"
+                    @click="onCloseSession(table)"
                   >
                     <svg
                       viewBox="0 0 24 24"
@@ -441,61 +489,15 @@ async function copyMenuUrl(tableId: string) {
                       aria-hidden="true"
                     >
                       <path
-                        d="M5 11v8M19 11v8M5 15h14M7 11V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v4"
+                        d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"
                         stroke-linecap="round"
                         stroke-linejoin="round"
                       />
                     </svg>
                   </button>
-                  <template v-else>
-                    <button
-                      type="button"
-                      class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--espresso)]/15 bg-white text-[var(--navy)] transition hover:bg-[var(--paper)]"
-                      :aria-label="t('admin.viewQr')"
-                      :title="t('admin.viewQr')"
-                      @click="openQr(table)"
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        class="h-4 w-4"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        aria-hidden="true"
-                      >
-                        <rect x="3" y="3" width="7" height="7" rx="1" />
-                        <rect x="14" y="3" width="7" height="7" rx="1" />
-                        <rect x="3" y="14" width="7" height="7" rx="1" />
-                        <path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20h.01" stroke-linecap="round" />
-                      </svg>
-                    </button>
-                    <button
-                      type="button"
-                      class="btn-warning inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !p-0 disabled:opacity-50"
-                      :disabled="saving"
-                      :aria-label="t('admin.closeTableSession')"
-                      :title="t('admin.closeTableSession')"
-                      @click="onCloseSession(table)"
-                    >
-                      <svg
-                        viewBox="0 0 24 24"
-                        class="h-4 w-4"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        aria-hidden="true"
-                      >
-                        <path
-                          d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        />
-                      </svg>
-                    </button>
-                  </template>
                   <button
                     type="button"
-                    class="btn-danger inline-flex !h-9 !w-9 !items-center !justify-center !rounded-xl !p-0 disabled:opacity-50"
+                    class="table-icon-btn table-icon-btn--danger"
                     :disabled="saving"
                     :aria-label="t('admin.removeTable')"
                     :title="t('admin.removeTable')"
@@ -523,7 +525,7 @@ async function copyMenuUrl(tableId: string) {
           </ul>
           <AppEmptyState
             v-else
-            class="border-0"
+            class="tables-card !shadow-none"
             :title="t('admin.tablesEmpty')"
             :description="t('admin.tablesEmptyHint')"
           />
