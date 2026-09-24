@@ -21,7 +21,7 @@ const orderId = computed(() => String(route.params.orderId || ""))
 
 onMounted(async () => {
   loadFromStorage()
-  const saved = loadActiveOrder(slug.value)
+  const saved = loadActiveOrder(slug.value, orderId.value)
   const active = session.value
   if (active) {
     setShell({

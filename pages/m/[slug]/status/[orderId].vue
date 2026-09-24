@@ -18,7 +18,7 @@ const POLL_MS = 2500
 const route = useRoute()
 const { setShell } = useClientShell()
 const { loadFromStorage, session } = useGuestSession()
-const { loadActiveOrder, saveActiveOrder } = useActiveOrder()
+const { loadActiveOrder, loadActiveOrders, saveActiveOrder, orders } = useActiveOrder()
 const { t, locale } = useAppI18n()
 
 const slug = computed(() => String(route.params.slug || ""))
@@ -36,7 +36,7 @@ const accessToken = computed(() => {
   if (typeof fromQuery === "string" && fromQuery) {
     return fromQuery
   }
-  return loadActiveOrder(slug.value)?.accessToken || ""
+  return loadActiveOrder(slug.value, orderId.value)?.accessToken || ""
 })
 
 const menuPath = computed(() => {
@@ -51,6 +51,21 @@ const menuPath = computed(() => {
     query,
   }
 })
+
+const ordersPath = computed(() => {
+  const visit =
+    parseSessionToken(route.query.session) ?? session.value?.sessionToken ?? null
+  const query: Record<string, string> = {}
+  if (visit) {
+    query.session = visit
+  }
+  return {
+    path: `/m/${slug.value}/orders`,
+    query,
+  }
+})
+
+const hasMultipleOrders = computed(() => orders.value.length > 1)
 
 const kitchenSteps: Array<{
   status: OrderStatus
@@ -238,7 +253,7 @@ function stopLiveUpdates() {
 
 onMounted(async () => {
   loadFromStorage()
-  loadActiveOrder(slug.value)
+  loadActiveOrders(slug.value)
   const active = session.value
   if (active) {
     setShell({
@@ -374,6 +389,14 @@ onBeforeUnmount(() => {
         class="btn-secondary"
       >
         {{ t("guest.orderSomethingElse") }}
+      </NuxtLink>
+
+      <NuxtLink
+        v-if="hasMultipleOrders"
+        :to="ordersPath"
+        class="btn-secondary"
+      >
+        {{ t("guest.viewOrders", { n: orders.length }) }}
       </NuxtLink>
     </div>
   </div>

@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { parseSessionToken } from "~/utils/session-token"
 
+const props = withDefaults(
+  defineProps<{
+    /** When true, the parent layout owns fixed positioning. */
+    stacked?: boolean
+  }>(),
+  { stacked: false },
+)
+
 const route = useRoute()
 const { itemCount, subtotal, syncFromStorage } = useCart()
 const { session, loadFromStorage } = useGuestSession()
@@ -32,6 +40,7 @@ const hideOnRoute = computed(() => {
   const path = route.path
   return (
     /\/m\/[^/]+\/cart\/?$/.test(path) ||
+    /\/m\/[^/]+\/orders\/?$/.test(path) ||
     /\/m\/[^/]+\/(?:pay|status)\//.test(path)
   )
 })
@@ -44,12 +53,19 @@ onMounted(() => {
   loadFromStorage()
   syncFromStorage()
 })
+
+defineExpose({ visible })
 </script>
 
 <template>
   <div
     v-if="visible"
-    class="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+    class="pointer-events-none w-full"
+    :class="
+      props.stacked
+        ? ''
+        : 'fixed inset-x-0 bottom-0 z-40 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]'
+    "
   >
     <NuxtLink
       :to="cartTo"

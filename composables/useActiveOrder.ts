@@ -1,6 +1,6 @@
 /**
- * Persists the guest's active order so status can be reopened after closing the browser.
- * Uses localStorage (survives tab close); scoped per restaurant slug.
+ * Persists guest order tracking links so status can be reopened after
+ * "Order something else" or closing the tab. Scoped per restaurant slug.
  */
 
 export const ACTIVE_ORDER_STORAGE_PREFIX = "al-maidah-active-order:"
@@ -10,6 +10,12 @@ export interface ActiveGuestOrder {
   orderId: string
   accessToken: string
   tableNumber: number | null
+  /** ISO timestamp used to keep newest orders first. */
+  placedAt?: string
+}
+
+type StoredOrders = {
+  orders: ActiveGuestOrder[]
 }
 
 function storageKey(slug: string) {
@@ -31,60 +37,116 @@ function isActiveGuestOrder(value: unknown): value is ActiveGuestOrder {
     (row.tableNumber === null ||
       (typeof row.tableNumber === "number" &&
         Number.isInteger(row.tableNumber) &&
-        row.tableNumber > 0))
+        row.tableNumber > 0)) &&
+    (row.placedAt === undefined || typeof row.placedAt === "string")
   )
+}
+
+function normalizeList(value: unknown, slug: string): ActiveGuestOrder[] {
+  if (!value) {
+    return []
+  }
+  // Legacy single-order shape.
+  if (isActiveGuestOrder(value) && value.slug === slug) {
+    return [value]
+  }
+  if (typeof value === "object" && Array.isArray((value as StoredOrders).orders)) {
+    return (value as StoredOrders).orders.filter(
+      (row) => isActiveGuestOrder(row) && row.slug === slug,
+    )
+  }
+  return []
+}
+
+function sortNewestFirst(orders: ActiveGuestOrder[]): ActiveGuestOrder[] {
+  return [...orders].sort((a, b) => {
+    const aTime = a.placedAt ? Date.parse(a.placedAt) : 0
+    const bTime = b.placedAt ? Date.parse(b.placedAt) : 0
+    return bTime - aTime
+  })
 }
 
 export function useActiveOrder() {
   const active = useState<ActiveGuestOrder | null>("guest-active-order", () => null)
+  const orders = useState<ActiveGuestOrder[]>("guest-active-orders", () => [])
 
-  function readStorage(slug: string): ActiveGuestOrder | null {
+  function writeStorage(slug: string, next: ActiveGuestOrder[]) {
     if (!import.meta.client || !slug) {
-      return null
+      return
+    }
+    const sorted = sortNewestFirst(next)
+    if (!sorted.length) {
+      window.localStorage.removeItem(storageKey(slug))
+      return
+    }
+    const payload: StoredOrders = { orders: sorted }
+    window.localStorage.setItem(storageKey(slug), JSON.stringify(payload))
+  }
+
+  function readStorage(slug: string): ActiveGuestOrder[] {
+    if (!import.meta.client || !slug) {
+      return []
     }
     try {
       const raw = window.localStorage.getItem(storageKey(slug))
       if (!raw) {
-        return null
+        return []
       }
-      const parsed: unknown = JSON.parse(raw)
-      if (!isActiveGuestOrder(parsed) || parsed.slug !== slug) {
-        return null
-      }
-      return parsed
+      return sortNewestFirst(normalizeList(JSON.parse(raw), slug))
     } catch {
-      return null
+      return []
     }
+  }
+
+  function syncState(slug: string, next: ActiveGuestOrder[]) {
+    const sorted = sortNewestFirst(next)
+    orders.value = sorted
+    active.value = sorted[0] ?? null
+    writeStorage(slug, sorted)
   }
 
   function saveActiveOrder(next: ActiveGuestOrder) {
-    active.value = next
-    if (!import.meta.client) {
-      return
+    const existing = readStorage(next.slug)
+    const previous = existing.find((row) => row.orderId === next.orderId)
+    const withTime: ActiveGuestOrder = {
+      ...next,
+      placedAt:
+        next.placedAt || previous?.placedAt || new Date().toISOString(),
     }
-    window.localStorage.setItem(storageKey(next.slug), JSON.stringify(next))
+    const rest = existing.filter((row) => row.orderId !== withTime.orderId)
+    syncState(withTime.slug, [withTime, ...rest])
   }
 
-  function loadActiveOrder(slug: string) {
+  function loadActiveOrders(slug: string) {
     const stored = readStorage(slug)
-    active.value = stored
+    orders.value = stored
+    active.value = stored[0] ?? null
     return stored
   }
 
-  function clearActiveOrder(slug: string) {
-    if (active.value?.slug === slug) {
-      active.value = null
+  function loadActiveOrder(slug: string, orderId?: string) {
+    const stored = loadActiveOrders(slug)
+    if (orderId) {
+      return stored.find((row) => row.orderId === orderId) ?? null
     }
-    if (!import.meta.client) {
+    return stored[0] ?? null
+  }
+
+  function clearActiveOrder(slug: string, orderId?: string) {
+    if (!orderId) {
+      syncState(slug, [])
       return
     }
-    window.localStorage.removeItem(storageKey(slug))
+    const remaining = readStorage(slug).filter((row) => row.orderId !== orderId)
+    syncState(slug, remaining)
   }
 
   return {
     active,
+    orders,
     saveActiveOrder,
     loadActiveOrder,
+    loadActiveOrders,
     clearActiveOrder,
   }
 }

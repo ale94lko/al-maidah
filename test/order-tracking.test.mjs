@@ -44,7 +44,12 @@ test("active order is persisted on the device", () => {
   assert.match(source, /localStorage/)
   assert.match(source, /ACTIVE_ORDER_STORAGE_PREFIX/)
   assert.match(source, /accessToken/)
+  assert.match(source, /loadActiveOrders/)
+  assert.match(source, /orders:\s*ActiveGuestOrder/)
   assert.match(read("pages/m/[slug]/cart.vue"), /saveActiveOrder/)
+  assert.ok(existsSync(resolve(root, "pages/m/[slug]/orders.vue")))
+  assert.ok(existsSync(resolve(root, "components/GuestOrdersBar.vue")))
+  assert.match(read("layouts/client.vue"), /GuestOrdersBar/)
 })
 
 test("status page live-updates kitchen statuses and keeps the table", () => {

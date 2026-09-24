@@ -4,6 +4,9 @@ const { venueName, tableNumber } = useClientShell()
 const { t } = useAppI18n()
 const { itemCount, syncFromStorage } = useCart()
 const { loadFromStorage } = useGuestSession()
+const { orders, loadActiveOrders } = useActiveOrder()
+
+const slug = computed(() => String(route.params.slug || ""))
 
 const tableLabel = computed(() => {
   if (tableNumber.value == null) {
@@ -12,23 +15,48 @@ const tableLabel = computed(() => {
   return t("guest.table", { n: tableNumber.value })
 })
 
-const cartBarHidden = computed(() => {
+const barsHidden = computed(() => {
   const path = route.path
   return (
     /\/m\/[^/]+\/cart\/?$/.test(path) ||
+    /\/m\/[^/]+\/orders\/?$/.test(path) ||
     /\/m\/[^/]+\/(?:pay|status)\//.test(path)
   )
 })
 
-const mainPadClass = computed(() =>
-  itemCount.value > 0 && !cartBarHidden.value
-    ? "pb-[max(6.5rem,calc(env(safe-area-inset-bottom)+5.5rem))]"
-    : "pb-[max(1.5rem,env(safe-area-inset-bottom))]",
+const showCartBar = computed(
+  () => itemCount.value > 0 && !barsHidden.value,
 )
+const showOrdersBar = computed(
+  () => orders.value.length > 0 && !barsHidden.value,
+)
+
+const barCount = computed(
+  () => (showCartBar.value ? 1 : 0) + (showOrdersBar.value ? 1 : 0),
+)
+
+const mainPadClass = computed(() => {
+  if (barCount.value >= 2) {
+    return "pb-[max(11.5rem,calc(env(safe-area-inset-bottom)+10rem))]"
+  }
+  if (barCount.value === 1) {
+    return "pb-[max(6.5rem,calc(env(safe-area-inset-bottom)+5.5rem))]"
+  }
+  return "pb-[max(1.5rem,env(safe-area-inset-bottom))]"
+})
 
 onMounted(() => {
   loadFromStorage()
   syncFromStorage()
+  if (slug.value) {
+    loadActiveOrders(slug.value)
+  }
+})
+
+watch(slug, (next) => {
+  if (next) {
+    loadActiveOrders(next)
+  }
 })
 </script>
 
@@ -66,6 +94,11 @@ onMounted(() => {
       <slot />
     </main>
 
-    <GuestCartBar />
+    <div
+      class="pointer-events-none fixed inset-x-0 bottom-0 z-40 flex flex-col gap-2 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+    >
+      <GuestOrdersBar raised />
+      <GuestCartBar stacked />
+    </div>
   </div>
 </template>
