@@ -6,9 +6,9 @@
   color-scheme: light;
   --chili: #e03131;
   --chili-deep: #c92a2a;
-  /* Brand greens remapped to Pizza Hub navy for a single chrome color. */
-  --herb: #3d5478;
-  --herb-deep: #1b2740;
+  /* Brand navy sampled from public/logo.png (#1c3440). */
+  --herb: #3a5566;
+  --herb-deep: #1c3440;
   --citrus: #ffc107;
   --citrus-deep: #f59f00;
   /* Action semantics: info / success / warning / error */
@@ -21,13 +21,13 @@
   --danger-deep: var(--chili-deep);
   --paper: #f4f1e6;
   --paper-deep: #e7e2d4;
-  --ink: #1b2740;
-  --sage: #5a6d8c;
-  --sage-deep: #3f5068;
-  --navy: #1b2740;
-  --nav: #1b2740;
+  --ink: #1c3440;
+  --sage: #5a7384;
+  --sage-deep: #3a5566;
+  --navy: #1c3440;
+  --nav: #1c3440;
   --gold: #c6a15b;
-  --muted: #5c6b80;
+  --muted: #5c7380;
   --surface: #ffffff;
   --kitchen: var(--paper);
   --kitchen-panel: #ffffff;
@@ -58,7 +58,7 @@ body:has(.auth-shell) {
 body:has(.kitchen-shell) {
   background:
     radial-gradient(ellipse 40% 30% at 0% 0%, rgba(198, 161, 91, 0.18), transparent 55%),
-    radial-gradient(ellipse 35% 28% at 100% 100%, rgba(27, 39, 64, 0.12), transparent 50%),
+    radial-gradient(ellipse 35% 28% at 100% 100%, rgba(28, 52, 64, 0.12), transparent 50%),
     var(--paper);
   color: var(--navy);
 }
@@ -115,7 +115,7 @@ body:has(.kitchen-shell) {
     @apply inline-flex items-center justify-center rounded-2xl px-5 py-3.5 text-sm font-extrabold tracking-tight transition;
     background: var(--success);
     color: #fff;
-    box-shadow: 0 14px 28px -14px rgba(27, 39, 64, 0.45);
+    box-shadow: 0 14px 28px -14px rgba(28, 52, 64, 0.45);
   }
 
   .btn-success:hover {
@@ -201,7 +201,7 @@ body:has(.kitchen-shell) {
   .kitchen-ticket {
     @apply flex flex-col gap-3 rounded-3xl border bg-white p-4;
     border-color: color-mix(in srgb, var(--navy) 8%, transparent);
-    box-shadow: 0 16px 40px -28px rgba(27, 39, 64, 0.35);
+    box-shadow: 0 16px 40px -28px rgba(28, 52, 64, 0.35);
   }
 
   .admin-shell,
@@ -209,7 +209,7 @@ body:has(.kitchen-shell) {
   .client-shell {
     background:
       radial-gradient(ellipse 40% 30% at 0% 0%, rgba(198, 161, 91, 0.18), transparent 55%),
-      radial-gradient(ellipse 35% 28% at 100% 100%, rgba(27, 39, 64, 0.12), transparent 50%),
+      radial-gradient(ellipse 35% 28% at 100% 100%, rgba(28, 52, 64, 0.12), transparent 50%),
       var(--paper);
   }
 
@@ -222,7 +222,7 @@ body:has(.kitchen-shell) {
   .admin-pill.is-active {
     background: #fff;
     color: var(--navy);
-    box-shadow: 0 8px 18px -12px rgba(27, 39, 64, 0.45);
+    box-shadow: 0 8px 18px -12px rgba(28, 52, 64, 0.45);
   }
 
   .metric-tile {

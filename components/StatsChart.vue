@@ -97,7 +97,7 @@ const xLabels = computed(() => {
         :width="slot.barW"
         :height="Math.max(slot.h, 0)"
         rx="3"
-        fill="#5a6d8c"
+        fill="#5a7384"
         opacity="0.9"
       >
         <title>{{ slot.label }}: {{ slot.value }}</title>
@@ -108,7 +108,7 @@ const xLabels = computed(() => {
         <polyline
           :points="linePoints"
           fill="none"
-          stroke="#1b2740"
+          stroke="#1c3440"
           stroke-width="2.5"
           stroke-linejoin="round"
           stroke-linecap="round"
@@ -119,7 +119,7 @@ const xLabels = computed(() => {
           :cx="slot.x"
           :cy="height - padB - slot.h"
           r="3.5"
-          fill="#1b2740"
+          fill="#1c3440"
         >
           <title>{{ slot.label }}: {{ slot.value }}</title>
         </circle>
