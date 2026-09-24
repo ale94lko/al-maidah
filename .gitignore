@@ -40,3 +40,6 @@ supabase/.branches/
 # Test and coverage
 coverage/
 .nyc_output/
+
+.vercel
+.env*
