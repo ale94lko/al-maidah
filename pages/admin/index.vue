@@ -9,6 +9,7 @@ definePageMeta({
 
 type MeResponse = {
   user: { id: string; email?: string }
+  is_superadmin?: boolean
   restaurants: Array<{ id: string; name: string; slug: string }>
 }
 
@@ -66,6 +67,10 @@ async function bootstrap() {
     const me = await $fetch<MeResponse>("/api/auth/me", {
       headers: await authHeaders(),
     })
+    if (me.is_superadmin) {
+      await navigateTo("/superadmin", { replace: true })
+      return
+    }
     restaurants.value = me.restaurants
     restaurantId.value = me.restaurants[0]?.id ?? null
     await loadStats()

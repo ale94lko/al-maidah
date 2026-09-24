@@ -1,3 +1,5 @@
+import { isSuperAdminUser } from "~/utils/roles"
+
 const PUBLIC_AUTH_PATHS = new Set(["/admin/login", "/admin/signup"])
 
 /**
@@ -40,6 +42,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   if (superadmin && (isAdminRoute || isKitchenRoute)) {
-    return navigateTo("/superadmin")
+    return navigateTo("/superadmin", { replace: true })
   }
 })
