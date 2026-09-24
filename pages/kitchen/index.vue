@@ -163,9 +163,6 @@ async function onInstall() {
           <h1 class="font-display text-xl font-bold tracking-tight text-[var(--navy)] sm:text-2xl">
             {{ t("kitchen.ticketBoard") }}
           </h1>
-          <p class="mt-1 text-sm text-[var(--muted)]">
-            {{ t("kitchen.boardHint") }}
-          </p>
           <p
             v-if="shiftStarted && audioBlocked"
             class="mt-1 text-xs text-[var(--warning)]"

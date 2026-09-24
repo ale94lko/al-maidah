@@ -22,6 +22,7 @@ const { t } = useAppI18n()
   >
     <KitchenColumn
       :title="t('kitchen.columnPending')"
+      :hint="t('kitchen.boardHint')"
       :tickets="pending"
       :empty-label="t('kitchen.columnEmpty')"
       action="start"
@@ -33,6 +34,7 @@ const { t } = useAppI18n()
     />
     <KitchenColumn
       :title="t('kitchen.columnPreparing')"
+      :hint="t('kitchen.boardHint')"
       :tickets="preparing"
       :empty-label="t('kitchen.columnEmpty')"
       action="ready"
@@ -44,6 +46,7 @@ const { t } = useAppI18n()
     />
     <KitchenColumn
       :title="t('kitchen.columnReady')"
+      :hint="t('kitchen.boardHint')"
       :tickets="ready"
       :empty-label="t('kitchen.columnEmpty')"
       action="deliver"

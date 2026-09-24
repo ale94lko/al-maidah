@@ -212,6 +212,8 @@ export interface PublicOrderItem {
   unit_price: string
   notes: string
   selected_options: SelectedModifierOption[]
+  /** Current menu photo when available (kitchen board); omitted on guest receipts. */
+  photo_url?: string | null
 }
 
 /**

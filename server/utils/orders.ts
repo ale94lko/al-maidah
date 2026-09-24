@@ -511,6 +511,10 @@ type KitchenOrderRow = {
         unit_price: string | number
         notes: string
         selected_options: SelectedModifierOption[] | null
+        menu_items:
+          | { photo_url: string | null }
+          | { photo_url: string | null }[]
+          | null
       }>
     | null
 }
@@ -546,16 +550,23 @@ function mapKitchenTicket(row: KitchenOrderRow): KitchenTicket {
     payment_method: row.payment_method,
     created_at: row.created_at,
     ready_at: row.ready_at,
-    items: (row.order_items ?? []).map((item) => ({
-      id: item.id,
-      menu_item_id: item.menu_item_id,
-      name_en: item.name_en,
-      name_ar: item.name_ar,
-      quantity: item.quantity,
-      unit_price: String(item.unit_price),
-      notes: item.notes ?? "",
-      selected_options: (item.selected_options ?? []) as SelectedModifierOption[],
-    })),
+    items: (row.order_items ?? []).map((item) => {
+      const menuRel = Array.isArray(item.menu_items)
+        ? item.menu_items[0]
+        : item.menu_items
+      return {
+        id: item.id,
+        menu_item_id: item.menu_item_id,
+        name_en: item.name_en,
+        name_ar: item.name_ar,
+        quantity: item.quantity,
+        unit_price: String(item.unit_price),
+        notes: item.notes ?? "",
+        selected_options: (item.selected_options ??
+          []) as SelectedModifierOption[],
+        photo_url: menuRel?.photo_url ?? null,
+      }
+    }),
   }
 }
 
@@ -578,7 +589,8 @@ const KITCHEN_ORDER_SELECT = `
     quantity,
     unit_price,
     notes,
-    selected_options
+    selected_options,
+    menu_items ( photo_url )
   )
 `
 
