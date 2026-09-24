@@ -6,8 +6,9 @@
   color-scheme: light;
   --chili: #e03131;
   --chili-deep: #c92a2a;
-  --herb: #2f9e44;
-  --herb-deep: #1e7a32;
+  /* Brand greens remapped to Pizza Hub navy for a single chrome color. */
+  --herb: #3d5478;
+  --herb-deep: #1b2740;
   --citrus: #ffc107;
   --citrus-deep: #f59f00;
   /* Action semantics: info / success / warning / error */
@@ -21,17 +22,17 @@
   --paper: #f4f1e6;
   --paper-deep: #e7e2d4;
   --ink: #1b2740;
-  --sage: #8ea394;
-  --sage-deep: #6d8776;
+  --sage: #5a6d8c;
+  --sage-deep: #3f5068;
   --navy: #1b2740;
-  --nav: #2c3330;
+  --nav: #1b2740;
   --gold: #c6a15b;
-  --muted: #5c6f62;
+  --muted: #5c6b80;
   --surface: #ffffff;
   --kitchen: var(--paper);
   --kitchen-panel: #ffffff;
-  --brand: var(--herb);
-  --brand-ink: var(--herb-deep);
+  --brand: var(--navy);
+  --brand-ink: var(--navy);
   --espresso: var(--ink);
   --olive: var(--herb);
   --olive-deep: var(--herb-deep);
@@ -57,7 +58,7 @@ body:has(.auth-shell) {
 body:has(.kitchen-shell) {
   background:
     radial-gradient(ellipse 40% 30% at 0% 0%, rgba(198, 161, 91, 0.18), transparent 55%),
-    radial-gradient(ellipse 35% 28% at 100% 100%, rgba(142, 163, 148, 0.22), transparent 50%),
+    radial-gradient(ellipse 35% 28% at 100% 100%, rgba(27, 39, 64, 0.12), transparent 50%),
     var(--paper);
   color: var(--navy);
 }
@@ -114,7 +115,7 @@ body:has(.kitchen-shell) {
     @apply inline-flex items-center justify-center rounded-2xl px-5 py-3.5 text-sm font-extrabold tracking-tight transition;
     background: var(--success);
     color: #fff;
-    box-shadow: 0 14px 28px -14px rgba(47, 158, 68, 0.55);
+    box-shadow: 0 14px 28px -14px rgba(27, 39, 64, 0.45);
   }
 
   .btn-success:hover {
@@ -208,18 +209,18 @@ body:has(.kitchen-shell) {
   .client-shell {
     background:
       radial-gradient(ellipse 40% 30% at 0% 0%, rgba(198, 161, 91, 0.18), transparent 55%),
-      radial-gradient(ellipse 35% 28% at 100% 100%, rgba(142, 163, 148, 0.22), transparent 50%),
+      radial-gradient(ellipse 35% 28% at 100% 100%, rgba(27, 39, 64, 0.12), transparent 50%),
       var(--paper);
   }
 
   .admin-pill {
     @apply inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-bold whitespace-nowrap transition;
-    background: var(--sage);
+    background: color-mix(in srgb, var(--navy) 72%, white);
     color: #fff;
   }
 
   .admin-pill.is-active {
-    background: #eef3fb;
+    background: #fff;
     color: var(--navy);
     box-shadow: 0 8px 18px -12px rgba(27, 39, 64, 0.45);
   }

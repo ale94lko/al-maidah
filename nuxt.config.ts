@@ -24,7 +24,7 @@ export default defineNuxtConfig({
           content:
             "QR digital menu, kitchen ticket board, and owner panel for restaurants in the UAE.",
         },
-        { name: "theme-color", content: "#2f9e44" },
+        { name: "theme-color", content: "#1b2740" },
       ],
       link: [
         { rel: "manifest", href: "/manifest.webmanifest" },

@@ -4,8 +4,8 @@
   "description": "QR digital menu, kitchen ticket board, and owner panel for restaurants in the UAE.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f5faf3",
-  "theme_color": "#2f9e44",
+  "background_color": "#f4f1e6",
+  "theme_color": "#1b2740",
   "lang": "en",
   "icons": [
     {

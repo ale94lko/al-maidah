@@ -97,7 +97,7 @@ const xLabels = computed(() => {
         :width="slot.barW"
         :height="Math.max(slot.h, 0)"
         rx="3"
-        fill="#8ea394"
+        fill="#5a6d8c"
         opacity="0.9"
       >
         <title>{{ slot.label }}: {{ slot.value }}</title>
