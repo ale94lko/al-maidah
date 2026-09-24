@@ -1,4 +1,19 @@
 import type { Session, User } from "@supabase/supabase-js"
+import { isSuperAdminUser, setSuperadminCookie } from "~/utils/roles"
+
+export type AuthMeResponse = {
+  user: { id: string; email?: string }
+  is_superadmin: boolean
+  restaurants: Array<{
+    id: string
+    name: string
+    slug: string
+    trn?: string | null
+    currency?: string
+    created_at?: string
+    updated_at?: string
+  }>
+}
 
 /**
  * Owner auth helpers. Safe to call during SSR: session state is read/written
@@ -8,6 +23,7 @@ export function useAuth() {
   const user = useState<User | null>("auth-user", () => null)
   const session = useState<Session | null>("auth-session", () => null)
   const loading = useState("auth-loading", () => true)
+  const isSuperadmin = useState<boolean | null>("auth-is-superadmin", () => null)
 
   function browserClient() {
     return useSupabaseClient()
@@ -22,6 +38,7 @@ export function useAuth() {
     if (error) {
       user.value = null
       session.value = null
+      isSuperadmin.value = null
       loading.value = false
       return null
     }
@@ -29,6 +46,21 @@ export function useAuth() {
     user.value = data.session?.user ?? null
     loading.value = false
     return data.session
+  }
+
+  async function fetchMe(): Promise<AuthMeResponse | null> {
+    const token = await accessToken()
+    if (!token) {
+      isSuperadmin.value = null
+      setSuperadminCookie(false)
+      return null
+    }
+    const me = await $fetch<AuthMeResponse>("/api/auth/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    isSuperadmin.value = !!me.is_superadmin
+    setSuperadminCookie(!!me.is_superadmin)
+    return me
   }
 
   async function signIn(email: string, password: string) {
@@ -44,6 +76,7 @@ export function useAuth() {
     }
     session.value = data.session
     user.value = data.user
+    isSuperadmin.value = isSuperAdminUser(data.user)
     return data
   }
 
@@ -71,6 +104,8 @@ export function useAuth() {
         })
         session.value = response.session
         user.value = response.session.user
+        isSuperadmin.value = false
+        setSuperadminCookie(false)
       }
 
       return response
@@ -95,6 +130,8 @@ export function useAuth() {
     }
     session.value = null
     user.value = null
+    isSuperadmin.value = null
+    setSuperadminCookie(false)
   }
 
   async function accessToken() {
@@ -106,7 +143,9 @@ export function useAuth() {
     user,
     session,
     loading,
+    isSuperadmin,
     refreshSession,
+    fetchMe,
     signIn,
     signUp,
     signOut,

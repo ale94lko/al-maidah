@@ -52,6 +52,7 @@ if (existing) {
     app_metadata: {
       ...(existing.app_metadata || {}),
       role: "superadmin",
+      app_role: "superadmin",
     },
   })
   if (error) {
@@ -64,7 +65,7 @@ if (existing) {
     email,
     password,
     email_confirm: true,
-    app_metadata: { role: "superadmin" },
+    app_metadata: { role: "superadmin", app_role: "superadmin" },
   })
   if (error) {
     console.error(error.message)

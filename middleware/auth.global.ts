@@ -4,7 +4,8 @@ const PUBLIC_AUTH_PATHS = new Set(["/admin/login", "/admin/signup"])
 
 /**
  * Require a signed-in user for /admin/**, /kitchen/**, and /superadmin/**.
- * Superadmins land on /superadmin; restaurant owners stay on /admin.
+ * Role decisions prefer /api/auth/me so Firefox/stale JWT metadata cannot
+ * bounce a superadmin into the restaurant owner panel.
  */
 export default defineNuxtRouteMiddleware(async (to) => {
   const isSuperadminRoute =
@@ -20,12 +21,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return
   }
 
-  // Session lives in the browser client; enforce on the client navigation path.
   if (import.meta.server) {
     return
   }
 
-  const { refreshSession } = useAuth()
+  const { refreshSession, fetchMe, isSuperadmin } = useAuth()
   const session = await refreshSession()
 
   if (!session) {
@@ -35,10 +35,21 @@ export default defineNuxtRouteMiddleware(async (to) => {
     })
   }
 
-  const superadmin = isSuperAdminUser(session.user)
+  let superadmin =
+    isSuperadmin.value === true || isSuperAdminUser(session.user)
+
+  if (isSuperadmin.value === null) {
+    try {
+      const me = await fetchMe()
+      superadmin = !!me?.is_superadmin
+    } catch {
+      superadmin = isSuperAdminUser(session.user)
+    }
+  }
 
   if (isSuperadminRoute && !superadmin) {
-    return navigateTo("/admin")
+    // Confirmed non-superadmin only — never bounce on uncertain metadata.
+    return navigateTo("/admin", { replace: true })
   }
 
   if (superadmin && (isAdminRoute || isKitchenRoute)) {

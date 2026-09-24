@@ -7,8 +7,10 @@ export function isSuperAdmin(user: User | null | undefined): boolean {
   if (!user) {
     return false
   }
-  const role = user.app_metadata?.role
-  return role === SUPERADMIN_ROLE
+  const meta = user.app_metadata ?? {}
+  return (
+    meta.app_role === SUPERADMIN_ROLE || meta.role === SUPERADMIN_ROLE
+  )
 }
 
 export async function requireUser(event: H3Event): Promise<User> {

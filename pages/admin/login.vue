@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isSuperAdminUser, postLoginPath } from "~/utils/roles"
+import { isSuperAdminUser, setSuperadminCookie } from "~/utils/roles"
 
 definePageMeta({
   layout: false,
@@ -10,34 +10,64 @@ const password = ref("")
 const errorMessage = ref("")
 const pending = ref(false)
 const route = useRoute()
-const { signIn } = useAuth()
+const { signIn, fetchMe } = useAuth()
 const { t, dir } = useAppI18n()
+
+onMounted(async () => {
+  if (!("serviceWorker" in navigator)) {
+    return
+  }
+  try {
+    const registrations = await navigator.serviceWorker.getRegistrations()
+    for (const registration of registrations) {
+      await registration.unregister()
+    }
+    if ("caches" in window) {
+      const keys = await caches.keys()
+      await Promise.all(keys.map((key) => caches.delete(key)))
+    }
+  } catch {
+    // Ignore — login must still work.
+  }
+})
 
 async function onSubmit() {
   errorMessage.value = ""
   pending.value = true
   try {
     const data = await signIn(email.value.trim(), password.value)
-    const defaultPath = postLoginPath(data.user)
+
+    // Authoritative role from the server (not only client JWT claims).
+    let superadmin = isSuperAdminUser(data.user)
+    try {
+      const me = await fetchMe()
+      if (me) {
+        superadmin = me.is_superadmin
+      }
+    } catch {
+      // Fall back to JWT metadata if /me fails.
+    }
+    setSuperadminCookie(superadmin)
+
     const requested =
       typeof route.query.redirect === "string" ? route.query.redirect : null
 
-    // Superadmins always go to the platform panel; owners may honor ?redirect=
-    // only when it targets their own surface (not /superadmin).
-    let target = defaultPath
-    if (requested && isSuperAdminUser(data.user)) {
+    let target = superadmin ? "/superadmin" : "/admin"
+    if (requested && superadmin) {
       target =
         requested === "/superadmin" || requested.startsWith("/superadmin/")
           ? requested
           : "/superadmin"
-    } else if (requested && !isSuperAdminUser(data.user)) {
-      target =
-        requested.startsWith("/superadmin")
-          ? "/admin"
-          : requested
+    } else if (requested && !superadmin) {
+      target = requested.startsWith("/superadmin") ? "/admin" : requested
     }
 
-    await navigateTo(target)
+    // Full navigation so Firefox picks up the cookie + fresh bundles.
+    if (import.meta.client) {
+      window.location.assign(target)
+      return
+    }
+    await navigateTo(target, { replace: true })
   } catch (error) {
     errorMessage.value =
       error instanceof Error ? error.message : t("common.signIn")
@@ -109,7 +139,6 @@ async function onSubmit() {
               {{ pending ? t("admin.signingIn") : t("common.signIn") }}
             </button>
           </form>
-
         </div>
       </div>
     </div>
