@@ -1,5 +1,5 @@
 /**
- * Platform-wide usage statistics (superadmin).
+ * Platform health stats for superadmin (accounts, visits, errors).
  */
 export default defineEventHandler(async (event) => {
   await requireSuperAdmin(event)
