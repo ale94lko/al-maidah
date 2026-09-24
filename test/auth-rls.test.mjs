@@ -69,6 +69,10 @@ test("auth middleware guards admin, kitchen, and superadmin routes", () => {
   assert.match(middleware, /\/admin\/login/)
   assert.match(middleware, /navigateTo/)
   assert.match(middleware, /isSuperAdminUser/)
+  assert.match(middleware, /\/admin\/orders/)
+  const roles = read("utils/roles.ts")
+  assert.match(roles, /postLoginPath/)
+  assert.match(roles, /\/admin\/orders/)
 })
 
 test("admin and kitchen pages exist; public signup redirects to login", () => {

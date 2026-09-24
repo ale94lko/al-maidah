@@ -10,5 +10,5 @@ export function isSuperAdminUser(user: User | null | undefined): boolean {
 }
 
 export function postLoginPath(user: User | null | undefined): string {
-  return isSuperAdminUser(user) ? "/superadmin" : "/admin"
+  return isSuperAdminUser(user) ? "/superadmin" : "/admin/orders"
 }

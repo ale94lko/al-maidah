@@ -4,7 +4,7 @@ const PUBLIC_AUTH_PATHS = new Set(["/admin/login", "/admin/signup"])
 
 /**
  * Require a signed-in user for /admin/**, /kitchen/**, and /superadmin/**.
- * Superadmins land on /superadmin; restaurant owners stay on /admin.
+ * Superadmins land on /superadmin; restaurant owners land on /admin/orders.
  */
 export default defineNuxtRouteMiddleware(async (to) => {
   const isSuperadminRoute =
@@ -38,7 +38,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const superadmin = isSuperAdminUser(session.user)
 
   if (isSuperadminRoute && !superadmin) {
-    return navigateTo("/admin")
+    return navigateTo("/admin/orders")
   }
 
   if (superadmin && (isAdminRoute || isKitchenRoute)) {

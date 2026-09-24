@@ -16,7 +16,7 @@ async function onSignOut() {
       <div class="mx-auto flex max-w-[90rem] items-center justify-between gap-4">
         <div class="flex min-w-0 items-center gap-4">
           <NuxtLink
-            to="/admin"
+            to="/admin/orders"
             class="font-display border-e border-[var(--navy)]/10 pe-4 text-xl font-bold text-[var(--gold)]"
           >
             Al-Maidah

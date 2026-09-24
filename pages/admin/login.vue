@@ -33,7 +33,7 @@ async function onSubmit() {
     } else if (requested && !isSuperAdminUser(data.user)) {
       target =
         requested.startsWith("/superadmin")
-          ? "/admin"
+          ? "/admin/orders"
           : requested
     }
 
