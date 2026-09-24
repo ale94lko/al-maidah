@@ -36,6 +36,16 @@ const showCreate = ref(false)
 const creating = ref(false)
 const createError = ref("")
 
+const passwordTarget = ref<OwnerAccount | null>(null)
+const newPassword = ref("")
+const confirmPassword = ref("")
+const savingPassword = ref(false)
+const passwordError = ref("")
+const passwordSuccess = ref("")
+
+const deleteTarget = ref<OwnerAccount | null>(null)
+const deleting = ref(false)
+
 const form = reactive({
   email: "",
   password: "",
@@ -109,6 +119,84 @@ function restaurantLabel(account: OwnerAccount) {
   return account.restaurants.map((r) => r.name).join(", ")
 }
 
+function openPassword(account: OwnerAccount) {
+  passwordTarget.value = account
+  newPassword.value = ""
+  confirmPassword.value = ""
+  passwordError.value = ""
+  passwordSuccess.value = ""
+}
+
+function closePassword() {
+  if (savingPassword.value) {
+    return
+  }
+  passwordTarget.value = null
+}
+
+async function onPassword() {
+  passwordError.value = ""
+  passwordSuccess.value = ""
+  if (newPassword.value !== confirmPassword.value) {
+    passwordError.value = t("superadmin.passwordMismatch")
+    return
+  }
+  const account = passwordTarget.value
+  if (!account) {
+    return
+  }
+  savingPassword.value = true
+  try {
+    await $fetch(
+      `/api/superadmin/users/${encodeURIComponent(account.id)}/password`,
+      {
+        method: "POST",
+        headers: await authHeaders(),
+        body: { password: newPassword.value },
+      },
+    )
+    passwordSuccess.value = t("superadmin.passwordUpdated")
+    newPassword.value = ""
+    confirmPassword.value = ""
+  } catch (error) {
+    passwordError.value =
+      extractApiErrorMessage(error) || t("superadmin.passwordError")
+  } finally {
+    savingPassword.value = false
+  }
+}
+
+function openDelete(account: OwnerAccount) {
+  deleteTarget.value = account
+}
+
+function closeDelete() {
+  if (deleting.value) {
+    return
+  }
+  deleteTarget.value = null
+}
+
+async function onDeleteConfirm() {
+  const account = deleteTarget.value
+  if (!account) {
+    return
+  }
+  deleting.value = true
+  try {
+    await $fetch(`/api/superadmin/users/${encodeURIComponent(account.id)}`, {
+      method: "DELETE",
+      headers: await authHeaders(),
+    })
+    deleteTarget.value = null
+    await loadUsers()
+  } catch (error) {
+    showError(extractApiErrorMessage(error) || t("superadmin.deleteError"))
+  } finally {
+    deleting.value = false
+  }
+}
+
 onMounted(async () => {
   const session = await refreshSession()
   if (!session) {
@@ -162,7 +250,7 @@ onMounted(async () => {
     />
     <section v-else class="admin-panel">
       <div class="admin-panel-body overflow-x-auto p-0">
-        <table class="w-full min-w-[40rem] text-start text-sm">
+        <table class="w-full min-w-[44rem] text-start text-sm">
           <thead class="border-b border-[var(--navy)]/8 bg-[var(--paper)]/80 text-xs uppercase tracking-wide text-[var(--muted)]">
             <tr>
               <th class="px-4 py-3 font-bold">{{ t("admin.email") }}</th>
@@ -191,12 +279,28 @@ onMounted(async () => {
                 }}
               </td>
               <td class="px-4 py-3">
-                <NuxtLink
-                  :to="`/superadmin/users/${account.id}`"
-                  class="font-extrabold text-[var(--herb-deep)] underline"
-                >
-                  {{ t("superadmin.edit") }}
-                </NuxtLink>
+                <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <NuxtLink
+                    :to="`/superadmin/users/${account.id}`"
+                    class="font-extrabold text-[var(--herb-deep)] underline"
+                  >
+                    {{ t("superadmin.edit") }}
+                  </NuxtLink>
+                  <button
+                    type="button"
+                    class="font-extrabold text-[var(--navy)] underline"
+                    @click="openPassword(account)"
+                  >
+                    {{ t("superadmin.changePassword") }}
+                  </button>
+                  <button
+                    type="button"
+                    class="font-extrabold text-[var(--chili)] underline"
+                    @click="openDelete(account)"
+                  >
+                    {{ t("superadmin.deleteUser") }}
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -272,6 +376,125 @@ onMounted(async () => {
             </button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <div
+      v-if="passwordTarget"
+      class="fixed inset-0 z-40 flex items-end justify-center bg-[var(--ink)]/45 p-4 sm:items-center"
+      role="dialog"
+      aria-modal="true"
+      @click.self="closePassword"
+    >
+      <div class="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl">
+        <h2 class="font-display text-xl font-bold text-[var(--ink)]">
+          {{ t("superadmin.changePassword") }}
+        </h2>
+        <p class="mt-1 truncate text-sm text-[var(--muted)]">
+          {{ passwordTarget.email }}
+        </p>
+        <form class="mt-5 space-y-3" @submit.prevent="onPassword">
+          <label class="block">
+            <span class="field-label">{{ t("superadmin.newPassword") }}</span>
+            <input
+              v-model="newPassword"
+              type="password"
+              required
+              minlength="8"
+              autocomplete="new-password"
+              class="field-input"
+            >
+          </label>
+          <label class="block">
+            <span class="field-label">{{ t("superadmin.confirmPassword") }}</span>
+            <input
+              v-model="confirmPassword"
+              type="password"
+              required
+              minlength="8"
+              autocomplete="new-password"
+              class="field-input"
+            >
+          </label>
+          <p
+            v-if="passwordError"
+            class="text-sm font-semibold text-[var(--chili)]"
+          >
+            {{ passwordError }}
+          </p>
+          <p
+            v-else-if="passwordSuccess"
+            class="text-sm font-semibold text-[var(--herb)]"
+          >
+            {{ passwordSuccess }}
+          </p>
+          <div class="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              class="rounded-full border border-[var(--navy)]/12 px-4 py-2 text-sm font-bold"
+              :disabled="savingPassword"
+              @click="closePassword"
+            >
+              {{ t("common.cancel") }}
+            </button>
+            <button
+              type="submit"
+              class="btn-primary disabled:opacity-60"
+              :disabled="savingPassword"
+            >
+              {{
+                savingPassword
+                  ? t("superadmin.saving")
+                  : t("superadmin.updatePassword")
+              }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div
+      v-if="deleteTarget"
+      class="fixed inset-0 z-40 flex items-end justify-center bg-[var(--ink)]/45 p-4 sm:items-center"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="delete-account-title"
+      @click.self="closeDelete"
+    >
+      <div class="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl">
+        <h2
+          id="delete-account-title"
+          class="font-display text-xl font-bold text-[var(--chili)]"
+        >
+          {{ t("superadmin.deleteUser") }}
+        </h2>
+        <p class="mt-2 text-sm text-[var(--ink)]">
+          {{ t("superadmin.confirmDelete") }}
+        </p>
+        <p class="mt-2 truncate text-sm font-semibold text-[var(--muted)]">
+          {{ deleteTarget.email }}
+        </p>
+        <p class="mt-2 text-xs text-[var(--muted)]">
+          {{ t("superadmin.deleteHint") }}
+        </p>
+        <div class="mt-5 flex justify-end gap-2">
+          <button
+            type="button"
+            class="rounded-full border border-[var(--navy)]/12 px-4 py-2 text-sm font-bold"
+            :disabled="deleting"
+            @click="closeDelete"
+          >
+            {{ t("common.cancel") }}
+          </button>
+          <button
+            type="button"
+            class="rounded-full bg-[var(--chili)] px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+            :disabled="deleting"
+            @click="onDeleteConfirm"
+          >
+            {{ deleting ? t("superadmin.deleting") : t("superadmin.deleteUser") }}
+          </button>
+        </div>
       </div>
     </div>
   </div>

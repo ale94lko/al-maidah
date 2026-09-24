@@ -87,6 +87,11 @@ test("admin and kitchen pages exist; public signup redirects to login", () => {
   assert.doesNotMatch(login, /\/admin\/signup/)
   const signup = read("pages/admin/signup.vue")
   assert.match(signup, /navigateTo\("\/admin\/login"/)
+  const usersList = read("pages/superadmin/users/index.vue")
+  assert.match(usersList, /changePassword/)
+  assert.match(usersList, /deleteUser/)
+  assert.match(usersList, /deleteTarget/)
+  assert.doesNotMatch(usersList, /window\.confirm/)
 })
 
 test("superadmin APIs require elevated access", () => {

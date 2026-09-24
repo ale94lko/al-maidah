@@ -38,6 +38,7 @@ const loading = ref(true)
 const saving = ref(false)
 const savingPassword = ref(false)
 const deleting = ref(false)
+const deleteConfirmOpen = ref(false)
 const savedMessage = ref("")
 const passwordMessage = ref("")
 
@@ -130,15 +131,17 @@ async function onPassword() {
 }
 
 async function onDelete() {
-  if (!window.confirm(t("superadmin.confirmDelete"))) {
-    return
-  }
+  deleteConfirmOpen.value = true
+}
+
+async function onDeleteConfirm() {
   deleting.value = true
   try {
     await $fetch(`/api/superadmin/users/${encodeURIComponent(userId.value)}`, {
       method: "DELETE",
       headers: await authHeaders(),
     })
+    deleteConfirmOpen.value = false
     await navigateTo("/superadmin/users")
   } catch (error) {
     showError(extractApiErrorMessage(error) || t("superadmin.deleteError"))
@@ -313,5 +316,50 @@ onMounted(async () => {
         </div>
       </section>
     </template>
+
+    <div
+      v-if="deleteConfirmOpen"
+      class="fixed inset-0 z-40 flex items-end justify-center bg-[var(--ink)]/45 p-4 sm:items-center"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="delete-account-title"
+      @click.self="deleteConfirmOpen = false"
+    >
+      <div class="w-full max-w-md rounded-3xl bg-white p-6 shadow-xl">
+        <h2
+          id="delete-account-title"
+          class="font-display text-xl font-bold text-[var(--chili)]"
+        >
+          {{ t("superadmin.deleteUser") }}
+        </h2>
+        <p class="mt-2 text-sm text-[var(--ink)]">
+          {{ t("superadmin.confirmDelete") }}
+        </p>
+        <p class="mt-2 truncate text-sm font-semibold text-[var(--muted)]">
+          {{ email }}
+        </p>
+        <p class="mt-2 text-xs text-[var(--muted)]">
+          {{ t("superadmin.deleteHint") }}
+        </p>
+        <div class="mt-5 flex justify-end gap-2">
+          <button
+            type="button"
+            class="rounded-full border border-[var(--navy)]/12 px-4 py-2 text-sm font-bold"
+            :disabled="deleting"
+            @click="deleteConfirmOpen = false"
+          >
+            {{ t("common.cancel") }}
+          </button>
+          <button
+            type="button"
+            class="rounded-full bg-[var(--chili)] px-4 py-2 text-sm font-bold text-white disabled:opacity-60"
+            :disabled="deleting"
+            @click="onDeleteConfirm"
+          >
+            {{ deleting ? t("superadmin.deleting") : t("superadmin.deleteUser") }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
