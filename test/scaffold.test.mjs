@@ -18,6 +18,7 @@ test("runtimeConfig wires Supabase, Stripe, and app URL", () => {
   assert.match(config, /appUrl/)
   assert.match(config, /STRIPE_SECRET_KEY/)
   assert.match(config, /SUPABASE_SERVICE_ROLE_KEY/)
+  assert.match(config, /@vercel\/speed-insights/)
 })
 
 test("PWA manifest is named Al-Maidah and standalone", () => {

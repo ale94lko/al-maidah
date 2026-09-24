@@ -7,7 +7,7 @@ export default defineNuxtConfig({
     // Static checking stays available via `npm run lint` / CI.
     typeCheck: process.env.NODE_ENV !== "production",
   },
-  modules: ["@nuxtjs/tailwindcss"],
+  modules: ["@nuxtjs/tailwindcss", "@vercel/speed-insights"],
   css: ["~/assets/css/main.css"],
   routeRules: {
     "/": { redirect: "/admin/login" },
