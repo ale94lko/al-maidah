@@ -337,36 +337,30 @@ onMounted(async () => {
           <form class="grid max-w-xl gap-3" @submit.prevent="onPassword">
             <label class="block">
               <span class="field-label">{{ t("admin.currentPassword") }}</span>
-              <input
+              <AppPasswordInput
                 v-model="currentPassword"
-                type="password"
                 required
                 minlength="8"
                 autocomplete="current-password"
-                class="field-input"
-              >
+              />
             </label>
             <label class="block">
               <span class="field-label">{{ t("admin.newPassword") }}</span>
-              <input
+              <AppPasswordInput
                 v-model="newPassword"
-                type="password"
                 required
                 minlength="8"
                 autocomplete="new-password"
-                class="field-input"
-              >
+              />
             </label>
             <label class="block">
               <span class="field-label">{{ t("admin.confirmPassword") }}</span>
-              <input
+              <AppPasswordInput
                 v-model="confirmPassword"
-                type="password"
                 required
                 minlength="8"
                 autocomplete="new-password"
-                class="field-input"
-              >
+              />
             </label>
             <p
               v-if="passwordMessage"

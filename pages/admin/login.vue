@@ -89,14 +89,12 @@ async function onSubmit() {
             </label>
             <label class="block">
               <span class="field-label">{{ t("admin.password") }}</span>
-              <input
+              <AppPasswordInput
                 v-model="password"
-                type="password"
                 required
                 minlength="8"
                 autocomplete="current-password"
-                class="field-input"
-              >
+              />
             </label>
             <p v-if="errorMessage" class="text-sm font-semibold text-[var(--chili)]">
               {{ errorMessage }}

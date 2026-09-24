@@ -49,6 +49,10 @@ test("admin layout navigates to statistics, menu, and tables", () => {
 test("shared loading and empty states exist", () => {
   assert.ok(existsSync(resolve(root, "components/AppLoadingState.vue")))
   assert.ok(existsSync(resolve(root, "components/AppEmptyState.vue")))
+  assert.ok(existsSync(resolve(root, "components/AppPasswordInput.vue")))
+  assert.match(read("components/AppPasswordInput.vue"), /showPassword|hidePassword/)
+  assert.match(read("pages/admin/login.vue"), /AppPasswordInput/)
+  assert.match(read("pages/admin/settings.vue"), /AppPasswordInput/)
 })
 
 test("route groups declare the matching layout", () => {

@@ -393,14 +393,12 @@ onMounted(async () => {
           </label>
           <label class="block">
             <span class="field-label">{{ t("admin.password") }}</span>
-            <input
+            <AppPasswordInput
               v-model="form.password"
-              type="password"
               required
               minlength="8"
               autocomplete="new-password"
-              class="field-input"
-            >
+            />
           </label>
           <p v-if="createError" class="text-sm font-semibold text-[var(--chili)]">
             {{ createError }}
@@ -442,25 +440,21 @@ onMounted(async () => {
         <form class="mt-5 space-y-3" @submit.prevent="onPassword">
           <label class="block">
             <span class="field-label">{{ t("superadmin.newPassword") }}</span>
-            <input
+            <AppPasswordInput
               v-model="newPassword"
-              type="password"
               required
               minlength="8"
               autocomplete="new-password"
-              class="field-input"
-            >
+            />
           </label>
           <label class="block">
             <span class="field-label">{{ t("superadmin.confirmPassword") }}</span>
-            <input
+            <AppPasswordInput
               v-model="confirmPassword"
-              type="password"
               required
               minlength="8"
               autocomplete="new-password"
-              class="field-input"
-            >
+            />
           </label>
           <p
             v-if="passwordError"

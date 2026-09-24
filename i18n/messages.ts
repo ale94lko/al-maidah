@@ -17,6 +17,8 @@ export const messages = {
       ok: "OK",
       cancel: "Cancel",
       currencyAed: "AED",
+      showPassword: "Show password",
+      hidePassword: "Hide password",
     },
     guest: {
       table: "Table {n}",
@@ -399,6 +401,8 @@ export const messages = {
       ok: "حسنًا",
       cancel: "إلغاء",
       currencyAed: "د.إ",
+      showPassword: "إظهار كلمة المرور",
+      hidePassword: "إخفاء كلمة المرور",
     },
     guest: {
       table: "طاولة {n}",
