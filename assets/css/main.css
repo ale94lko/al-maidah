@@ -326,46 +326,24 @@ body:has(.kitchen-shell) {
     background: color-mix(in srgb, var(--chili) 18%, white);
   }
 
-  .admin-chip-btn {
-    @apply inline-flex items-center justify-center rounded-xl px-3 py-2 text-xs font-bold transition disabled:cursor-not-allowed disabled:opacity-50;
+  .table-icon-btn--archive {
+    border-color: color-mix(in srgb, #e67700 20%, transparent);
+    background: color-mix(in srgb, #e67700 12%, white);
+    color: #e67700;
   }
 
-  .admin-chip-btn--primary {
-    background: var(--info);
-    color: #fff;
-    box-shadow: 0 10px 20px -12px rgba(28, 126, 214, 0.55);
+  .table-icon-btn--archive:hover:not(:disabled) {
+    background: color-mix(in srgb, #e67700 20%, white);
   }
 
-  .admin-chip-btn--primary:hover:not(:disabled) {
-    background: var(--info-deep);
+  .table-icon-btn--warning {
+    border-color: color-mix(in srgb, var(--citrus-deep) 22%, transparent);
+    background: color-mix(in srgb, var(--citrus) 30%, white);
+    color: var(--citrus-deep);
   }
 
-  .admin-chip-btn--warning {
-    background: var(--citrus);
-    color: var(--ink);
-  }
-
-  .admin-chip-btn--warning:hover:not(:disabled) {
-    background: var(--citrus-deep);
-    color: #fff;
-  }
-
-  .admin-chip-btn--archive {
-    background: #e67700;
-    color: #fff;
-  }
-
-  .admin-chip-btn--archive:hover:not(:disabled) {
-    background: #d9480f;
-  }
-
-  .admin-chip-btn--success {
-    background: #2f9e44;
-    color: #fff;
-  }
-
-  .admin-chip-btn--success:hover:not(:disabled) {
-    background: #2b8a3e;
+  .table-icon-btn--warning:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--citrus) 45%, white);
   }
 
   .admin-split {

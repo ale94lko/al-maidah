@@ -323,7 +323,7 @@ function clearSelectedPhoto() {
             </label>
             <button
               type="submit"
-              class="admin-chip-btn admin-chip-btn--primary !px-4 !py-2.5 !text-sm disabled:opacity-60"
+              class="btn-primary !rounded-xl disabled:opacity-60"
               :disabled="saving"
             >
               + {{ t("admin.addCategory") }}
@@ -367,7 +367,7 @@ function clearSelectedPhoto() {
                 </label>
                 <button
                   type="submit"
-                  class="admin-chip-btn admin-chip-btn--primary disabled:opacity-60"
+                  class="btn-primary !rounded-xl !px-3 !py-2 !text-xs disabled:opacity-60"
                   :disabled="saving"
                 >
                   {{ saving ? t("admin.saving") : t("admin.save") }}
@@ -417,7 +417,9 @@ function clearSelectedPhoto() {
                 :title="t('admin.moveUp')"
                 @click="moveCategory(category.id, -1)"
               >
-                ↑
+                <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M12 19V5M5 12l7-7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
               </button>
               <button
                 type="button"
@@ -427,31 +429,57 @@ function clearSelectedPhoto() {
                 :title="t('admin.moveDown')"
                 @click="moveCategory(category.id, 1)"
               >
-                ↓
+                <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M12 5v14M19 12l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
               </button>
               <button
                 type="button"
-                class="admin-chip-btn"
-                :class="category.is_archived ? 'admin-chip-btn--success' : 'admin-chip-btn--archive'"
+                class="table-icon-btn"
+                :class="category.is_archived ? 'table-icon-btn--seat' : 'table-icon-btn--archive'"
                 :disabled="saving"
+                :aria-label="category.is_archived ? t('admin.restore') : t('admin.archive')"
+                :title="category.is_archived ? t('admin.restore') : t('admin.archive')"
                 @click="
                   patchCategory(category.id, {
                     is_archived: !category.is_archived,
                   })
                 "
               >
-                {{
-                  category.is_archived
-                    ? t("admin.restore")
-                    : t("admin.archive")
-                }}
+                <svg
+                  v-if="category.is_archived"
+                  viewBox="0 0 24 24"
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  aria-hidden="true"
+                >
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" stroke-linecap="round" stroke-linejoin="round" />
+                  <path d="M3 3v5h5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <svg
+                  v-else
+                  viewBox="0 0 24 24"
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  aria-hidden="true"
+                >
+                  <path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
               </button>
               <button
                 type="button"
-                class="admin-chip-btn admin-chip-btn--primary"
+                class="table-icon-btn table-icon-btn--info"
+                :aria-label="t('admin.addDish')"
+                :title="t('admin.addDish')"
                 @click="openNewDish(category.id)"
               >
-                {{ t("admin.addDish") }}
+                <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M12 5v14M5 12h14" stroke-linecap="round" />
+                </svg>
               </button>
             </div>
           </div>
@@ -538,7 +566,9 @@ function clearSelectedPhoto() {
                   :title="t('admin.moveUp')"
                   @click="moveDish(dish.id, -1)"
                 >
-                  ↑
+                  <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M12 19V5M5 12l7-7 7 7" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
                 </button>
                 <button
                   type="button"
@@ -548,46 +578,102 @@ function clearSelectedPhoto() {
                   :title="t('admin.moveDown')"
                   @click="moveDish(dish.id, 1)"
                 >
-                  ↓
+                  <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M12 5v14M19 12l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
                 </button>
                 <button
                   type="button"
-                  class="admin-chip-btn"
-                  :class="
-                    dish.is_available
-                      ? 'admin-chip-btn--warning'
-                      : 'admin-chip-btn--success'
-                  "
+                  class="table-icon-btn"
+                  :class="dish.is_available ? 'table-icon-btn--warning' : 'table-icon-btn--seat'"
                   :disabled="saving"
+                  :aria-label="dish.is_available ? t('admin.markSoldOut') : t('admin.markAvailable')"
+                  :title="dish.is_available ? t('admin.markSoldOut') : t('admin.markAvailable')"
                   @click="
                     patchDish(dish.id, { is_available: !dish.is_available })
                   "
                 >
-                  {{
-                    dish.is_available
-                      ? t("admin.markSoldOut")
-                      : t("admin.markAvailable")
-                  }}
+                  <svg
+                    v-if="dish.is_available"
+                    viewBox="0 0 24 24"
+                    class="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M8 12h8" stroke-linecap="round" />
+                  </svg>
+                  <svg
+                    v-else
+                    viewBox="0 0 24 24"
+                    class="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M8 12l3 3 5-5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
                 </button>
                 <button
                   type="button"
-                  class="admin-chip-btn"
-                  :class="dish.is_archived ? 'admin-chip-btn--success' : 'admin-chip-btn--archive'"
+                  class="table-icon-btn"
+                  :class="dish.is_archived ? 'table-icon-btn--seat' : 'table-icon-btn--archive'"
                   :disabled="saving"
+                  :aria-label="dish.is_archived ? t('admin.restore') : t('admin.archive')"
+                  :title="dish.is_archived ? t('admin.restore') : t('admin.archive')"
                   @click="
                     patchDish(dish.id, { is_archived: !dish.is_archived })
                   "
                 >
-                  {{
-                    dish.is_archived ? t("admin.restore") : t("admin.archive")
-                  }}
+                  <svg
+                    v-if="dish.is_archived"
+                    viewBox="0 0 24 24"
+                    class="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    aria-hidden="true"
+                  >
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M3 3v5h5" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  <svg
+                    v-else
+                    viewBox="0 0 24 24"
+                    class="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    aria-hidden="true"
+                  >
+                    <path d="M21 8v13H3V8M1 3h22v5H1zM10 12h4" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
                 </button>
                 <button
                   type="button"
-                  class="admin-chip-btn admin-chip-btn--primary"
+                  class="table-icon-btn table-icon-btn--neutral"
+                  :aria-label="t('admin.edit')"
+                  :title="t('admin.edit')"
                   @click="openEditDish(dish.id)"
                 >
-                  {{ t("admin.edit") }}
+                  <svg
+                    viewBox="0 0 24 24"
+                    class="h-4 w-4"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
                 </button>
               </div>
             </li>
