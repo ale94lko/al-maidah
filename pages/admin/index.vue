@@ -27,7 +27,7 @@ const {
 
 const restaurants = ref<MeResponse["restaurants"]>([])
 const restaurantId = ref<string | null>(null)
-const range = ref<StatsRange>("last_30_days")
+const range = ref<StatsRange>("today")
 const stats = ref<OwnerStatsResponse | null>(null)
 const loading = ref(true)
 

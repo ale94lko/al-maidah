@@ -52,7 +52,8 @@ test("admin stats page surfaces KPIs and range controls", () => {
   assert.match(page, /statsRevenue|statsProfit/)
   assert.match(page, /statsBestSellers/)
   assert.match(page, /statsPeakHours/)
-  assert.match(page, /last_30_days/)
+  assert.match(page, /ref<StatsRange>\("today"\)|ref\("today"\)/)
+  assert.match(read("server/utils/admin-stats.ts"), /return "today"/)
 })
 
 test("OwnerStatsResponse type covers margin and series", () => {

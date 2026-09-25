@@ -43,7 +43,7 @@ export function parseStatsRange(raw: unknown): StatsRange {
   if (typeof raw === "string" && (RANGES as string[]).includes(raw)) {
     return raw as StatsRange
   }
-  return "last_30_days"
+  return "today"
 }
 
 export function isEligibleStatOrder(row: {
