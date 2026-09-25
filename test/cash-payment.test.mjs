@@ -39,4 +39,6 @@ test("admin orders page can mark cash collected", () => {
   assert.match(page, /mark-paid/)
   assert.match(page, /cash_at_table/)
   assert.match(page, /admin\.markCashPaid/)
+  assert.match(page, /modalOpen|Teleport/)
+  assert.match(page, /PAGE_SIZE|pagedOrders/)
 })

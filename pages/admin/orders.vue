@@ -6,6 +6,8 @@ definePageMeta({
   layout: "admin",
 })
 
+const PAGE_SIZE = 10
+
 type MeResponse = {
   restaurants: Array<{ id: string; name: string; slug: string; trn: string | null }>
 }
@@ -37,14 +39,29 @@ const restaurantId = ref<string | null>(null)
 const orders = ref<OrderSummary[]>([])
 const receipt = ref<PublicReceipt | null>(null)
 const selectedOrderId = ref<string | null>(null)
+const modalOpen = ref(false)
+const receiptLoading = ref(false)
 const loading = ref(true)
 const markingPaid = ref(false)
+const page = ref(1)
+
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil(orders.value.length / PAGE_SIZE)),
+)
+
+const pagedOrders = computed(() => {
+  const start = (page.value - 1) * PAGE_SIZE
+  return orders.value.slice(start, start + PAGE_SIZE)
+})
 
 const canMarkCashPaid = computed(
   () =>
     receipt.value?.payment_method === "cash_at_table" &&
     receipt.value?.payment_status === "pending",
 )
+
+const canGoPrev = computed(() => page.value > 1)
+const canGoNext = computed(() => page.value < totalPages.value)
 
 function paymentStatusLabel(status: string) {
   if (status === "paid") {
@@ -82,6 +99,16 @@ async function loadOrders(id: string) {
     orders: OrderSummary[]
   }>(`/api/admin/orders/${encodeURIComponent(id)}`, { headers })
   orders.value = result.orders
+  if (page.value > totalPages.value) {
+    page.value = totalPages.value
+  }
+}
+
+function closeModal() {
+  modalOpen.value = false
+  selectedOrderId.value = null
+  receipt.value = null
+  receiptLoading.value = false
 }
 
 async function openReceipt(orderId: string) {
@@ -89,6 +116,9 @@ async function openReceipt(orderId: string) {
     return
   }
   selectedOrderId.value = orderId
+  modalOpen.value = true
+  receipt.value = null
+  receiptLoading.value = true
   try {
     const result = await $fetch<{ receipt: PublicReceipt }>(
       `/api/admin/orders/${encodeURIComponent(restaurantId.value)}/${encodeURIComponent(orderId)}`,
@@ -100,6 +130,9 @@ async function openReceipt(orderId: string) {
     showError(
       extractApiErrorMessage(error) || t("admin.receiptLoadError"),
     )
+    closeModal()
+  } finally {
+    receiptLoading.value = false
   }
 }
 
@@ -127,6 +160,18 @@ async function markCashPaid() {
     )
   } finally {
     markingPaid.value = false
+  }
+}
+
+function goPrev() {
+  if (canGoPrev.value) {
+    page.value -= 1
+  }
+}
+
+function goNext() {
+  if (canGoNext.value) {
+    page.value += 1
   }
 }
 
@@ -164,14 +209,21 @@ async function bootstrap() {
 
 async function onRestaurantChange(event: Event) {
   restaurantId.value = (event.target as HTMLSelectElement).value
-  receipt.value = null
-  selectedOrderId.value = null
+  closeModal()
+  page.value = 1
   if (restaurantId.value) {
     await loadOrders(restaurantId.value)
   }
 }
 
+function onKeydown(event: KeyboardEvent) {
+  if (event.key === "Escape" && modalOpen.value) {
+    closeModal()
+  }
+}
+
 onMounted(async () => {
+  window.addEventListener("keydown", onKeydown)
   const session = await refreshSession()
   if (!session) {
     await navigateTo({
@@ -181,6 +233,10 @@ onMounted(async () => {
     return
   }
   await bootstrap()
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener("keydown", onKeydown)
 })
 </script>
 
@@ -224,84 +280,149 @@ onMounted(async () => {
       class="mt-8"
       :label="t('admin.loadingOwner')"
     />
-    <div v-else class="mt-6 grid gap-6 lg:grid-cols-2">
-      <div class="space-y-2">
-        <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
+    <div v-else class="mt-2 space-y-4">
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <h2 class="text-sm font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
           {{ t("admin.recentOrders") }}
         </h2>
-        <AppEmptyState
-          v-if="!orders.length"
-          :title="t('admin.ordersEmpty')"
-          :description="t('admin.ordersEmptyHint')"
-        />
-        <ul v-else class="space-y-2">
-          <li v-for="order in orders" :key="order.id">
-            <button
-              type="button"
-              class="w-full rounded-2xl border px-4 py-3 text-start transition"
-              :class="
-                selectedOrderId === order.id
-                  ? 'border-[var(--herb)] bg-[var(--herb)] text-[var(--ivory)]'
-                  : 'border-[var(--espresso)]/10 bg-[var(--surface)] text-[var(--espresso)] hover:border-[var(--espresso)]/30'
-              "
-              @click="openReceipt(order.id)"
-            >
-              <div class="flex items-center justify-between gap-3">
-                <span class="text-sm font-semibold">
-                  <template v-if="order.table_number != null">
-                    {{ t("guest.table", { n: order.table_number }) }}
-                  </template>
-                  <template v-else>
-                    {{ t("admin.orderLabel") }}
-                  </template>
+        <p
+          v-if="orders.length"
+          class="text-xs font-semibold text-[var(--muted)]"
+        >
+          {{ t("admin.ordersPageOf", { page, pages: totalPages }) }}
+        </p>
+      </div>
+
+      <AppEmptyState
+        v-if="!orders.length"
+        :title="t('admin.ordersEmpty')"
+        :description="t('admin.ordersEmptyHint')"
+      />
+
+      <ul v-else class="space-y-2">
+        <li v-for="order in pagedOrders" :key="order.id">
+          <button
+            type="button"
+            class="flex w-full items-center justify-between gap-4 rounded-2xl border border-[var(--navy)]/10 bg-white px-4 py-3.5 text-start shadow-sm transition hover:border-[var(--navy)]/25 hover:shadow-md"
+            @click="openReceipt(order.id)"
+          >
+            <div class="min-w-0">
+              <p class="text-sm font-bold text-[var(--navy)]">
+                <template v-if="order.table_number != null">
+                  {{ t("guest.table", { n: order.table_number }) }}
+                </template>
+                <template v-else>
+                  {{ t("admin.orderLabel") }}
+                </template>
+                <span
+                  v-if="order.guest_name"
+                  class="ms-2 font-normal text-[var(--muted)]"
+                >
+                  · {{ order.guest_name }}
                 </span>
-                <span class="font-mono text-sm">
-                  {{ t("guest.priceAed", { price: order.total }) }}
-                </span>
-              </div>
-              <p
-                class="mt-1 text-xs"
-                :class="
-                  selectedOrderId === order.id
-                    ? 'text-[var(--ivory)]/70'
-                    : 'text-[var(--muted)]'
-                "
-              >
+              </p>
+              <p class="mt-1 text-xs text-[var(--muted)]">
                 {{ formatWhen(order.created_at) }}
                 · {{ paymentStatusLabel(order.payment_status) }}
               </p>
-            </button>
-          </li>
-        </ul>
-      </div>
-
-      <div class="space-y-4">
-        <OrderReceipt
-          v-if="receipt"
-          :receipt="receipt"
-        />
-        <p v-else class="text-sm text-[var(--muted)]">
-          {{ t("admin.selectOrderForReceipt") }}
-        </p>
-        <div
-          v-if="canMarkCashPaid"
-          class="rounded-2xl border border-[var(--espresso)]/15 bg-[var(--surface)] px-4 py-3"
-        >
-          <p class="text-sm leading-relaxed text-[var(--muted)]">
-            {{ t("admin.markCashPaidHint") }}
-          </p>
-          <button
-            type="button"
-            class="btn-success mt-3 disabled:opacity-60"
-            :disabled="markingPaid"
-            @click="markCashPaid"
-          >
-            {{
-              markingPaid ? t("admin.markingCashPaid") : t("admin.markCashPaid")
-            }}
+            </div>
+            <span class="shrink-0 font-mono text-sm font-bold text-[var(--navy)]">
+              {{ t("guest.priceAed", { price: order.total }) }}
+            </span>
           </button>
-        </div>
+        </li>
+      </ul>
+
+      <div
+        v-if="orders.length > PAGE_SIZE"
+        class="flex flex-wrap items-center justify-between gap-3 pt-1"
+      >
+        <button
+          type="button"
+          class="table-icon-btn table-icon-btn--neutral !h-auto !w-auto !px-4 !py-2 !text-xs font-bold"
+          :disabled="!canGoPrev"
+          @click="goPrev"
+        >
+          {{ t("admin.ordersPrevPage") }}
+        </button>
+        <p class="text-xs font-semibold text-[var(--muted)]">
+          {{ t("admin.ordersPageOf", { page, pages: totalPages }) }}
+        </p>
+        <button
+          type="button"
+          class="table-icon-btn table-icon-btn--neutral !h-auto !w-auto !px-4 !py-2 !text-xs font-bold"
+          :disabled="!canGoNext"
+          @click="goNext"
+        >
+          {{ t("admin.ordersNextPage") }}
+        </button>
       </div>
     </div>
+
+    <Teleport to="body">
+      <div
+        v-if="modalOpen"
+        class="fixed inset-0 z-[70] flex items-end justify-center px-4 py-6 sm:items-center"
+        role="dialog"
+        aria-modal="true"
+        :aria-label="t('guest.receiptTitle')"
+      >
+        <button
+          type="button"
+          class="absolute inset-0 bg-[var(--navy)]/45 backdrop-blur-sm"
+          :aria-label="t('common.close')"
+          @click="closeModal"
+        />
+        <div
+          class="relative z-10 flex max-h-[min(92dvh,44rem)] w-full max-w-lg flex-col overflow-hidden rounded-3xl border border-[var(--navy)]/10 bg-[var(--paper)] shadow-2xl"
+        >
+          <div class="flex items-center justify-between gap-3 border-b border-[var(--navy)]/8 bg-white px-4 py-3">
+            <h2 class="font-display text-lg font-bold text-[var(--navy)]">
+              {{ t("guest.receiptTitle") }}
+            </h2>
+            <button
+              type="button"
+              class="table-icon-btn table-icon-btn--neutral !h-9 !w-9"
+              :aria-label="t('common.close')"
+              @click="closeModal"
+            >
+              <svg viewBox="0 0 24 24" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M6 6l12 12M18 6L6 18" stroke-linecap="round" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
+            <AppLoadingState
+              v-if="receiptLoading"
+              :label="t('common.loading')"
+            />
+            <template v-else-if="receipt">
+              <OrderReceipt :receipt="receipt" />
+              <div
+                v-if="canMarkCashPaid"
+                class="rounded-2xl border border-[var(--navy)]/10 bg-white px-4 py-3"
+              >
+                <p class="text-sm leading-relaxed text-[var(--muted)]">
+                  {{ t("admin.markCashPaidHint") }}
+                </p>
+                <button
+                  type="button"
+                  class="btn-primary mt-3 w-full !rounded-xl disabled:opacity-60"
+                  :disabled="markingPaid"
+                  @click="markCashPaid"
+                >
+                  {{
+                    markingPaid
+                      ? t("admin.markingCashPaid")
+                      : t("admin.markCashPaid")
+                  }}
+                </button>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
