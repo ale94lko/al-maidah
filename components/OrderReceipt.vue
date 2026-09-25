@@ -5,9 +5,6 @@ import { filsToMoney, moneyToFils } from "~/utils/cart"
 
 const props = defineProps<{
   receipt: PublicReceipt
-  /** When true, show admin-only TRN missing prompt. */
-  showTrnPrompt?: boolean
-  settingsPath?: string
 }>()
 
 const { t, locale } = useAppI18n()
@@ -62,9 +59,6 @@ function paymentLabel(method: PaymentMethod | null): string {
       <p v-if="receipt.trn" class="font-mono text-xs text-[var(--muted)]">
         {{ t("guest.trnLabel", { trn: receipt.trn }) }}
       </p>
-      <p v-else class="text-xs text-amber-800">
-        {{ t("guest.trnNotOnFile") }}
-      </p>
       <p class="text-xs text-[var(--muted)]">
         {{ issuedAt }}
       </p>
@@ -75,20 +69,6 @@ function paymentLabel(method: PaymentMethod | null): string {
         {{ receipt.guest_name }}
       </p>
     </header>
-
-    <div
-      v-if="showTrnPrompt && !receipt.trn && settingsPath"
-      class="rounded-2xl border border-amber-300/80 bg-amber-50 px-3 py-2 text-amber-950"
-    >
-      <p class="font-medium">{{ t("admin.trnMissingTitle") }}</p>
-      <p class="mt-1 text-xs leading-relaxed">{{ t("admin.trnMissingHint") }}</p>
-      <NuxtLink
-        :to="settingsPath"
-        class="mt-2 inline-flex text-xs font-semibold underline"
-      >
-        {{ t("admin.addTrn") }}
-      </NuxtLink>
-    </div>
 
     <ul class="space-y-2">
       <li

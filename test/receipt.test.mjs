@@ -79,17 +79,17 @@ test("status page mounts digital receipt for paid or cash orders", () => {
   assert.match(page, /payment_status === "paid"/)
 })
 
-test("admin settings and orders surfaces expose TRN prompt", () => {
+test("admin settings focuses on account password, not TRN prompts", () => {
   assert.ok(existsSync(resolve(root, "pages/admin/settings.vue")))
   assert.ok(existsSync(resolve(root, "pages/admin/orders.vue")))
   assert.ok(existsSync(resolve(root, "components/OrderReceipt.vue")))
-  assert.match(read("pages/admin/settings.vue"), /trnMissingTitle|trnField/)
+  assert.doesNotMatch(read("pages/admin/settings.vue"), /trnMissingTitle|trnField|trnInput/)
   assert.match(read("pages/admin/settings.vue"), /changePassword|\/api\/auth\/password/)
   assert.ok(existsSync(resolve(root, "server/api/auth/password.post.ts")))
   assert.match(read("server/api/auth/password.post.ts"), /requireUser/)
   assert.match(read("server/api/auth/password.post.ts"), /currentPassword/)
-  assert.match(read("pages/admin/orders.vue"), /trnMissingTitle|OrderReceipt/)
-  assert.match(read("components/OrderReceipt.vue"), /trnNotOnFile/)
+  assert.doesNotMatch(read("pages/admin/orders.vue"), /trnMissingTitle|addTrn|show-trn-prompt/)
+  assert.doesNotMatch(read("components/OrderReceipt.vue"), /trnNotOnFile|showTrnPrompt/)
   assert.match(read("layouts/admin.vue"), /\/admin\/settings/)
   assert.match(read("layouts/admin.vue"), /\/admin\/orders/)
 })

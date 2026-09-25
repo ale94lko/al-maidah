@@ -34,14 +34,11 @@ const {
 
 const restaurants = ref<MeResponse["restaurants"]>([])
 const restaurantId = ref<string | null>(null)
-const restaurantTrn = ref<string | null>(null)
 const orders = ref<OrderSummary[]>([])
 const receipt = ref<PublicReceipt | null>(null)
 const selectedOrderId = ref<string | null>(null)
 const loading = ref(true)
 const markingPaid = ref(false)
-
-const settingsPath = computed(() => "/admin/settings")
 
 const canMarkCashPaid = computed(
   () =>
@@ -84,7 +81,6 @@ async function loadOrders(id: string) {
     restaurant: { id: string; trn: string | null }
     orders: OrderSummary[]
   }>(`/api/admin/orders/${encodeURIComponent(id)}`, { headers })
-  restaurantTrn.value = result.restaurant.trn
   orders.value = result.orders
 }
 
@@ -223,20 +219,6 @@ onMounted(async () => {
       </label>
     </header>
 
-    <div
-      v-if="!loading && !restaurantTrn"
-      class="mt-6 rounded-2xl border border-amber-300/80 bg-amber-50 px-4 py-3 text-amber-950"
-    >
-      <p class="font-semibold">{{ t("admin.trnMissingTitle") }}</p>
-      <p class="mt-1 text-sm leading-relaxed">{{ t("admin.trnMissingHint") }}</p>
-      <NuxtLink
-        :to="settingsPath"
-        class="mt-2 inline-flex text-sm font-semibold underline"
-      >
-        {{ t("admin.addTrn") }}
-      </NuxtLink>
-    </div>
-
     <AppLoadingState
       v-if="loading"
       class="mt-8"
@@ -297,8 +279,6 @@ onMounted(async () => {
         <OrderReceipt
           v-if="receipt"
           :receipt="receipt"
-          :show-trn-prompt="true"
-          :settings-path="settingsPath"
         />
         <p v-else class="text-sm text-[var(--muted)]">
           {{ t("admin.selectOrderForReceipt") }}

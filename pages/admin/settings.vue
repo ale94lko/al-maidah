@@ -11,7 +11,6 @@ type MeResponse = {
     id: string
     name: string
     slug: string
-    trn: string | null
   }>
 }
 
@@ -27,10 +26,7 @@ const {
 
 const restaurants = ref<MeResponse["restaurants"]>([])
 const restaurantId = ref<string | null>(null)
-const trnInput = ref("")
 const loading = ref(true)
-const saving = ref(false)
-const savedMessage = ref("")
 
 const currentPassword = ref("")
 const newPassword = ref("")
@@ -41,7 +37,6 @@ const passwordMessage = ref("")
 const selected = computed(
   () => restaurants.value.find((r) => r.id === restaurantId.value) ?? null,
 )
-const trnMissing = computed(() => !selected.value?.trn)
 
 async function authHeaders() {
   const token = await accessToken()
@@ -51,24 +46,6 @@ async function authHeaders() {
   return { Authorization: `Bearer ${token}` }
 }
 
-async function loadRestaurant(id: string) {
-  const headers = await authHeaders()
-  const result = await $fetch<{
-    restaurant: { id: string; name: string; slug: string; trn: string | null }
-  }>(`/api/admin/restaurants/${encodeURIComponent(id)}`, { headers })
-  const idx = restaurants.value.findIndex((r) => r.id === id)
-  const current = idx >= 0 ? restaurants.value[idx] : null
-  if (current) {
-    restaurants.value[idx] = {
-      id: current.id,
-      name: current.name,
-      slug: current.slug,
-      trn: result.restaurant.trn,
-    }
-  }
-  trnInput.value = result.restaurant.trn || ""
-}
-
 async function bootstrap() {
   loading.value = true
   try {
@@ -76,13 +53,11 @@ async function bootstrap() {
       headers: await authHeaders(),
     })
     restaurants.value = me.restaurants.map((r) => ({
-      ...r,
-      trn: r.trn ?? null,
+      id: r.id,
+      name: r.name,
+      slug: r.slug,
     }))
     restaurantId.value = restaurants.value[0]?.id ?? null
-    if (restaurantId.value) {
-      await loadRestaurant(restaurantId.value)
-    }
   } catch (error) {
     showError(
       extractApiErrorMessage(error) || t("admin.settingsSaveError"),
@@ -92,47 +67,8 @@ async function bootstrap() {
   }
 }
 
-async function onRestaurantChange(event: Event) {
+function onRestaurantChange(event: Event) {
   restaurantId.value = (event.target as HTMLSelectElement).value
-  savedMessage.value = ""
-  if (restaurantId.value) {
-    await loadRestaurant(restaurantId.value)
-  }
-}
-
-async function onSave() {
-  if (!restaurantId.value) {
-    return
-  }
-  saving.value = true
-  savedMessage.value = ""
-  try {
-    const result = await $fetch<{
-      restaurant: { id: string; trn: string | null }
-    }>(`/api/admin/restaurants/${encodeURIComponent(restaurantId.value)}`, {
-      method: "PATCH",
-      headers: await authHeaders(),
-      body: { trn: trnInput.value },
-    })
-    const idx = restaurants.value.findIndex((r) => r.id === restaurantId.value)
-    const current = idx >= 0 ? restaurants.value[idx] : null
-    if (current) {
-      restaurants.value[idx] = {
-        id: current.id,
-        name: current.name,
-        slug: current.slug,
-        trn: result.restaurant.trn,
-      }
-    }
-    trnInput.value = result.restaurant.trn || ""
-    savedMessage.value = t("admin.settingsSaved")
-  } catch (error) {
-    showError(
-      extractApiErrorMessage(error) || t("admin.settingsSaveError"),
-    )
-  } finally {
-    saving.value = false
-  }
 }
 
 async function onPassword() {
@@ -215,22 +151,6 @@ onMounted(async () => {
       :label="t('admin.loadingOwner')"
     />
     <template v-else>
-      <div
-        v-if="trnMissing && selected"
-        class="mb-5 flex flex-wrap items-start gap-3 rounded-3xl border border-[var(--citrus)]/40 bg-[color-mix(in_srgb,var(--citrus)_18%,white)] px-5 py-4"
-      >
-        <span
-          class="mt-0.5 h-2.5 w-2.5 shrink-0 rounded-sm bg-[var(--citrus-deep)]"
-          aria-hidden="true"
-        />
-        <div class="min-w-0 flex-1">
-          <p class="font-bold text-[var(--ink)]">{{ t("admin.trnMissingTitle") }}</p>
-          <p class="mt-1 text-sm leading-relaxed text-[var(--muted)]">
-            {{ t("admin.trnMissingHint") }}
-          </p>
-        </div>
-      </div>
-
       <div v-if="selected" class="admin-split">
         <aside class="admin-panel overflow-hidden">
           <div
@@ -248,18 +168,6 @@ onMounted(async () => {
           </div>
           <div class="admin-panel-body space-y-4">
             <div class="flex flex-wrap gap-2">
-              <span
-                v-if="!trnMissing"
-                class="status-chip status-chip-ok"
-              >
-                {{ t("admin.trnField") }}
-              </span>
-              <span
-                v-else
-                class="status-chip status-chip-warn"
-              >
-                {{ t("admin.trnMissingTitle") }}
-              </span>
               <span class="status-chip status-chip-ok">
                 {{ t("admin.owner") }}
               </span>
@@ -267,52 +175,78 @@ onMounted(async () => {
             <dl class="space-y-3 text-sm">
               <div>
                 <dt class="text-xs font-bold uppercase tracking-wide text-[var(--muted)]">
-                  {{ t("admin.trnField") }}
+                  {{ t("admin.menuPath") }}
                 </dt>
                 <dd class="mt-1 font-mono text-[var(--ink)]">
-                  {{ selected.trn || "—" }}
+                  /m/{{ selected.slug }}
                 </dd>
               </div>
             </dl>
           </div>
         </aside>
 
-        <form class="admin-panel flex flex-col" @submit.prevent="onSave">
+        <section class="admin-panel">
           <div class="admin-panel-head">
             <div>
               <h2 class="font-display text-lg font-bold text-[var(--ink)]">
-                {{ t("admin.trnField") }}
+                {{ t("admin.changePassword") }}
               </h2>
               <p class="mt-0.5 text-xs text-[var(--muted)]">
-                {{ t("admin.trnFieldHint") }}
+                {{ t("admin.changePasswordHint") }}
               </p>
             </div>
           </div>
-          <div class="admin-panel-body flex flex-1 flex-col gap-5">
-            <label class="block">
-              <span class="field-label">{{ t("admin.trnField") }}</span>
-              <input
-                v-model="trnInput"
-                type="text"
-                autocomplete="off"
-                class="field-input font-mono"
-                :placeholder="t('admin.trnPlaceholder')"
+          <div class="admin-panel-body">
+            <form class="grid gap-3" @submit.prevent="onPassword">
+              <label class="block">
+                <span class="field-label">{{ t("admin.currentPassword") }}</span>
+                <AppPasswordInput
+                  v-model="currentPassword"
+                  required
+                  minlength="8"
+                  autocomplete="current-password"
+                />
+              </label>
+              <label class="block">
+                <span class="field-label">{{ t("admin.newPassword") }}</span>
+                <AppPasswordInput
+                  v-model="newPassword"
+                  required
+                  minlength="8"
+                  autocomplete="new-password"
+                />
+              </label>
+              <label class="block">
+                <span class="field-label">{{ t("admin.confirmPassword") }}</span>
+                <AppPasswordInput
+                  v-model="confirmPassword"
+                  required
+                  minlength="8"
+                  autocomplete="new-password"
+                />
+              </label>
+              <p
+                v-if="passwordMessage"
+                class="text-sm font-semibold text-[var(--herb)]"
               >
-            </label>
-            <p v-if="savedMessage" class="text-sm font-semibold text-[var(--herb)]">
-              {{ savedMessage }}
-            </p>
-            <div class="mt-auto flex flex-wrap items-center justify-end gap-3 border-t border-[var(--ink)]/6 pt-5">
-              <button
-                type="submit"
-                class="btn-primary min-w-[8rem] disabled:opacity-60"
-                :disabled="saving"
-              >
-                {{ saving ? t("admin.saving") : t("admin.save") }}
-              </button>
-            </div>
+                {{ passwordMessage }}
+              </p>
+              <div class="flex justify-end pt-1">
+                <button
+                  type="submit"
+                  class="btn-primary min-w-[10rem] disabled:opacity-60"
+                  :disabled="savingPassword"
+                >
+                  {{
+                    savingPassword
+                      ? t("admin.saving")
+                      : t("admin.updatePassword")
+                  }}
+                </button>
+              </div>
+            </form>
           </div>
-        </form>
+        </section>
       </div>
 
       <AppEmptyState
@@ -321,69 +255,6 @@ onMounted(async () => {
         :title="t('admin.noRestaurants')"
         :description="t('admin.noRestaurantsHint')"
       />
-
-      <section class="admin-panel mt-5">
-        <div class="admin-panel-head">
-          <div>
-            <h2 class="font-display text-lg font-bold text-[var(--ink)]">
-              {{ t("admin.changePassword") }}
-            </h2>
-            <p class="mt-0.5 text-xs text-[var(--muted)]">
-              {{ t("admin.changePasswordHint") }}
-            </p>
-          </div>
-        </div>
-        <div class="admin-panel-body">
-          <form class="grid max-w-xl gap-3" @submit.prevent="onPassword">
-            <label class="block">
-              <span class="field-label">{{ t("admin.currentPassword") }}</span>
-              <AppPasswordInput
-                v-model="currentPassword"
-                required
-                minlength="8"
-                autocomplete="current-password"
-              />
-            </label>
-            <label class="block">
-              <span class="field-label">{{ t("admin.newPassword") }}</span>
-              <AppPasswordInput
-                v-model="newPassword"
-                required
-                minlength="8"
-                autocomplete="new-password"
-              />
-            </label>
-            <label class="block">
-              <span class="field-label">{{ t("admin.confirmPassword") }}</span>
-              <AppPasswordInput
-                v-model="confirmPassword"
-                required
-                minlength="8"
-                autocomplete="new-password"
-              />
-            </label>
-            <p
-              v-if="passwordMessage"
-              class="text-sm font-semibold text-[var(--herb)]"
-            >
-              {{ passwordMessage }}
-            </p>
-            <div class="flex justify-end pt-1">
-              <button
-                type="submit"
-                class="btn-primary min-w-[10rem] disabled:opacity-60"
-                :disabled="savingPassword"
-              >
-                {{
-                  savingPassword
-                    ? t("admin.saving")
-                    : t("admin.updatePassword")
-                }}
-              </button>
-            </div>
-          </form>
-        </div>
-      </section>
     </template>
   </div>
 </template>
