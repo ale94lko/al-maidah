@@ -50,6 +50,7 @@ test("admin menu page supports categories dishes sold-out and archive", () => {
   assert.match(page, /admin\.margin|dishMargin/)
   assert.match(page, /uploadPhoto|photo/)
   assert.match(page, /border-e border-\[var\(--navy\)\]\/12|grid-cols-3/)
+  assert.match(page, /table-icon-btn|admin-chip-btn/)
   assert.match(composable, /saveDish/)
   assert.match(composable, /uploadPhoto/)
   assert.match(composable, /assertRestaurantOwner|\/api\/admin\/menu\//)

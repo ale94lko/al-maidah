@@ -323,7 +323,7 @@ function clearSelectedPhoto() {
             </label>
             <button
               type="submit"
-              class="btn-primary !rounded-xl disabled:opacity-60"
+              class="admin-chip-btn admin-chip-btn--primary !px-4 !py-2.5 !text-sm disabled:opacity-60"
               :disabled="saving"
             >
               + {{ t("admin.addCategory") }}
@@ -367,14 +367,14 @@ function clearSelectedPhoto() {
                 </label>
                 <button
                   type="submit"
-                  class="btn-primary !rounded-xl !px-3 !py-2 !text-xs disabled:opacity-60"
+                  class="admin-chip-btn admin-chip-btn--primary disabled:opacity-60"
                   :disabled="saving"
                 >
                   {{ saving ? t("admin.saving") : t("admin.save") }}
                 </button>
                 <button
                   type="button"
-                  class="rounded-xl border border-[var(--navy)]/10 bg-white px-3 py-2 text-xs font-bold text-[var(--navy)]"
+                  class="table-icon-btn table-icon-btn--neutral !h-auto !w-auto !px-3 !py-2 !text-xs font-bold"
                   @click="cancelEditCategory"
                 >
                   {{ t("admin.cancel") }}
@@ -386,7 +386,7 @@ function clearSelectedPhoto() {
                 </h2>
                 <button
                   type="button"
-                  class="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--navy)]/10 bg-white text-[var(--navy)] transition hover:bg-[var(--paper)]"
+                  class="table-icon-btn table-icon-btn--neutral !h-8 !w-8"
                   :aria-label="t('admin.editCategory')"
                   :title="t('admin.editCategory')"
                   @click="openEditCategory(category)"
@@ -411,7 +411,7 @@ function clearSelectedPhoto() {
             <div class="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--navy)]/10 bg-white text-[var(--navy)] transition hover:bg-white disabled:opacity-50"
+                class="table-icon-btn table-icon-btn--neutral"
                 :disabled="saving"
                 :aria-label="t('admin.moveUp')"
                 :title="t('admin.moveUp')"
@@ -421,7 +421,7 @@ function clearSelectedPhoto() {
               </button>
               <button
                 type="button"
-                class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--navy)]/10 bg-white text-[var(--navy)] transition hover:bg-white disabled:opacity-50"
+                class="table-icon-btn table-icon-btn--neutral"
                 :disabled="saving"
                 :aria-label="t('admin.moveDown')"
                 :title="t('admin.moveDown')"
@@ -431,8 +431,8 @@ function clearSelectedPhoto() {
               </button>
               <button
                 type="button"
-                class="rounded-xl px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
-                :class="category.is_archived ? 'bg-[var(--herb)]' : 'bg-[#e67700]'"
+                class="admin-chip-btn"
+                :class="category.is_archived ? 'admin-chip-btn--success' : 'admin-chip-btn--archive'"
                 :disabled="saving"
                 @click="
                   patchCategory(category.id, {
@@ -448,7 +448,7 @@ function clearSelectedPhoto() {
               </button>
               <button
                 type="button"
-                class="btn-primary !rounded-xl !px-3 !py-2 !text-xs"
+                class="admin-chip-btn admin-chip-btn--primary"
                 @click="openNewDish(category.id)"
               >
                 {{ t("admin.addDish") }}
@@ -532,7 +532,7 @@ function clearSelectedPhoto() {
               <div class="flex w-full flex-wrap items-center gap-2 sm:ms-auto sm:w-auto sm:justify-end">
                 <button
                   type="button"
-                  class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--navy)]/10 bg-[var(--paper)]/60 text-[var(--navy)] disabled:opacity-50"
+                  class="table-icon-btn table-icon-btn--neutral"
                   :disabled="saving"
                   :aria-label="t('admin.moveUp')"
                   :title="t('admin.moveUp')"
@@ -542,7 +542,7 @@ function clearSelectedPhoto() {
                 </button>
                 <button
                   type="button"
-                  class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--navy)]/10 bg-[var(--paper)]/60 text-[var(--navy)] disabled:opacity-50"
+                  class="table-icon-btn table-icon-btn--neutral"
                   :disabled="saving"
                   :aria-label="t('admin.moveDown')"
                   :title="t('admin.moveDown')"
@@ -552,11 +552,11 @@ function clearSelectedPhoto() {
                 </button>
                 <button
                   type="button"
-                  class="rounded-xl px-3 py-2 text-xs font-bold disabled:opacity-50"
+                  class="admin-chip-btn"
                   :class="
                     dish.is_available
-                      ? 'bg-[var(--citrus)] text-[var(--ink)]'
-                      : 'bg-[var(--herb)] text-white'
+                      ? 'admin-chip-btn--warning'
+                      : 'admin-chip-btn--success'
                   "
                   :disabled="saving"
                   @click="
@@ -571,8 +571,8 @@ function clearSelectedPhoto() {
                 </button>
                 <button
                   type="button"
-                  class="rounded-xl px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
-                  :class="dish.is_archived ? 'bg-[var(--herb)]' : 'bg-[#e67700]'"
+                  class="admin-chip-btn"
+                  :class="dish.is_archived ? 'admin-chip-btn--success' : 'admin-chip-btn--archive'"
                   :disabled="saving"
                   @click="
                     patchDish(dish.id, { is_archived: !dish.is_archived })
@@ -584,7 +584,7 @@ function clearSelectedPhoto() {
                 </button>
                 <button
                   type="button"
-                  class="btn-primary !rounded-xl !px-3 !py-2 !text-xs"
+                  class="admin-chip-btn admin-chip-btn--primary"
                   @click="openEditDish(dish.id)"
                 >
                   {{ t("admin.edit") }}
