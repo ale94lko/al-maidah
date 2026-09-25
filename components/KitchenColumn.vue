@@ -33,7 +33,13 @@ const badgeTextColor = computed(() => {
 </script>
 
 <template>
-  <section class="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
+  <section
+    class="flex min-h-0 min-w-0 flex-1 flex-col gap-3 rounded-3xl border bg-white/70 p-4 shadow-sm sm:p-5"
+    :style="{
+      borderColor: `color-mix(in srgb, ${accentColor} 28%, transparent)`,
+      boxShadow: `0 14px 36px -28px color-mix(in srgb, ${accentColor} 55%, transparent)`,
+    }"
+  >
     <header class="space-y-1.5 pb-1">
       <div class="flex items-center justify-between gap-2">
         <div class="flex min-w-0 items-center gap-2">
@@ -98,11 +104,11 @@ const badgeTextColor = computed(() => {
 
     <div
       v-if="!tickets.length"
-      class="rounded-3xl border border-dashed border-[var(--navy)]/15 bg-white/60 px-3 py-10 text-center text-sm text-[var(--muted)]"
+      class="rounded-2xl border border-dashed border-[var(--navy)]/15 bg-[var(--paper)]/50 px-3 py-10 text-center text-sm text-[var(--muted)]"
     >
       {{ emptyLabel }}
     </div>
-    <div v-else class="flex flex-col gap-3 overflow-y-auto pb-2">
+    <div v-else class="flex min-h-0 flex-col gap-3 overflow-y-auto pb-1">
       <KitchenTicketCard
         v-for="ticket in tickets"
         :key="ticket.id"
