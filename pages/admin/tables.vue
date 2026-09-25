@@ -402,30 +402,6 @@ async function copyMenuUrl(tableId: string) {
                 </template>
                 <template v-else>
                   <button
-                    v-if="!table.open_session"
-                    type="button"
-                    class="table-icon-btn table-icon-btn--seat"
-                    :disabled="saving"
-                    :aria-label="t('admin.seatTable')"
-                    :title="t('admin.seatTable')"
-                    @click="onSeat(table)"
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      class="h-4 w-4"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M5 11v8M19 11v8M5 15h14M7 11V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v4"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                    </svg>
-                  </button>
-                  <button
                     type="button"
                     class="table-icon-btn table-icon-btn--neutral"
                     :disabled="saving"
@@ -472,7 +448,31 @@ async function copyMenuUrl(tableId: string) {
                     </svg>
                   </button>
                   <button
-                    v-if="table.open_session"
+                    v-if="!table.open_session"
+                    type="button"
+                    class="table-icon-btn table-icon-btn--seat"
+                    :disabled="saving"
+                    :aria-label="t('admin.seatTable')"
+                    :title="t('admin.seatTable')"
+                    @click="onSeat(table)"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      class="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M5 11v8M19 11v8M5 15h14M7 11V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v4"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    v-else
                     type="button"
                     class="table-icon-btn table-icon-btn--info"
                     :disabled="saving"
