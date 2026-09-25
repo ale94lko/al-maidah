@@ -1,4 +1,6 @@
+import { parseStatsRange } from "~/server/utils/admin-stats"
 import { listOwnerOrders } from "~/server/utils/receipt"
+import { resolveStatsWindow } from "~/utils/stats-range"
 
 export default defineEventHandler(async (event) => {
   const user = await requireUser(event)
@@ -20,7 +22,15 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: "Restaurant not found" })
   }
 
-  const orders = await listOwnerOrders(client, restaurantId)
+  const query = getQuery(event)
+  const range = parseStatsRange(query.range)
+  const { start, end } = resolveStatsWindow(range)
+
+  const orders = await listOwnerOrders(client, restaurantId, {
+    start,
+    end,
+    limit: 200,
+  })
 
   return {
     restaurant: {
@@ -29,6 +39,7 @@ export default defineEventHandler(async (event) => {
       slug: restaurant.slug,
       trn: restaurant.trn?.trim() || null,
     },
+    range,
     orders,
   }
 })

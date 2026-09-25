@@ -41,4 +41,16 @@ test("admin orders page can mark cash collected", () => {
   assert.match(page, /admin\.markCashPaid/)
   assert.match(page, /modalOpen|Teleport/)
   assert.match(page, /PAGE_SIZE|pagedOrders/)
+  assert.match(page, /statsRange|onRangeChange/)
+  assert.match(page, /ref<StatsRange>\("today"\)|ref\("today"\)/)
+})
+
+test("admin orders API accepts the same date range as analytics", () => {
+  const api = read("server/api/admin/orders/[restaurantId].get.ts")
+  assert.match(api, /parseStatsRange/)
+  assert.match(api, /resolveStatsWindow/)
+  assert.match(api, /listOwnerOrders/)
+  const helper = read("server/utils/receipt.ts")
+  assert.match(helper, /gte\("created_at"/)
+  assert.match(helper, /lte\("created_at"/)
 })

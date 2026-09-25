@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PublicReceipt } from "~/types"
+import type { PublicReceipt, StatsRange } from "~/types"
 import { extractApiErrorMessage } from "~/utils/errors"
 
 definePageMeta({
@@ -7,6 +7,7 @@ definePageMeta({
 })
 
 const PAGE_SIZE = 10
+const RANGES: StatsRange[] = ["today", "week", "month", "last_30_days"]
 
 type MeResponse = {
   restaurants: Array<{ id: string; name: string; slug: string; trn: string | null }>
@@ -36,6 +37,7 @@ const {
 
 const restaurants = ref<MeResponse["restaurants"]>([])
 const restaurantId = ref<string | null>(null)
+const range = ref<StatsRange>("today")
 const orders = ref<OrderSummary[]>([])
 const receipt = ref<PublicReceipt | null>(null)
 const selectedOrderId = ref<string | null>(null)
@@ -97,7 +99,10 @@ async function loadOrders(id: string) {
   const result = await $fetch<{
     restaurant: { id: string; trn: string | null }
     orders: OrderSummary[]
-  }>(`/api/admin/orders/${encodeURIComponent(id)}`, { headers })
+  }>(`/api/admin/orders/${encodeURIComponent(id)}`, {
+    headers,
+    query: { range: range.value },
+  })
   orders.value = result.orders
   if (page.value > totalPages.value) {
     page.value = totalPages.value
@@ -172,6 +177,15 @@ function goPrev() {
 function goNext() {
   if (canGoNext.value) {
     page.value += 1
+  }
+}
+
+async function onRangeChange(next: StatsRange) {
+  range.value = next
+  page.value = 1
+  closeModal()
+  if (restaurantId.value) {
+    await loadOrders(restaurantId.value)
   }
 }
 
@@ -275,9 +289,30 @@ onBeforeUnmount(() => {
       </label>
     </header>
 
+    <div
+      class="mb-4 inline-flex flex-wrap gap-1 rounded-full bg-white p-1 shadow-sm"
+      role="group"
+      :aria-label="t('admin.statsRangeLabel')"
+    >
+      <button
+        v-for="option in RANGES"
+        :key="option"
+        type="button"
+        class="rounded-full px-3.5 py-1.5 text-sm font-bold transition"
+        :class="
+          range === option
+            ? 'bg-[var(--navy)] text-white'
+            : 'text-[var(--navy)]/70 hover:bg-[var(--paper)]'
+        "
+        @click="onRangeChange(option)"
+      >
+        {{ t(`admin.statsRange.${option}`) }}
+      </button>
+    </div>
+
     <AppLoadingState
       v-if="loading"
-      class="mt-8"
+      class="mt-4"
       :label="t('admin.loadingOwner')"
     />
     <div v-else class="mt-2 space-y-4">

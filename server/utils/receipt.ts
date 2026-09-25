@@ -240,13 +240,18 @@ export type OwnerOrderSummary = {
   gateway_reference: string | null
 }
 
-/** Recent orders for the owner receipt list (no cost fields). */
+/** Orders for the owner receipt list (no cost fields), optionally scoped to a date window. */
 export async function listOwnerOrders(
   client: SupabaseClient,
   restaurantId: string,
-  limit = 40,
+  options?: {
+    start?: Date
+    end?: Date
+    limit?: number
+  },
 ): Promise<OwnerOrderSummary[]> {
-  const { data, error } = await client
+  const limit = options?.limit ?? 200
+  let query = client
     .from("orders")
     .select(
       "id, created_at, payment_status, payment_method, total, guest_name, gateway_reference, table_id, tables(table_number)",
@@ -254,6 +259,15 @@ export async function listOwnerOrders(
     .eq("restaurant_id", restaurantId)
     .order("created_at", { ascending: false })
     .limit(limit)
+
+  if (options?.start) {
+    query = query.gte("created_at", options.start.toISOString())
+  }
+  if (options?.end) {
+    query = query.lte("created_at", options.end.toISOString())
+  }
+
+  const { data, error } = await query
 
   if (error) {
     throw createError({
