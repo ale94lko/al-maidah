@@ -3,6 +3,7 @@ import type { DishFormState } from "~/composables/useAdminMenu"
 import type { ModifierGroupInput } from "~/types"
 import { extractApiErrorMessage } from "~/utils/errors"
 import { localizedName } from "~/utils/localize"
+import { filsToMoney, moneyToFils } from "~/utils/cart"
 
 definePageMeta({
   layout: "admin",
@@ -73,6 +74,14 @@ function closeDishModal() {
 
 function menuError(error: unknown) {
   return extractApiErrorMessage(error) || t("admin.menuSaveError")
+}
+
+function dishMargin(price: string, cost: string) {
+  return filsToMoney(moneyToFils(price) - moneyToFils(cost))
+}
+
+function formatMoney(amount: string) {
+  return t("guest.priceAed", { price: amount })
 }
 
 onMounted(async () => {
@@ -253,9 +262,22 @@ function clearSelectedPhoto() {
             </option>
           </select>
         </label>
-        <label class="flex items-center gap-2 rounded-2xl border border-[var(--ink)]/10 bg-white px-3 py-2 text-sm font-semibold text-[var(--ink)]">
-          <input v-model="showArchived" type="checkbox" class="rounded" >
-          {{ t("admin.showArchived") }}
+        <label class="flex cursor-pointer items-center gap-3 rounded-2xl border border-[var(--navy)]/10 bg-white px-3.5 py-2.5 text-sm font-semibold text-[var(--navy)] shadow-sm">
+          <span>{{ t("admin.showArchived") }}</span>
+          <span
+            class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition"
+            :class="showArchived ? 'bg-[var(--info)]' : 'bg-[var(--paper-deep)]'"
+          >
+            <input
+              v-model="showArchived"
+              type="checkbox"
+              class="peer sr-only"
+            >
+            <span
+              class="inline-block h-5 w-5 translate-x-0.5 rounded-full bg-white shadow transition peer-checked:translate-x-[1.35rem]"
+              :class="showArchived ? 'translate-x-[1.35rem]' : 'translate-x-0.5'"
+            />
+          </span>
         </label>
       </div>
     </header>
@@ -273,38 +295,38 @@ function clearSelectedPhoto() {
         :description="t('admin.noRestaurantsHint')"
       />
 
-      <div v-else class="mt-8 space-y-8">
-        <section class="surface-card">
-          <h2 class="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
+      <div v-else class="mt-2 space-y-5">
+        <section class="rounded-2xl border border-[var(--navy)]/10 bg-white p-5 shadow-sm sm:p-6">
+          <h2 class="mb-4 text-base font-bold text-[var(--navy)]">
             {{ t("admin.addCategory") }}
           </h2>
           <form
-            class="mt-3 flex flex-wrap items-end gap-3"
+            class="flex flex-wrap items-end gap-3"
             @submit.prevent="onAddCategory"
           >
-            <label class="flex min-w-[10rem] flex-1 flex-col gap-1 text-xs text-[var(--muted)]">
+            <label class="flex min-w-[10rem] flex-1 flex-col gap-1.5 text-xs font-semibold text-[var(--muted)]">
               {{ t("admin.nameEn") }}
               <input
                 v-model="newCategoryEn"
                 required
-                class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+                class="field-input !rounded-xl"
               >
             </label>
-            <label class="flex min-w-[10rem] flex-1 flex-col gap-1 text-xs text-[var(--muted)]">
+            <label class="flex min-w-[10rem] flex-1 flex-col gap-1.5 text-xs font-semibold text-[var(--muted)]">
               {{ t("admin.nameAr") }}
               <input
                 v-model="newCategoryAr"
                 required
                 dir="rtl"
-                class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+                class="field-input !rounded-xl"
               >
             </label>
             <button
               type="submit"
-              class="btn-primary disabled:opacity-60"
+              class="btn-primary !rounded-xl disabled:opacity-60"
               :disabled="saving"
             >
-              {{ t("admin.addCategory") }}
+              + {{ t("admin.addCategory") }}
             </button>
           </form>
         </section>
@@ -312,8 +334,12 @@ function clearSelectedPhoto() {
         <section
           v-for="category in visibleCategories"
           :key="category.id"
-          class="surface-card"
-          :class="{ 'opacity-70': category.is_archived }"
+          class="rounded-3xl border border-[var(--navy)]/10 p-4 sm:p-5"
+          :class="
+            category.is_archived
+              ? 'bg-[var(--paper-deep)]/70 opacity-80'
+              : 'bg-[color-mix(in_srgb,var(--paper)_72%,white)]'
+          "
         >
           <div class="flex flex-wrap items-start justify-between gap-3">
             <div class="min-w-0 flex-1">
@@ -327,7 +353,7 @@ function clearSelectedPhoto() {
                   <input
                     v-model="editingCategory.name_en"
                     required
-                    class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+                    class="field-input !rounded-xl"
                   >
                 </label>
                 <label class="flex min-w-[8rem] flex-1 flex-col gap-1 text-xs text-[var(--muted)]">
@@ -336,31 +362,31 @@ function clearSelectedPhoto() {
                     v-model="editingCategory.name_ar"
                     required
                     dir="rtl"
-                    class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-sm"
+                    class="field-input !rounded-xl"
                   >
                 </label>
                 <button
                   type="submit"
-                  class="btn-primary !px-3 !py-2 !text-xs disabled:opacity-60"
+                  class="btn-primary !rounded-xl !px-3 !py-2 !text-xs disabled:opacity-60"
                   :disabled="saving"
                 >
                   {{ saving ? t("admin.saving") : t("admin.save") }}
                 </button>
                 <button
                   type="button"
-                  class="rounded-2xl border border-[var(--espresso)]/15 px-3 py-2 text-xs"
+                  class="rounded-xl border border-[var(--navy)]/10 bg-white px-3 py-2 text-xs font-bold text-[var(--navy)]"
                   @click="cancelEditCategory"
                 >
                   {{ t("admin.cancel") }}
                 </button>
               </form>
               <div v-else class="flex items-center gap-2">
-                <h2 class="text-lg font-semibold text-[var(--espresso)]">
+                <h2 class="font-display text-xl font-bold text-[var(--navy)]">
                   {{ localizedName(category, locale) }}
                 </h2>
                 <button
                   type="button"
-                  class="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--espresso)]/15 text-[var(--espresso)] transition hover:bg-white"
+                  class="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--navy)]/10 bg-white text-[var(--navy)] transition hover:bg-[var(--paper)]"
                   :aria-label="t('admin.editCategory')"
                   :title="t('admin.editCategory')"
                   @click="openEditCategory(category)"
@@ -378,31 +404,35 @@ function clearSelectedPhoto() {
                   </svg>
                 </button>
               </div>
-              <p v-if="category.is_archived" class="mt-1 text-xs text-amber-700">
+              <p v-if="category.is_archived" class="mt-1 text-xs font-semibold text-amber-700">
                 {{ t("admin.archived") }}
               </p>
             </div>
-            <div class="flex flex-wrap gap-2">
+            <div class="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
+                class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--navy)]/10 bg-white text-[var(--navy)] transition hover:bg-white disabled:opacity-50"
                 :disabled="saving"
+                :aria-label="t('admin.moveUp')"
+                :title="t('admin.moveUp')"
                 @click="moveCategory(category.id, -1)"
               >
                 ↑
               </button>
               <button
                 type="button"
-                class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
+                class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--navy)]/10 bg-white text-[var(--navy)] transition hover:bg-white disabled:opacity-50"
                 :disabled="saving"
+                :aria-label="t('admin.moveDown')"
+                :title="t('admin.moveDown')"
                 @click="moveCategory(category.id, 1)"
               >
                 ↓
               </button>
               <button
                 type="button"
-                class="!px-2 !py-1 !text-xs"
-                :class="category.is_archived ? 'btn-success' : 'btn-warning'"
+                class="rounded-xl px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
+                :class="category.is_archived ? 'bg-[var(--herb)]' : 'bg-[#e67700]'"
                 :disabled="saving"
                 @click="
                   patchCategory(category.id, {
@@ -418,7 +448,7 @@ function clearSelectedPhoto() {
               </button>
               <button
                 type="button"
-                class="btn-primary !px-3 !py-1 !text-xs"
+                class="btn-primary !rounded-xl !px-3 !py-2 !text-xs"
                 @click="openNewDish(category.id)"
               >
                 {{ t("admin.addDish") }}
@@ -426,73 +456,108 @@ function clearSelectedPhoto() {
             </div>
           </div>
 
-          <ul class="mt-4 divide-y divide-[var(--espresso)]/10">
+          <ul class="mt-4 space-y-3">
             <li
               v-for="dish in itemsForCategory(category.id)"
               :key="dish.id"
-              class="flex flex-wrap items-center justify-between gap-3 py-3"
+              class="flex flex-wrap items-center gap-4 rounded-2xl border border-[var(--navy)]/10 bg-white p-3.5 shadow-sm sm:p-4"
             >
-              <div class="flex min-w-0 flex-1 items-center gap-3">
-                <div
-                  class="h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-[var(--espresso)]/10 bg-[var(--paper)]"
+              <div
+                class="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br from-[var(--chili)]/12 via-[var(--herb)]/12 to-[var(--citrus)]/18 sm:h-24 sm:w-24"
+              >
+                <img
+                  v-if="dish.photo_url"
+                  :src="dish.photo_url"
+                  :alt="localizedName(dish, locale)"
+                  class="h-full w-full object-cover"
                 >
-                  <img
-                    v-if="dish.photo_url"
-                    :src="dish.photo_url"
-                    :alt="localizedName(dish, locale)"
-                    class="h-full w-full object-cover"
-                  >
-                  <div
-                    v-else
-                    class="flex h-full w-full items-center justify-center text-[10px] font-bold uppercase tracking-wide text-[var(--muted)]"
-                    aria-hidden="true"
-                  >
-                    —
-                  </div>
-                </div>
-                <div class="min-w-0">
-                  <p class="font-medium text-[var(--espresso)]">
-                    {{ localizedName(dish, locale) }}
-                    <span
-                      v-if="!dish.is_available"
-                      class="ms-2 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-amber-800"
-                    >
-                      {{ t("admin.soldOut") }}
-                    </span>
-                    <span
-                      v-if="dish.is_archived"
-                      class="status-chip status-chip-warn ms-2"
-                    >
-                      {{ t("admin.archived") }}
-                    </span>
-                  </p>
-                  <p class="text-xs text-[var(--muted)]">
-                    {{ t("admin.price") }} {{ dish.price }} {{ t("common.currencyAed") }} ·
-                    {{ t("admin.cost") }} {{ dish.cost_price }} {{ t("common.currencyAed") }}
-                  </p>
+                <div
+                  v-else
+                  class="font-display flex h-full w-full items-center justify-center text-[11px] font-extrabold text-[var(--herb)]/45"
+                  aria-hidden="true"
+                >
+                  Al-Maidah
                 </div>
               </div>
-              <div class="flex flex-wrap gap-2">
+
+              <div class="min-w-0 flex-1 space-y-2.5">
+                <div class="flex flex-wrap items-center gap-2">
+                  <p class="text-base font-bold text-[var(--navy)]">
+                    {{ localizedName(dish, locale) }}
+                  </p>
+                  <span
+                    v-if="!dish.is_available"
+                    class="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-amber-800"
+                  >
+                    {{ t("admin.soldOut") }}
+                  </span>
+                  <span
+                    v-if="dish.is_archived"
+                    class="rounded-full bg-[var(--paper-deep)] px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-[var(--muted)]"
+                  >
+                    {{ t("admin.archived") }}
+                  </span>
+                </div>
+
+                <div
+                  class="grid max-w-md grid-cols-3 overflow-hidden rounded-xl border border-[var(--navy)]/12 bg-[color-mix(in_srgb,var(--paper)_55%,white)]"
+                >
+                  <div class="border-e border-[var(--navy)]/12 px-3 py-2">
+                    <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
+                      {{ t("admin.price") }}
+                    </p>
+                    <p class="mt-0.5 font-mono text-sm font-bold text-[var(--navy)]">
+                      {{ formatMoney(dish.price) }}
+                    </p>
+                  </div>
+                  <div class="border-e border-[var(--navy)]/12 px-3 py-2">
+                    <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
+                      {{ t("admin.cost") }}
+                    </p>
+                    <p class="mt-0.5 font-mono text-sm font-bold text-[var(--navy)]">
+                      {{ formatMoney(dish.cost_price) }}
+                    </p>
+                  </div>
+                  <div class="px-3 py-2">
+                    <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-[var(--muted)]">
+                      {{ t("admin.margin") }}
+                    </p>
+                    <p class="mt-0.5 font-mono text-sm font-bold text-[var(--navy)]">
+                      {{ formatMoney(dishMargin(dish.price, dish.cost_price)) }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex w-full flex-wrap items-center gap-2 sm:ms-auto sm:w-auto sm:justify-end">
                 <button
                   type="button"
-                  class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
+                  class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--navy)]/10 bg-[var(--paper)]/60 text-[var(--navy)] disabled:opacity-50"
                   :disabled="saving"
+                  :aria-label="t('admin.moveUp')"
+                  :title="t('admin.moveUp')"
                   @click="moveDish(dish.id, -1)"
                 >
                   ↑
                 </button>
                 <button
                   type="button"
-                  class="rounded-2xl border border-[var(--espresso)]/15 px-2 py-1 text-xs"
+                  class="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--navy)]/10 bg-[var(--paper)]/60 text-[var(--navy)] disabled:opacity-50"
                   :disabled="saving"
+                  :aria-label="t('admin.moveDown')"
+                  :title="t('admin.moveDown')"
                   @click="moveDish(dish.id, 1)"
                 >
                   ↓
                 </button>
                 <button
                   type="button"
-                  class="!px-2 !py-1 !text-xs"
-                  :class="dish.is_available ? 'btn-warning' : 'btn-success'"
+                  class="rounded-xl px-3 py-2 text-xs font-bold disabled:opacity-50"
+                  :class="
+                    dish.is_available
+                      ? 'bg-[var(--citrus)] text-[var(--ink)]'
+                      : 'bg-[var(--herb)] text-white'
+                  "
                   :disabled="saving"
                   @click="
                     patchDish(dish.id, { is_available: !dish.is_available })
@@ -506,8 +571,8 @@ function clearSelectedPhoto() {
                 </button>
                 <button
                   type="button"
-                  class="!px-2 !py-1 !text-xs"
-                  :class="dish.is_archived ? 'btn-success' : 'btn-warning'"
+                  class="rounded-xl px-3 py-2 text-xs font-bold text-white disabled:opacity-50"
+                  :class="dish.is_archived ? 'bg-[var(--herb)]' : 'bg-[#e67700]'"
                   :disabled="saving"
                   @click="
                     patchDish(dish.id, { is_archived: !dish.is_archived })
@@ -519,7 +584,7 @@ function clearSelectedPhoto() {
                 </button>
                 <button
                   type="button"
-                  class="rounded-2xl border border-[var(--herb)] px-2 py-1 text-xs text-[var(--herb)]"
+                  class="btn-primary !rounded-xl !px-3 !py-2 !text-xs"
                   @click="openEditDish(dish.id)"
                 >
                   {{ t("admin.edit") }}
@@ -528,7 +593,7 @@ function clearSelectedPhoto() {
             </li>
             <li
               v-if="!itemsForCategory(category.id).length"
-              class="py-4 text-sm text-[var(--muted)]"
+              class="rounded-2xl border border-dashed border-[var(--navy)]/15 bg-white/50 px-4 py-8 text-center text-sm text-[var(--muted)]"
             >
               {{ t("admin.noDishesInCategory") }}
             </li>
