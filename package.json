@@ -22,7 +22,7 @@
     "fsevents": true
   },
   "dependencies": {
-    "@stripe/stripe-js": "^9.17.0",
+    "@stripe/stripe-js": "^10.0.0",
     "@supabase/supabase-js": "^2.117.1",
     "@vercel/speed-insights": "^2.0.0",
     "nuxt": "^4.5.2",
